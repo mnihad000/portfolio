@@ -1,5 +1,6 @@
 'use client';
 
+import Link from 'next/link';
 import { useEffect, useState } from 'react';
 
 const UNICORN_PROJECT_ID = 'OMzqyUv6M3kSnv0JeAtC';
@@ -118,26 +119,6 @@ export default function HeroAsciiOne() {
       <div className="pointer-events-none absolute inset-0 retro-crt-overlay" />
       <div className="pointer-events-none absolute inset-0 retro-noise" />
 
-      <div className="absolute top-0 left-0 right-0 z-20 border-b border-white/20">
-        <div className="container mx-auto flex items-center justify-between px-4 py-3 lg:px-8 lg:py-4">
-          <div className="flex items-center gap-2 lg:gap-4">
-            <div className="font-heading text-2xl tracking-[0.18em] text-white lg:text-3xl">
-              MN
-            </div>
-            <div className="h-3 w-px bg-white/40 lg:h-4" />
-            <span className="font-mono text-[8px] text-white/60 lg:text-[10px]">
-              EST. 2026
-            </span>
-          </div>
-
-          <div className="hidden items-center gap-3 font-mono text-[10px] text-white/60 lg:flex">
-            <span>LOC: NYC</span>
-            <div className="h-1 w-1 rounded-full bg-white/40" />
-            <span>STATUS: ONLINE</span>
-          </div>
-        </div>
-      </div>
-
       <div className="absolute top-0 left-0 z-20 h-8 w-8 border-t-2 border-l-2 border-white/30 lg:h-12 lg:w-12" />
       <div className="absolute top-0 right-0 z-20 h-8 w-8 border-t-2 border-r-2 border-white/30 lg:h-12 lg:w-12" />
       <div
@@ -150,7 +131,7 @@ export default function HeroAsciiOne() {
       />
 
       <div
-        className="relative z-10 flex min-h-screen items-center justify-end pt-16 lg:pt-0"
+        className="relative z-10 flex min-h-screen items-center justify-end pt-24 lg:pt-16"
         style={{ marginTop: '5vh' }}
       >
         <aside className="pointer-events-none absolute left-[3%] top-[85%] z-10 hidden w-[30vw] max-w-[420px] -translate-y-1/2 border-l border-white/30 pl-5 lg:block">
@@ -217,15 +198,21 @@ export default function HeroAsciiOne() {
             </div>
 
             <div className="flex flex-col gap-3 lg:flex-row lg:gap-4">
-              <button className="group relative border border-white bg-transparent px-5 py-2 text-xs font-mono text-white transition-all duration-200 hover:bg-white hover:text-black lg:px-6 lg:py-2.5 lg:text-sm">
+              <Link
+                href="/projects"
+                className="group relative border border-white bg-transparent px-5 py-2 text-xs font-mono text-white transition-all duration-200 hover:bg-white hover:text-black lg:px-6 lg:py-2.5 lg:text-sm"
+              >
                 <span className="absolute top-[-0.25rem] left-[-0.25rem] hidden h-2 w-2 border-t border-l border-white opacity-0 transition-opacity group-hover:opacity-100 lg:block" />
                 <span className="absolute right-[-0.25rem] bottom-[-0.25rem] hidden h-2 w-2 border-r border-b border-white opacity-0 transition-opacity group-hover:opacity-100 lg:block" />
                 VIEW PROJECTS
-              </button>
+              </Link>
 
-              <button className="relative border border-white bg-transparent px-5 py-2 text-xs font-mono text-white transition-all duration-200 hover:bg-white hover:text-black lg:px-6 lg:py-2.5 lg:text-sm">
+              <Link
+                href="/contact"
+                className="relative border border-white bg-transparent px-5 py-2 text-xs font-mono text-white transition-all duration-200 hover:bg-white hover:text-black lg:px-6 lg:py-2.5 lg:text-sm"
+              >
                 CONTACT ME
-              </button>
+              </Link>
             </div>
 
             <div className="mt-6 hidden items-center gap-2 opacity-40 lg:flex">
@@ -407,4 +394,3 @@ export default function HeroAsciiOne() {
     </main>
   );
 }
-

@@ -1,5 +1,6 @@
 import type { Metadata } from "next";
 import { IBM_Plex_Mono, VT323 } from "next/font/google";
+import NavHeader from "@/components/ui/nav-header";
 import "./globals.css";
 
 const ibmPlexMono = IBM_Plex_Mono({
@@ -29,7 +30,10 @@ export default function RootLayout({
       lang="en"
       className={`${ibmPlexMono.variable} ${vt323.variable} h-full antialiased`}
     >
-      <body className="flex min-h-full flex-col bg-black text-white">{children}</body>
+      <body className="flex min-h-full flex-col bg-black text-white">
+        <NavHeader />
+        {children}
+      </body>
     </html>
   );
 }

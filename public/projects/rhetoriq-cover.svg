@@ -1,0 +1,49 @@
+<svg width="1600" height="900" viewBox="0 0 1600 900" fill="none" xmlns="http://www.w3.org/2000/svg">
+  <defs>
+    <linearGradient id="bg" x1="0" y1="0" x2="1" y2="1">
+      <stop offset="0%" stop-color="#1A1433" />
+      <stop offset="45%" stop-color="#4C4E84" />
+      <stop offset="100%" stop-color="#101629" />
+    </linearGradient>
+    <radialGradient id="glow" cx="0" cy="0" r="1" gradientUnits="userSpaceOnUse" gradientTransform="translate(820 360) rotate(90) scale(460 820)">
+      <stop stop-color="#D9D9FF" stop-opacity="0.45" />
+      <stop offset="1" stop-color="#D9D9FF" stop-opacity="0" />
+    </radialGradient>
+    <linearGradient id="card" x1="0" y1="0" x2="0" y2="1">
+      <stop stop-color="#FAFDFF" />
+      <stop offset="1" stop-color="#CFD2E4" />
+    </linearGradient>
+  </defs>
+
+  <rect width="1600" height="900" fill="url(#bg)" />
+  <rect width="1600" height="900" fill="url(#glow)" />
+
+  <g opacity="0.26">
+    <circle cx="120" cy="90" r="1.6" fill="white" />
+    <circle cx="300" cy="160" r="1.2" fill="white" />
+    <circle cx="530" cy="120" r="1.3" fill="white" />
+    <circle cx="820" cy="80" r="1.5" fill="white" />
+    <circle cx="1080" cy="190" r="1.1" fill="white" />
+    <circle cx="1380" cy="120" r="1.5" fill="white" />
+    <circle cx="1520" cy="240" r="1.4" fill="white" />
+    <circle cx="200" cy="700" r="1.4" fill="white" />
+    <circle cx="640" cy="760" r="1.2" fill="white" />
+    <circle cx="980" cy="720" r="1.1" fill="white" />
+    <circle cx="1340" cy="780" r="1.4" fill="white" />
+  </g>
+
+  <rect x="210" y="230" width="1180" height="440" rx="42" fill="#0B0D16" fill-opacity="0.42" stroke="#AEB8FF" stroke-opacity="0.35" />
+  <rect x="242" y="262" width="304" height="304" rx="48" fill="url(#card)" />
+  <circle cx="394" cy="414" r="92" fill="#5B5F8D" />
+  <path d="M394 347C431 347 461 377 461 414C461 451 431 481 394 481C375 481 357 473 344 459L365 438C372 445 382 449 394 449C413 449 429 433 429 414C429 395 413 379 394 379C382 379 372 383 365 390L344 369C357 355 375 347 394 347Z" fill="#0D1020" />
+  <path d="M358 411H430V439H358V411Z" fill="#0D1020" />
+
+  <text x="620" y="390" fill="#F4F6FF" font-size="112" font-family="IBM Plex Mono, monospace" font-weight="700" letter-spacing="1.4">Rhetoriq</text>
+  <text x="622" y="450" fill="#D2D8F6" fill-opacity="0.84" font-size="30" font-family="IBM Plex Mono, monospace" letter-spacing="1">Persuasive writing system with guided AI feedback loops.</text>
+  <text x="622" y="494" fill="#B7BFE5" fill-opacity="0.72" font-size="22" font-family="IBM Plex Mono, monospace" letter-spacing="2">NEXT.JS  TYPESCRIPT  OPENAI API  TAILWIND</text>
+
+  <rect x="622" y="528" width="174" height="46" rx="11" fill="#D9DEFA" />
+  <text x="653" y="558" fill="#121528" font-size="18" font-family="IBM Plex Mono, monospace" letter-spacing="0.7">LIVE DEMO</text>
+  <rect x="812" y="528" width="174" height="46" rx="11" fill="#2B3150" />
+  <text x="846" y="558" fill="#E7ECFF" font-size="18" font-family="IBM Plex Mono, monospace" letter-spacing="0.7">SOURCE</text>
+</svg>
