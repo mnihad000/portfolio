@@ -736,9 +736,9 @@ export default function ProtocolTerminal() {
               </div>
             </div>
 
-            <div className="border-t border-white/10 px-4 py-3">
+            <div className="border-t border-white/10 px-4 py-4">
               <div className="mb-2 text-[11px] tracking-[0.16em] text-[#888888]">{HELP_HINT}</div>
-              <label className="flex items-center gap-2 text-[13px] text-white">
+              <label className="flex min-h-11 items-center gap-2 text-[14px] text-white">
                 <span className="shrink-0 text-white/90">{PROMPT}</span>
                 <input
                   ref={inputRef}
@@ -749,7 +749,7 @@ export default function ProtocolTerminal() {
                   spellCheck={false}
                   placeholder={"type 'help' to list commands"}
                   disabled={isBooting}
-                  className="min-w-0 flex-1 bg-transparent text-white outline-none placeholder:text-[#666666] disabled:cursor-not-allowed"
+                  className="min-w-0 flex-1 bg-transparent py-1 text-[14px] text-white outline-none placeholder:text-[#666666] disabled:cursor-not-allowed"
                 />
               </label>
             </div>

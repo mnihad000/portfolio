@@ -1,19 +1,78 @@
 'use client';
 
 import Link from 'next/link';
-import { useEffect, useState } from 'react';
+import { useEffect, useRef, useState } from 'react';
 
 const UNICORN_PROJECT_ID = 'OMzqyUv6M3kSnv0JeAtC';
 const UNICORN_SCRIPT_SRC =
   'https://cdn.jsdelivr.net/gh/hiunicornstudio/unicornstudio.js@v1.4.33/dist/unicornStudio.umd.js';
+const UNICORN_RUNTIME_SCRIPT_ID = 'unicorn-runtime-script';
+const UNICORN_STYLE_ID = 'hero-ascii-one-style';
+
+let unicornScriptPromise: Promise<void> | null = null;
 
 declare global {
   interface Window {
     UnicornStudio?: {
-      isInitialized?: boolean;
       init?: () => void;
     };
   }
+}
+
+function ensureUnicornMountStyles() {
+  if (document.getElementById(UNICORN_STYLE_ID)) return;
+
+  const style = document.createElement('style');
+  style.id = UNICORN_STYLE_ID;
+  style.textContent = `
+    [data-us-project] {
+      position: relative !important;
+      overflow: hidden !important;
+    }
+  `;
+  document.head.appendChild(style);
+}
+
+function loadUnicornStudioScript() {
+  if (typeof window === 'undefined') {
+    return Promise.resolve();
+  }
+
+  if (window.UnicornStudio && typeof window.UnicornStudio.init === 'function') {
+    return Promise.resolve();
+  }
+
+  if (unicornScriptPromise) {
+    return unicornScriptPromise;
+  }
+
+  unicornScriptPromise = new Promise<void>((resolve, reject) => {
+    const existingScript = document.getElementById(
+      UNICORN_RUNTIME_SCRIPT_ID
+    ) as HTMLScriptElement | null;
+
+    const handleLoad = () => resolve();
+    const handleError = () => {
+      unicornScriptPromise = null;
+      reject(new Error('Failed to load UnicornStudio.'));
+    };
+
+    if (existingScript) {
+      existingScript.addEventListener('load', handleLoad, { once: true });
+      existingScript.addEventListener('error', handleError, { once: true });
+      return;
+    }
+
+    const script = document.createElement('script');
+    script.id = UNICORN_RUNTIME_SCRIPT_ID;
+    script.src = UNICORN_SCRIPT_SRC;
+    script.async = true;
+    script.addEventListener('load', handleLoad, { once: true });
+    script.addEventListener('error', handleError, { once: true });
+    document.head.appendChild(script);
+  });
+
+  return unicornScriptPromise;
 }
 
 export default function HeroAsciiOne() {
@@ -22,71 +81,84 @@ export default function HeroAsciiOne() {
   const [typedQuote, setTypedQuote] = useState('');
   const [typingDone, setTypingDone] = useState(false);
   const [unicornLoaded, setUnicornLoaded] = useState(false);
+  const unicornContainerRef = useRef<HTMLDivElement | null>(null);
 
   useEffect(() => {
-    const embedScriptId = 'unicorn-loader-script';
-    const localStyleId = 'hero-ascii-one-style';
+    const container = unicornContainerRef.current;
+    if (!container) return undefined;
 
-    let appendedScript = false;
-    let appendedStyle = false;
+    let cancelled = false;
+    let loadCheck: number | null = null;
+    let retryTimer: number | null = null;
+    let initAttempts = 0;
 
-    if (!document.getElementById(embedScriptId)) {
-      const embedScript = document.createElement('script');
-      embedScript.id = embedScriptId;
-      embedScript.type = 'text/javascript';
-      embedScript.textContent = `
-        !function(){
-          if(!window.UnicornStudio){
-            window.UnicornStudio={isInitialized:!1};
-            var i=document.createElement("script");
-            i.src="${UNICORN_SCRIPT_SRC}";
-            i.onload=function(){
-              if(window.UnicornStudio && window.UnicornStudio.isInitialized) return;
-              if(window.UnicornStudio && typeof window.UnicornStudio.init === "function"){
-                window.UnicornStudio.init();
-                window.UnicornStudio.isInitialized = !0;
-              }
-            };
-            (document.head || document.body).appendChild(i);
-          } else if (window.UnicornStudio && !window.UnicornStudio.isInitialized && typeof window.UnicornStudio.init === "function"){
-            window.UnicornStudio.init();
-            window.UnicornStudio.isInitialized = !0;
-          }
-        }();
-      `;
-      document.head.appendChild(embedScript);
-      appendedScript = true;
-    }
-
-    if (!document.getElementById(localStyleId)) {
-      const style = document.createElement('style');
-      style.id = localStyleId;
-      style.textContent = `
-        [data-us-project] {
-          position: relative !important;
-          overflow: hidden !important;
-        }
-      `;
-      document.head.appendChild(style);
-      appendedStyle = true;
-    }
-
-    const loadCheck = window.setInterval(() => {
-      const hasCanvas = Boolean(document.querySelector('[data-us-project] canvas'));
-      if (hasCanvas) {
-        setUnicornLoaded(true);
+    const stopTimers = () => {
+      if (loadCheck) {
         window.clearInterval(loadCheck);
       }
-    }, 150);
+      if (retryTimer) {
+        window.clearTimeout(retryTimer);
+      }
+    };
+
+    const hasCanvas = () => Boolean(container.querySelector('canvas'));
+
+    const markLoadedIfReady = () => {
+      if (hasCanvas()) {
+        setUnicornLoaded(true);
+        stopTimers();
+        return true;
+      }
+      return false;
+    };
+
+    const initializeCurrentMount = () => {
+      if (cancelled || typeof window.UnicornStudio?.init !== 'function') return;
+      window.UnicornStudio.init();
+      initAttempts += 1;
+    };
+
+    ensureUnicornMountStyles();
+    setUnicornLoaded(hasCanvas());
+
+    loadUnicornStudioScript()
+      .then(() => {
+        if (cancelled) return;
+
+        container.replaceChildren();
+        setUnicornLoaded(false);
+        initializeCurrentMount();
+
+        if (markLoadedIfReady()) return;
+
+        loadCheck = window.setInterval(() => {
+          if (cancelled) return;
+          markLoadedIfReady();
+        }, 150);
+
+        const queueRetry = () => {
+          if (cancelled || initAttempts >= 4 || hasCanvas()) return;
+          retryTimer = window.setTimeout(() => {
+            retryTimer = null;
+            initializeCurrentMount();
+            if (!markLoadedIfReady()) {
+              queueRetry();
+            }
+          }, 400);
+        };
+
+        queueRetry();
+      })
+      .catch(() => {
+        if (!cancelled) {
+          setUnicornLoaded(false);
+        }
+      });
 
     return () => {
-      window.clearInterval(loadCheck);
-      if (appendedScript) {
-        document.getElementById(embedScriptId)?.remove();
-      }
-      if (appendedStyle) {
-        document.getElementById(localStyleId)?.remove();
-      }
+      cancelled = true;
+      stopTimers();
+      container.replaceChildren();
     };
   }, []);
 
@@ -108,6 +180,7 @@ export default function HeroAsciiOne() {
     <main className="relative min-h-screen overflow-hidden bg-black">
       <div className="absolute inset-0 h-full w-full">
         <div
+          ref={unicornContainerRef}
           data-us-project={UNICORN_PROJECT_ID}
           style={{ width: '100%', height: '100%', minHeight: '100vh' }}
         />
