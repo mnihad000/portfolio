@@ -1,0 +1,36 @@
+<svg width="1600" height="900" viewBox="0 0 1600 900" fill="none" xmlns="http://www.w3.org/2000/svg">
+  <defs>
+    <linearGradient id="bg2" x1="0" y1="0" x2="1" y2="1">
+      <stop offset="0%" stop-color="#101A2E" />
+      <stop offset="45%" stop-color="#1B4F63" />
+      <stop offset="100%" stop-color="#0C1325" />
+    </linearGradient>
+    <radialGradient id="glow2" cx="0" cy="0" r="1" gradientUnits="userSpaceOnUse" gradientTransform="translate(850 340) rotate(90) scale(430 760)">
+      <stop stop-color="#AFF5FF" stop-opacity="0.5" />
+      <stop offset="1" stop-color="#AFF5FF" stop-opacity="0" />
+    </radialGradient>
+  </defs>
+
+  <rect width="1600" height="900" fill="url(#bg2)" />
+  <rect width="1600" height="900" fill="url(#glow2)" />
+
+  <rect x="180" y="186" width="1240" height="528" rx="44" fill="#0A1322" fill-opacity="0.52" stroke="#95E6F1" stroke-opacity="0.32" />
+  <rect x="248" y="256" width="520" height="388" rx="30" fill="#122033" fill-opacity="0.9" />
+  <rect x="308" y="316" width="390" height="20" rx="10" fill="#D2F7FB" fill-opacity="0.74" />
+  <rect x="308" y="362" width="350" height="16" rx="8" fill="#A3E3EC" fill-opacity="0.58" />
+  <rect x="308" y="406" width="300" height="16" rx="8" fill="#8FCAD5" fill-opacity="0.5" />
+
+  <rect x="308" y="468" width="390" height="136" rx="20" fill="#1A3042" />
+  <rect x="338" y="500" width="330" height="16" rx="8" fill="#BCEBF2" fill-opacity="0.7" />
+  <rect x="338" y="534" width="290" height="16" rx="8" fill="#9ED2DC" fill-opacity="0.6" />
+  <rect x="338" y="568" width="250" height="16" rx="8" fill="#86B5BF" fill-opacity="0.5" />
+
+  <text x="826" y="380" fill="#E8FDFF" font-size="96" font-family="IBM Plex Mono, monospace" font-weight="700">Squeeze Ai</text>
+  <text x="828" y="452" fill="#C5EFF4" fill-opacity="0.82" font-size="30" font-family="IBM Plex Mono, monospace">compress and structure long-form context</text>
+  <text x="828" y="498" fill="#9FD0D8" fill-opacity="0.72" font-size="22" font-family="IBM Plex Mono, monospace">NEXT.JS  TYPESCRIPT  OPENAI  POSTGRESQL</text>
+
+  <rect x="830" y="546" width="226" height="52" rx="12" fill="#D2FAFF" />
+  <text x="868" y="580" fill="#102234" font-size="20" font-family="IBM Plex Mono, monospace">SUMMARIZE</text>
+  <rect x="1078" y="546" width="226" height="52" rx="12" fill="#2A5062" />
+  <text x="1138" y="580" fill="#EAFCFF" font-size="20" font-family="IBM Plex Mono, monospace">INSIGHTS</text>
+</svg>
