@@ -12,6 +12,7 @@ type RoleData = {
   title: string;
   dates: string;
   bullets: string[];
+  impactHighlights: string[];
   stack: string[];
   featured: boolean;
   statusBadge: "[ ACTIVE ]" | "[ INCOMING ]" | "[ COMPLETED ]" | "[ RESEARCH ]";
@@ -20,6 +21,8 @@ type RoleData = {
   progressDuration: number;
   dramaMultiplier: number;
 };
+
+type HudTone = "neutral" | "active" | "incoming";
 
 type HudElements = {
   phase: HTMLElement | null;
@@ -54,6 +57,7 @@ const EXPERIENCE_ROLES: RoleData[] = [
       "Built an agentic Retention Autopilot that ingests analytics, segments users, and automates retention operations at campaign scale.",
       "Launched approved A/B-tested push and rewards campaigns that improved 30-day returning users while reducing campaign setup time by 30%.",
     ],
+    impactHighlights: ["+30% setup speed", "Retention automation", "A/B campaign engine"],
     stack: ["Agentic Workflows", "A/B Testing", "Analytics", "Push Campaigns"],
     featured: true,
     statusBadge: "[ ACTIVE ]",
@@ -71,6 +75,7 @@ const EXPERIENCE_ROLES: RoleData[] = [
       "Incoming SWE intern building scalable backend tooling and automated data pipelines for real-time monitoring across 30,000+ distributed energy systems.",
       "Leveraging Kubernetes, Grafana, and FastAPI to support observability and infrastructure-scale operational workflows.",
     ],
+    impactHighlights: ["30,000+ systems", "Real-time monitoring", "Incoming role"],
     stack: ["Kubernetes", "Grafana", "FastAPI", "Backend Tooling"],
     featured: false,
     statusBadge: "[ INCOMING ]",
@@ -87,6 +92,7 @@ const EXPERIENCE_ROLES: RoleData[] = [
       "Co-authored a research paper on a self-critiquing LLM pipeline using expert feedback, distillation, reinforcement learning, and Pareto optimization.",
       "Improved model accuracy while reducing infrastructure costs by up to 90% using open-weight models.",
     ],
+    impactHighlights: ["Up to 90% cost reduction", "Self-critiquing pipeline", "Pareto optimization"],
     stack: ["LLMs", "Distillation", "RL", "Pareto Optimization"],
     featured: false,
     statusBadge: "[ RESEARCH ]",
@@ -104,6 +110,7 @@ const EXPERIENCE_ROLES: RoleData[] = [
       "Implemented secure authentication with Node.js and MongoDB, integrated Stripe subscriptions, and added GPT flashcards and lessons, increasing student engagement by 25% across three schools.",
       "Wrote unit tests with Jest and Postman, reducing integration bugs by 20% and improving authentication and data consistency across endpoints.",
     ],
+    impactHighlights: ["Led 3 interns", "+25% engagement", "-20% integration bugs"],
     stack: ["MERN", "Node.js", "MongoDB", "Stripe", "Jest", "Postman"],
     featured: false,
     statusBadge: "[ COMPLETED ]",
@@ -120,6 +127,7 @@ const EXPERIENCE_ROLES: RoleData[] = [
       "Built a Python Selenium web-scraping workflow to extract daily Home Health Aide data, automating manual processes and improving productivity by 11%.",
       "Developed 15 reusable React components and integrated a role-aware production application form, improving UI consistency and access control while saving 2+ hours per submission.",
     ],
+    impactHighlights: ["+11% productivity", "15 reusable components", "2+ hours saved/submission"],
     stack: ["Python", "Selenium", "React", "Automation"],
     featured: false,
     statusBadge: "[ COMPLETED ]",
@@ -131,10 +139,10 @@ const EXPERIENCE_ROLES: RoleData[] = [
 
 function getBadgeClassNames(role: RoleData) {
   if (role.statusBadge === "[ ACTIVE ]") {
-    return "border-gray-500 text-gray-200";
+    return "border-emerald-500/60 text-emerald-300";
   }
   if (role.statusBadge === "[ INCOMING ]") {
-    return "border-gray-600 text-gray-300";
+    return "border-amber-500/60 text-amber-300";
   }
   if (role.statusBadge === "[ RESEARCH ]") {
     return "border-gray-700 text-gray-300";
@@ -146,10 +154,30 @@ function hudStatusFromBadge(statusBadge: RoleData["statusBadge"]) {
   return statusBadge.replace(/\[|\]/g, "").trim();
 }
 
-function setHud(hud: HudElements, values: { phase?: string; role?: string; status?: string }) {
+function getHudToneFromBadge(statusBadge: RoleData["statusBadge"]): HudTone {
+  if (statusBadge === "[ ACTIVE ]") return "active";
+  if (statusBadge === "[ INCOMING ]") return "incoming";
+  return "neutral";
+}
+
+function applyHudStatusTone(element: HTMLElement, tone: HudTone) {
+  element.classList.remove("text-gray-300", "text-emerald-300", "text-amber-300");
+  if (tone === "active") {
+    element.classList.add("text-emerald-300");
+    return;
+  }
+  if (tone === "incoming") {
+    element.classList.add("text-amber-300");
+    return;
+  }
+  element.classList.add("text-gray-300");
+}
+
+function setHud(hud: HudElements, values: { phase?: string; role?: string; status?: string; statusTone?: HudTone }) {
   if (values.phase && hud.phase) hud.phase.textContent = values.phase;
   if (values.role && hud.role) hud.role.textContent = values.role;
   if (values.status && hud.status) hud.status.textContent = values.status;
+  if (values.statusTone && hud.status) applyHudStatusTone(hud.status, values.statusTone);
 }
 
 function createTypewriterTween(element: HTMLElement | null, text: string, cps = 34) {
@@ -252,7 +280,7 @@ function bootSequence(cardEl: HTMLElement | null, roleData: RoleData, options: B
   const timeline = gsap.timeline(timelineOptions);
 
   timeline.call(() => {
-    setHud(hud, { phase: "INIT", role: roleData.bootLabel, status: "RUNNING" });
+    setHud(hud, { phase: "INIT", role: roleData.bootLabel, status: "RUNNING", statusTone: "neutral" });
     initLine.textContent = "> INITIALIZING ROLE...";
     if (secureLine) secureLine.textContent = roleData.secureStep ?? "";
     loadingLine.textContent = "";
@@ -266,11 +294,15 @@ function bootSequence(cardEl: HTMLElement | null, roleData: RoleData, options: B
   addFlicker(timeline, initLine, flickerCycles, flickerStep);
 
   if (roleData.secureStep && secureLine) {
-    timeline.call(() => setHud(hud, { phase: "AUTH", role: roleData.bootLabel, status: "HANDSHAKE" }));
+    timeline.call(() =>
+      setHud(hud, { phase: "AUTH", role: roleData.bootLabel, status: "HANDSHAKE", statusTone: "neutral" })
+    );
     addFlicker(timeline, secureLine, secureCycles, flickerStep);
   }
 
-  timeline.call(() => setHud(hud, { phase: "MOUNT", role: roleData.bootLabel, status: "LOADING" }));
+  timeline.call(() =>
+    setHud(hud, { phase: "MOUNT", role: roleData.bootLabel, status: "LOADING", statusTone: "neutral" })
+  );
   timeline.to(loadingLine, { opacity: 1, duration: 0.04 });
   timeline.add(
     createTypewriterTween(loadingLine, `> LOADING: [${roleData.company.toUpperCase()}]`, typeCps)
@@ -289,7 +321,12 @@ function bootSequence(cardEl: HTMLElement | null, roleData: RoleData, options: B
   });
 
   timeline.call(() =>
-    setHud(hud, { phase: "VERIFY", role: roleData.bootLabel, status: "AUTHENTICATED" })
+    setHud(hud, {
+      phase: "VERIFY",
+      role: roleData.bootLabel,
+      status: "AUTHENTICATED",
+      statusTone: "neutral",
+    })
   );
   timeline.to(statusLine, { opacity: 1, duration: 0.08, ease: "steps(1)" });
   timeline.to(content, { opacity: 0.9, duration: 0.07 }).to(content, { opacity: 1, duration: 0.12 });
@@ -307,7 +344,12 @@ function bootSequence(cardEl: HTMLElement | null, roleData: RoleData, options: B
   );
   timeline.to(cursor, { opacity: 1, duration: 0.05, ease: "none" }, "<");
   timeline.call(() =>
-    setHud(hud, { phase: "READY", role: roleData.bootLabel, status: hudStatusFromBadge(roleData.statusBadge) })
+    setHud(hud, {
+      phase: "READY",
+      role: roleData.bootLabel,
+      status: hudStatusFromBadge(roleData.statusBadge),
+      statusTone: getHudToneFromBadge(roleData.statusBadge),
+    })
   );
 
   return timeline;
@@ -326,6 +368,7 @@ function createFocusTrigger(cardEl: HTMLElement | null, roleData: RoleData, hud:
         phase: "FOCUS",
         role: roleData.bootLabel,
         status: hudStatusFromBadge(roleData.statusBadge),
+        statusTone: getHudToneFromBadge(roleData.statusBadge),
       });
     },
     onEnterBack: () => {
@@ -333,6 +376,7 @@ function createFocusTrigger(cardEl: HTMLElement | null, roleData: RoleData, hud:
         phase: "FOCUS",
         role: roleData.bootLabel,
         status: hudStatusFromBadge(roleData.statusBadge),
+        statusTone: getHudToneFromBadge(roleData.statusBadge),
       });
     },
   });
@@ -381,6 +425,7 @@ export default function ExperiencesPage() {
         phase: "IDLE",
         role: "STANDBY",
         status: compact ? "ADAPTIVE_MODE" : "READY",
+        statusTone: "neutral",
       });
 
       timelineRefs.current = cardRefs.current
@@ -537,9 +582,20 @@ export default function ExperiencesPage() {
                   <p className="text-sm text-gray-500">{role.dates}</p>
                 </div>
 
+                <div data-boot-reveal className="mt-4 flex flex-wrap gap-2">
+                  {role.impactHighlights.map((highlight) => (
+                    <span
+                      key={highlight}
+                      className="border border-gray-700 bg-black px-2 py-0.5 text-[11px] tracking-[0.08em] text-gray-300 uppercase"
+                    >
+                      {highlight}
+                    </span>
+                  ))}
+                </div>
+
                 <ul data-boot-reveal className="mt-6 space-y-3">
                   {role.bullets.map((bullet) => (
-                    <li key={bullet} className="text-sm leading-7 text-white md:text-base">
+                    <li key={bullet} className="max-w-[80ch] text-sm leading-7 text-white md:text-base">
                       <span className="mr-2 text-gray-500">{"\u25B8"}</span>
                       {bullet}
                     </li>
