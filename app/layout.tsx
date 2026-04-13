@@ -1,6 +1,7 @@
 import type { Metadata } from "next";
 import { IBM_Plex_Mono, VT323 } from "next/font/google";
 import NavHeader from "@/components/ui/nav-header";
+import ProtocolTerminal from "@/components/ui/protocol-terminal";
 import "./globals.css";
 
 const ibmPlexMono = IBM_Plex_Mono({
@@ -33,6 +34,7 @@ export default function RootLayout({
       <body className="flex min-h-full flex-col bg-black text-white">
         <NavHeader />
         {children}
+        <ProtocolTerminal />
       </body>
     </html>
   );

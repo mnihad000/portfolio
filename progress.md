@@ -12,6 +12,9 @@
 ## Implemented Features
 - Hero landing page with UnicornStudio background and retro overlays.
 - Route-based pages for `Projects`, `Experiences`, and `Contact`.
+- Persistent terminal widget mounted in `components/ui/protocol-terminal.tsx`.
+- Terminal command content is intentionally hardcoded in `components/ui/protocol-terminal.tsx` for later copy edits.
+- Resume download route is served from `app/resume/route.ts`.
 - Reusable project system:
   - Shared typed data model in `lib/projects.ts`
   - Reusable card component in `components/ui/project-card.tsx`
