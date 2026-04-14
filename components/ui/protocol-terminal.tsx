@@ -120,7 +120,7 @@ function normalizeValue(value: string) {
 
 function getToneClass(tone: EntryTone = "default") {
   if (tone === "muted") return "text-[#888888]";
-  if (tone === "success") return "text-white/90";
+  if (tone === "success") return "text-[#7CFFB2]";
   if (tone === "warning") return "text-white/70";
   return "text-white";
 }
@@ -282,6 +282,16 @@ export default function ProtocolTerminal() {
     ]);
   }
 
+  function appendStatusEntriesCurrent() {
+    appendEntries([
+      createTextEntry(
+        "● Internship accepted at Bloom Energy for Summer 2026",
+        "success"
+      ),
+      createTextEntry("Last updated: April 2026", "muted"),
+    ]);
+  }
+
   function appendContactEntries() {
     appendEntries([
       {
@@ -381,7 +391,7 @@ export default function ProtocolTerminal() {
     }
 
     if (normalized === "status") {
-      appendStatusEntries();
+      appendStatusEntriesCurrent();
       return;
     }
 
@@ -669,10 +679,10 @@ export default function ProtocolTerminal() {
         <button
           type="button"
           onClick={() => setIsOpen(true)}
-          className={`pointer-events-auto protocol-launcher relative ml-auto flex h-15 w-[400px] items-center justify-between overflow-hidden rounded-[14px] border border-white/20 bg-[rgba(0,0,0,0.92)] px-3 text-left shadow-[0_0_22px_rgba(255,255,255,0.05)] backdrop-blur-md transition-all duration-200 hover:border-white/30 ${
+          className={`pointer-events-auto protocol-launcher relative ml-auto flex h-15 w-[400px] items-center justify-between overflow-hidden rounded-[14px] border border-white/28 bg-[rgba(28,31,36,0.94)] px-3 text-left shadow-[0_0_22px_rgba(255,255,255,0.07)] backdrop-blur-md transition-all duration-200 hover:border-white/40 ${
             isOpen ? "translate-y-1 opacity-0 pointer-events-none" : "translate-y-0 opacity-100"
           }`}
-          aria-label="Open terminal"
+          aria-label="Open interactive terminal"
         >
           <span className="pointer-events-none absolute inset-0 bg-[radial-gradient(circle_at_top,rgba(255,255,255,0.12),transparent_68%)]" />
           <span className="pointer-events-none absolute inset-0 bg-[radial-gradient(rgba(255,255,255,0.08)_1px,transparent_1px)] bg-[size:12px_12px] opacity-[0.16]" />
@@ -680,7 +690,7 @@ export default function ProtocolTerminal() {
           <span className="relative z-10 flex min-w-0 items-center gap-2">
             <span className="protocol-caret shrink-0 text-[12px] text-amber-300">{">_"}</span>
             <span className="truncate text-[11px] tracking-[0.16em] text-white/92 lowercase">
-              open terminal
+              Start Here
             </span>
           </span>
           <span className="relative z-10 flex items-center gap-1.5">
