@@ -337,6 +337,8 @@ export default function HeroAsciiOne() {
         </div>
       </div>
 
+      <div className="pointer-events-none fixed bottom-[0.3px] left-1/2 z-[2147483647] h-[72px] w-[320px] -translate-x-1/2 rounded-[20px] bg-black" />
+
       <style jsx>{`
         .dither-pattern {
           background-image:
