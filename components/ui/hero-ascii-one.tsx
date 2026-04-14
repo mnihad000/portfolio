@@ -204,10 +204,10 @@ export default function HeroAsciiOne() {
       />
 
       <div
-        className="relative z-10 flex min-h-screen items-center justify-end pt-24 lg:pt-16"
-        style={{ marginTop: '5vh' }}
+        className="relative z-10 flex min-h-screen items-center justify-end pt-16 lg:pt-8"
+        style={{ marginTop: '3vh' }}
       >
-        <aside className="pointer-events-none absolute left-[3%] top-[85%] z-10 hidden w-[30vw] max-w-[420px] -translate-y-1/2 border-l border-white/30 pl-5 lg:block">
+        <aside className="pointer-events-none absolute left-[12%] top-[85%] z-10 hidden w-[30vw] max-w-[420px] -translate-y-1/2 border-l border-white/30 pl-5 lg:block">
           <p className="mb-2 font-mono text-[10px] tracking-[0.16em] text-white/45 uppercase">
             SISYPHUS NOTE
           </p>
@@ -221,7 +221,7 @@ export default function HeroAsciiOne() {
           </blockquote>
         </aside>
 
-        <div className="w-full px-6 lg:w-1/2 lg:px-16 lg:pr-[10%]">
+        <div className="w-full px-6 lg:w-1/2 lg:px-16 lg:pr-[15%]">
           <div className="relative max-w-lg lg:ml-auto">
             <div className="mb-3 flex items-center gap-2 opacity-60">
               <div className="h-px w-8 bg-white" />
@@ -256,7 +256,7 @@ export default function HeroAsciiOne() {
               </p>
 
               <p className="mb-5 font-mono text-xs tracking-[0.12em] text-white/60 lg:mb-7 lg:text-sm">
-                {'> building products with code_'}
+                {'> iterating fast on fullstack and AI products_'}
               </p>
 
               <div

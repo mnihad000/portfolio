@@ -31,7 +31,10 @@ export default function RootLayout({
       lang="en"
       className={`${ibmPlexMono.variable} ${vt323.variable} h-full antialiased`}
     >
-      <body className="flex min-h-full flex-col bg-black text-white">
+      <body
+        suppressHydrationWarning
+        className="flex min-h-full flex-col bg-black text-white"
+      >
         <NavHeader />
         {children}
         <ProtocolTerminal />
