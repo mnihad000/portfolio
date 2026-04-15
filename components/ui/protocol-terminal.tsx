@@ -120,10 +120,10 @@ function normalizeValue(value: string) {
 }
 
 function getToneClass(tone: EntryTone = "default") {
-  if (tone === "muted") return "text-[#888888]";
-  if (tone === "success") return "text-[#7CFFB2]";
-  if (tone === "warning") return "text-white/70";
-  return "text-white";
+  if (tone === "muted") return "protocol-tone-muted";
+  if (tone === "success") return "protocol-tone-success";
+  if (tone === "warning") return "protocol-tone-warning";
+  return "protocol-tone-default";
 }
 
 function createPersistedState(
@@ -256,8 +256,8 @@ export default function ProtocolTerminal() {
         slug: project.slug,
         title:
           index === projects.length - 1
-            ? `└── ${project.slug}`
-            : `├── ${project.slug}`,
+            ? `\\-- ${project.slug}`
+            : `|-- ${project.slug}`,
         description: project.description,
       })),
       createTextEntry("Type 'open <project-name>' to visit.", "muted"),
@@ -269,26 +269,18 @@ export default function ProtocolTerminal() {
   function appendSkillsEntries() {
     appendEntries([
       createTextEntry("SYSTEM RESOURCES"),
-      { id: createId(), kind: "separator", value: "──────────────────────────────" },
-      createTextEntry("LANGUAGES   Python · C++ · JavaScript", "muted"),
-      createTextEntry("FRAMEWORKS  React · Node · Express", "muted"),
-      createTextEntry("TOOLS       Git · Docker · Linux", "muted"),
-      createTextEntry("LEARNING    AI agents · systems design · low-latency infra", "muted"),
-    ]);
-  }
-
-  function appendStatusEntries() {
-    appendEntries([
-      createTextEntry("● Accepted Software Engineering Intern at Bloom Energy for Summer 2026", "success"),
-      createTextEntry("Looking for co-ops / Summer 2027 internships", "muted"),
-      createTextEntry("Last updated: April 2026", "muted"),
+      { id: createId(), kind: "separator", value: "------------------------------" },
+      createTextEntry("LANGUAGES   Python / C++ / JavaScript", "muted"),
+      createTextEntry("FRAMEWORKS  React / Node / Express", "muted"),
+      createTextEntry("TOOLS       Git / Docker / Linux", "muted"),
+      createTextEntry("LEARNING    AI agents / systems design / low-latency infra", "muted"),
     ]);
   }
 
   function appendStatusEntriesCurrent() {
     appendEntries([
       createTextEntry(
-        "● Internship accepted at Bloom Energy for Summer 2026",
+        "* Internship accepted at Bloom Energy for Summer 2026",
         "success"
       ),
       createTextEntry("Last updated: April 2026", "muted"),
@@ -546,8 +538,8 @@ export default function ProtocolTerminal() {
   function renderEntry(entry: TerminalEntry): ReactNode {
     if (entry.kind === "command") {
       return (
-        <div className="flex items-start gap-2 text-white">
-          <span className="shrink-0 text-white/90">{PROMPT}</span>
+        <div className="protocol-tone-default flex items-start gap-2">
+          <span className="shrink-0">{PROMPT}</span>
           <span>{entry.value}</span>
         </div>
       );
@@ -562,23 +554,23 @@ export default function ProtocolTerminal() {
     }
 
     if (entry.kind === "separator") {
-      return <div className="text-[#888888]">{entry.value}</div>;
+      return <div className="protocol-tone-muted">{entry.value}</div>;
     }
 
     if (entry.kind === "project") {
       return (
-        <div className="flex items-start justify-between gap-3 text-white/90">
+        <div className="protocol-tone-default flex items-start justify-between gap-3">
           <div className="min-w-0">
             <div className="flex flex-wrap items-center gap-2">
               <span>{entry.title}</span>
-              <span className="text-[#888888]">→</span>
-              <span className="text-[#888888]">{entry.description}</span>
+              <span className="protocol-tone-muted">-&gt;</span>
+              <span className="protocol-tone-muted">{entry.description}</span>
             </div>
           </div>
           <button
             type="button"
             onClick={() => openInternalRoute(`/projects/${entry.slug}`)}
-            className="shrink-0 text-[#888888] transition-colors hover:text-white"
+            className="protocol-link shrink-0"
           >
             [open]
           </button>
@@ -589,14 +581,14 @@ export default function ProtocolTerminal() {
     if (entry.external) {
       return (
         <div className="flex items-center justify-between gap-3">
-          <span className="text-white/90">
-            {entry.label.padEnd(8, " ")}→ {entry.value}
+          <span className="protocol-tone-default">
+            {`${entry.label.padEnd(8, " ")}-> ${entry.value}`}
           </span>
           <a
             href={entry.href}
             target="_blank"
             rel="noreferrer noopener"
-            className="text-[#888888] transition-colors hover:text-white"
+            className="protocol-link"
           >
             [open]
           </a>
@@ -610,10 +602,10 @@ export default function ProtocolTerminal() {
         onClick={() => openInternalRoute(entry.href)}
         className="flex items-center justify-between gap-3 text-left"
       >
-        <span className="text-white/90">
-          {entry.label.padEnd(8, " ")}→ {entry.value}
+        <span className="protocol-tone-default">
+          {`${entry.label.padEnd(8, " ")}-> ${entry.value}`}
         </span>
-        <span className="text-[#888888] transition-colors hover:text-white">[open]</span>
+        <span className="protocol-link">[open]</span>
       </button>
     );
   }
@@ -688,24 +680,67 @@ export default function ProtocolTerminal() {
         <button
           type="button"
           onClick={() => setIsOpen(true)}
-          className={`pointer-events-auto protocol-launcher relative ml-auto flex h-15 w-[400px] items-center justify-between overflow-hidden rounded-[14px] border border-white/28 bg-[rgba(28,31,36,0.94)] px-3 text-left shadow-[0_0_22px_rgba(255,255,255,0.07)] backdrop-blur-md transition-all duration-200 hover:border-white/40 ${
+          className={`pointer-events-auto protocol-launcher relative ml-auto flex h-15 w-[400px] items-center justify-between overflow-hidden rounded-[14px] border px-3 text-left backdrop-blur-md transition-all duration-200 ${
             isOpen ? "translate-y-1 opacity-0 pointer-events-none" : "translate-y-0 opacity-100"
           }`}
+          style={{
+            borderColor: "var(--portfolio-terminal-border-strong)",
+            background: "var(--portfolio-terminal-shell)",
+            boxShadow: "var(--portfolio-shadow-soft)",
+          }}
           aria-label="Open interactive terminal"
         >
-          <span className="pointer-events-none absolute inset-0 bg-[radial-gradient(circle_at_top,rgba(255,255,255,0.12),transparent_68%)]" />
-          <span className="pointer-events-none absolute inset-0 bg-[radial-gradient(rgba(255,255,255,0.08)_1px,transparent_1px)] bg-[size:12px_12px] opacity-[0.16]" />
-          <span className="pointer-events-none absolute inset-x-0 top-0 h-px bg-white/10" />
+          <span
+            className="pointer-events-none absolute inset-0"
+            style={{
+              background:
+                "radial-gradient(circle at top, var(--portfolio-glow), transparent 68%)",
+            }}
+          />
+          <span
+            className="pointer-events-none absolute inset-0 opacity-[0.16]"
+            style={{
+              background:
+                "radial-gradient(var(--portfolio-grid-dot) 1px, transparent 1px)",
+              backgroundSize: "12px 12px",
+            }}
+          />
+          <span
+            className="pointer-events-none absolute inset-x-0 top-0 h-px"
+            style={{ background: "var(--portfolio-terminal-border)" }}
+          />
           <span className="relative z-10 flex min-w-0 items-center gap-2">
-            <span className="protocol-caret shrink-0 text-[12px] text-amber-300">{">_"}</span>
-            <span className="truncate text-[11px] tracking-[0.16em] text-white/92 lowercase">
+            <span
+              className="protocol-caret shrink-0 text-[12px]"
+              style={{ color: "var(--portfolio-warning)" }}
+            >
+              {">_"}
+            </span>
+            <span
+              className="truncate text-[11px] tracking-[0.16em] lowercase"
+              style={{ color: "var(--portfolio-terminal-text)" }}
+            >
               Start Here
             </span>
           </span>
           <span className="relative z-10 flex items-center gap-1.5">
-            <span className="protocol-status h-1.5 w-1.5 rounded-full bg-amber-300 shadow-[0_0_8px_rgba(252,211,77,0.55)]" />
-            <span className="h-4 w-px bg-white/10" />
-            <span className="text-[10px] tracking-[0.18em] text-white/38 uppercase">sys</span>
+            <span
+              className="protocol-status h-1.5 w-1.5 rounded-full"
+              style={{
+                background: "var(--portfolio-warning)",
+                boxShadow: "0 0 8px var(--portfolio-warning-bg)",
+              }}
+            />
+            <span
+              className="h-4 w-px"
+              style={{ background: "var(--portfolio-terminal-border)" }}
+            />
+            <span
+              className="text-[10px] tracking-[0.18em] uppercase"
+              style={{ color: "var(--portfolio-terminal-faint)" }}
+            >
+              sys
+            </span>
           </span>
         </button>
 
@@ -714,39 +749,77 @@ export default function ProtocolTerminal() {
             if (!isOpen) return;
             focusInput();
           }}
-          className={`absolute right-0 bottom-[calc(100%+0.75rem)] pointer-events-auto w-[min(420px,calc(100vw-2rem))] origin-bottom-right overflow-hidden rounded-[20px] border border-white/15 bg-[rgba(0,0,0,0.92)] shadow-[0_0_30px_rgba(255,255,255,0.05)] backdrop-blur-[10px] transition-all duration-200 ${
+          className={`absolute right-0 bottom-[calc(100%+0.75rem)] pointer-events-auto w-[min(420px,calc(100vw-2rem))] origin-bottom-right overflow-hidden rounded-[20px] border backdrop-blur-[10px] transition-all duration-200 ${
             isOpen
               ? "translate-y-0 scale-100 opacity-100"
               : "translate-y-3 scale-[0.97] opacity-0 pointer-events-none"
           }`}
+          style={{
+            borderColor: "var(--portfolio-terminal-border)",
+            background: "var(--portfolio-terminal-bg)",
+            boxShadow: "var(--portfolio-shadow)",
+          }}
         >
-          <div className="pointer-events-none absolute inset-0 bg-[radial-gradient(rgba(255,255,255,0.08)_1px,transparent_1px)] bg-[size:16px_16px] opacity-[0.14]" />
-          <div className="pointer-events-none absolute inset-0 bg-[linear-gradient(to_bottom,rgba(255,255,255,0.06)_1px,transparent_1px)] bg-[size:100%_3px] opacity-[0.12]" />
-          <div className="pointer-events-none absolute inset-0 bg-[radial-gradient(circle_at_top,rgba(255,255,255,0.1),transparent_58%)]" />
+          <div
+            className="pointer-events-none absolute inset-0 opacity-[0.14]"
+            style={{
+              background:
+                "radial-gradient(var(--portfolio-grid-dot) 1px, transparent 1px)",
+              backgroundSize: "16px 16px",
+            }}
+          />
+          <div
+            className="pointer-events-none absolute inset-0 opacity-[0.12]"
+            style={{
+              background:
+                "linear-gradient(to bottom, var(--portfolio-scanline) 1px, transparent 1px)",
+              backgroundSize: "100% 3px",
+            }}
+          />
+          <div
+            className="pointer-events-none absolute inset-0"
+            style={{
+              background:
+                "radial-gradient(circle at top, var(--portfolio-glow), transparent 58%)",
+            }}
+          />
 
-          <header className="relative flex items-center justify-between border-b border-white/10 px-4 py-3 text-[13px]">
-            <div className="flex items-center gap-2 text-white">
-              <span className="h-1.5 w-1.5 rounded-full bg-white/80" />
-              <span className="tracking-[0.16em] text-white/90">NIHAD.PROTOCOL</span>
+          <header
+            className="relative flex items-center justify-between border-b px-4 py-3 text-[13px]"
+            style={{ borderColor: "var(--portfolio-terminal-border)" }}
+          >
+            <div
+              className="flex items-center gap-2"
+              style={{ color: "var(--portfolio-terminal-text)" }}
+            >
+              <span
+                className="h-1.5 w-1.5 rounded-full"
+                style={{ background: "var(--portfolio-frame-fill)" }}
+              />
+              <span className="tracking-[0.16em]">NIHAD.PROTOCOL</span>
             </div>
             <button
               type="button"
               onClick={() => setIsOpen(false)}
-              className="text-[#888888] transition-colors hover:text-white"
+              className="protocol-link"
               aria-label="Minimize terminal"
             >
-              [×]
+              [x]
             </button>
           </header>
 
           <div className="relative flex h-[320px] max-h-[calc(100vh-7rem)] flex-col">
             <div
               ref={outputRef}
-              className="flex-1 overflow-y-auto px-4 py-4 text-[13px] leading-6 text-white [scrollbar-color:rgba(255,255,255,0.28)_transparent] [scrollbar-width:thin]"
+              className="flex-1 overflow-y-auto px-4 py-4 text-[13px] leading-6 [scrollbar-width:thin]"
+              style={{
+                color: "var(--portfolio-terminal-text)",
+                scrollbarColor: "var(--portfolio-terminal-scrollbar) transparent",
+              }}
             >
               <div className="space-y-1.5">
                 {entries.length === 0 && !isBooting ? (
-                  <div className="text-[#888888]">Type &apos;help&apos; to begin.</div>
+                  <div className="protocol-tone-muted">Type &apos;help&apos; to begin.</div>
                 ) : null}
 
                 {entries.map((entry) => (
@@ -755,10 +828,21 @@ export default function ProtocolTerminal() {
               </div>
             </div>
 
-            <div className="border-t border-white/10 px-4 py-4">
-              <div className="mb-2 text-[11px] tracking-[0.16em] text-[#888888]">{HELP_HINT}</div>
-              <label className="flex min-h-11 items-center gap-2 text-[14px] text-white">
-                <span className="shrink-0 text-white/90">{PROMPT}</span>
+            <div
+              className="border-t px-4 py-4"
+              style={{ borderColor: "var(--portfolio-terminal-border)" }}
+            >
+              <div
+                className="mb-2 text-[11px] tracking-[0.16em]"
+                style={{ color: "var(--portfolio-terminal-muted)" }}
+              >
+                {HELP_HINT}
+              </div>
+              <label
+                className="flex min-h-11 items-center gap-2 text-[14px]"
+                style={{ color: "var(--portfolio-terminal-text)" }}
+              >
+                <span className="shrink-0">{PROMPT}</span>
                 <input
                   ref={inputRef}
                   value={inputValue}
@@ -768,7 +852,8 @@ export default function ProtocolTerminal() {
                   spellCheck={false}
                   placeholder={"type 'help' to list commands"}
                   disabled={isBooting}
-                  className="min-w-0 flex-1 bg-transparent py-1 text-[14px] text-white outline-none placeholder:text-[#666666] disabled:cursor-not-allowed"
+                  className="min-w-0 flex-1 bg-transparent py-1 text-[14px] outline-none disabled:cursor-not-allowed"
+                  style={{ color: "var(--portfolio-terminal-text)" }}
                 />
               </label>
             </div>
@@ -778,7 +863,11 @@ export default function ProtocolTerminal() {
 
       <style jsx>{`
         input {
-          caret-color: #ffffff;
+          caret-color: var(--portfolio-terminal-text);
+        }
+
+        input::placeholder {
+          color: var(--portfolio-terminal-placeholder);
         }
 
         .protocol-caret,

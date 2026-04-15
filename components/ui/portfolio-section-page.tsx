@@ -30,14 +30,17 @@ export default function PortfolioSectionPage({
   gallery = [],
 }: PortfolioSectionPageProps) {
   return (
-    <main className="relative min-h-screen overflow-hidden bg-black text-white">
-      <div className="pointer-events-none absolute inset-0 bg-[radial-gradient(rgba(255,255,255,0.12)_1px,transparent_1px)] bg-[size:18px_18px] opacity-20" />
-      <div className="pointer-events-none absolute inset-0 bg-[linear-gradient(to_bottom,rgba(255,255,255,0.06)_1px,transparent_1px)] bg-[size:100%_3px] opacity-[0.08]" />
-      <div className="pointer-events-none absolute inset-0 bg-[radial-gradient(circle_at_top,rgba(255,255,255,0.08),transparent_55%)]" />
+    <main className="portfolio-page">
+      <div className="portfolio-overlay-grid pointer-events-none absolute inset-0" />
+      <div className="portfolio-overlay-scan pointer-events-none absolute inset-0" />
+      <div className="portfolio-overlay-glow pointer-events-none absolute inset-0" />
 
       <section className="relative z-10 mx-auto w-full max-w-6xl px-6 pt-28 pb-16 md:px-10">
-        <header className="mb-10 border border-white/15 bg-black/45 p-6 backdrop-blur-sm md:p-8">
-          <div className="mb-4 flex items-center gap-3 text-white/65">
+        <header className="portfolio-panel mb-10 p-6 md:p-8">
+          <div
+            className="mb-4 flex items-center gap-3"
+            style={{ color: "var(--portfolio-ink-faint)" }}
+          >
             <Icon className="h-4 w-4" />
             <span className="font-mono text-[11px] tracking-[0.2em] uppercase">
               {eyebrow}
@@ -46,7 +49,10 @@ export default function PortfolioSectionPage({
           <h1 className="font-heading text-5xl tracking-[0.12em] md:text-7xl">
             {title}
           </h1>
-          <p className="mt-4 max-w-3xl font-mono text-sm leading-7 text-white/70 md:text-base">
+          <p
+            className="mt-4 max-w-3xl font-mono text-sm leading-7 md:text-base"
+            style={{ color: "var(--portfolio-ink-muted)" }}
+          >
             {description}
           </p>
         </header>
@@ -55,12 +61,15 @@ export default function PortfolioSectionPage({
           {features.map((feature) => (
             <article
               key={feature.title}
-              className="border border-white/15 bg-black/40 p-5 backdrop-blur-sm"
+              className="portfolio-panel p-5"
             >
-              <h2 className="font-mono text-sm tracking-[0.16em] text-white uppercase">
+              <h2 className="font-mono text-sm tracking-[0.16em] uppercase">
                 {feature.title}
               </h2>
-              <p className="mt-3 font-mono text-sm leading-6 text-white/65">
+              <p
+                className="mt-3 font-mono text-sm leading-6"
+                style={{ color: "var(--portfolio-ink-muted)" }}
+              >
                 {feature.description}
               </p>
             </article>
@@ -72,7 +81,7 @@ export default function PortfolioSectionPage({
             {gallery.map((item) => (
               <article
                 key={item.title}
-                className="overflow-hidden border border-white/15 bg-black/40 backdrop-blur-sm"
+                className="portfolio-panel overflow-hidden"
               >
                 <Image
                   src={item.imageUrl}
@@ -86,7 +95,10 @@ export default function PortfolioSectionPage({
                   <h3 className="font-mono text-sm tracking-[0.14em] uppercase">
                     {item.title}
                   </h3>
-                  <p className="mt-2 font-mono text-xs text-white/60">
+                  <p
+                    className="mt-2 font-mono text-xs"
+                    style={{ color: "var(--portfolio-ink-muted)" }}
+                  >
                     {item.subtitle}
                   </p>
                 </div>

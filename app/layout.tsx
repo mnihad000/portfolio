@@ -2,6 +2,7 @@ import type { Metadata } from "next";
 import { IBM_Plex_Mono, VT323 } from "next/font/google";
 import NavHeader from "@/components/ui/nav-header";
 import ProtocolTerminal from "@/components/ui/protocol-terminal";
+import { THEME_BOOTSTRAP_SCRIPT } from "@/lib/theme";
 import "./globals.css";
 
 const ibmPlexMono = IBM_Plex_Mono({
@@ -29,11 +30,18 @@ export default function RootLayout({
   return (
     <html
       lang="en"
+      suppressHydrationWarning
       className={`${ibmPlexMono.variable} ${vt323.variable} h-full antialiased`}
     >
+      <head>
+        <script
+          id="portfolio-theme-bootstrap"
+          dangerouslySetInnerHTML={{ __html: THEME_BOOTSTRAP_SCRIPT }}
+        />
+      </head>
       <body
         suppressHydrationWarning
-        className="flex min-h-full flex-col bg-black text-white"
+        className="flex min-h-full flex-col"
       >
         <NavHeader />
         {children}

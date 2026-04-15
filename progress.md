@@ -39,8 +39,6 @@
 - `npm run build` passes.
 
 upcoming tasks:
-remove the dev unicornstudio logo with css---- DONE 
-make an about section
 thoroughly work on the projects section
-potentially add music
+add light mode 
 

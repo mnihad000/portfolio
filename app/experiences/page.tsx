@@ -139,15 +139,12 @@ const EXPERIENCE_ROLES: RoleData[] = [
 
 function getBadgeClassNames(role: RoleData) {
   if (role.statusBadge === "[ ACTIVE ]") {
-    return "border-emerald-500/60 text-emerald-300";
+    return "experience-badge-active";
   }
   if (role.statusBadge === "[ INCOMING ]") {
-    return "border-amber-500/60 text-amber-300";
+    return "experience-badge-incoming";
   }
-  if (role.statusBadge === "[ RESEARCH ]") {
-    return "border-gray-700 text-gray-300";
-  }
-  return "border-gray-700 text-gray-400";
+  return "experience-badge-neutral";
 }
 
 function hudStatusFromBadge(statusBadge: RoleData["statusBadge"]) {
@@ -161,16 +158,20 @@ function getHudToneFromBadge(statusBadge: RoleData["statusBadge"]): HudTone {
 }
 
 function applyHudStatusTone(element: HTMLElement, tone: HudTone) {
-  element.classList.remove("text-gray-300", "text-emerald-300", "text-amber-300");
+  element.classList.remove(
+    "experience-hud-neutral",
+    "experience-hud-active",
+    "experience-hud-incoming"
+  );
   if (tone === "active") {
-    element.classList.add("text-emerald-300");
+    element.classList.add("experience-hud-active");
     return;
   }
   if (tone === "incoming") {
-    element.classList.add("text-amber-300");
+    element.classList.add("experience-hud-incoming");
     return;
   }
-  element.classList.add("text-gray-300");
+  element.classList.add("experience-hud-neutral");
 }
 
 function setHud(hud: HudElements, values: { phase?: string; role?: string; status?: string; statusTone?: HudTone }) {
@@ -469,38 +470,61 @@ export default function ExperiencesPage() {
   }, []);
 
   return (
-    <section ref={sectionRef} className="relative w-full bg-black py-24 text-white md:py-28">
-      <div className="pointer-events-none absolute inset-0 bg-[radial-gradient(rgba(255,255,255,0.12)_1px,transparent_1px)] bg-[size:18px_18px] opacity-25" />
+    <section ref={sectionRef} className="portfolio-page w-full py-24 md:py-28">
+      <div className="portfolio-overlay-grid pointer-events-none absolute inset-0" />
+      <div className="portfolio-overlay-scan pointer-events-none absolute inset-0" />
+      <div className="portfolio-overlay-glow pointer-events-none absolute inset-0" />
 
       <div className="relative mx-auto w-full max-w-6xl px-6 md:px-10">
         <header className="mb-10 md:mb-12">
-          <div className="mb-4 inline-flex items-center gap-3 border border-gray-800 px-3 py-1.5 font-mono text-[11px] tracking-[0.2em] text-gray-400 uppercase">
+          <div
+            className="portfolio-panel-strong mb-4 inline-flex items-center gap-3 px-3 py-1.5 font-mono text-[11px] tracking-[0.2em] uppercase"
+            style={{ color: "var(--portfolio-ink-muted)" }}
+          >
             <span>CAREER_TIMELINE</span>
-            <span className="h-px w-8 bg-gray-700" />
-            <span className="text-gray-500">LIVE_STATUS</span>
+            <span
+              className="h-px w-8"
+              style={{ background: "var(--portfolio-border-strong)" }}
+            />
+            <span style={{ color: "var(--portfolio-ink-faint)" }}>LIVE_STATUS</span>
           </div>
           <h1 className="font-mono text-5xl font-semibold tracking-[0.12em] uppercase md:text-7xl">
             Experiences
           </h1>
-          <p className="mt-4 max-w-3xl font-mono text-sm leading-7 text-gray-400 md:text-base">
+          <p
+            className="mt-4 max-w-3xl font-mono text-sm leading-7 md:text-base"
+            style={{ color: "var(--portfolio-ink-muted)" }}
+          >
             Experience records are visible immediately. Scroll for lightweight boot accents and
             live terminal status updates.
           </p>
         </header>
 
-        <div className="sticky top-20 z-30 mb-10 border border-gray-700 bg-black px-4 py-3 font-mono md:px-5">
+        <div className="portfolio-panel sticky top-20 z-30 mb-10 px-4 py-3 font-mono md:px-5">
           <div className="grid gap-2 md:grid-cols-2 lg:grid-cols-4">
-            <p className="text-[11px] tracking-[0.16em] text-gray-500 uppercase">
-              PHASE: <span ref={hudPhaseRef} className="text-gray-300">IDLE</span>
+            <p
+              className="text-[11px] tracking-[0.16em] uppercase"
+              style={{ color: "var(--portfolio-ink-faint)" }}
+            >
+              PHASE: <span ref={hudPhaseRef} className="experience-hud-neutral">IDLE</span>
             </p>
-            <p className="text-[11px] tracking-[0.16em] text-gray-500 uppercase">
-              ROLE_ID: <span ref={hudRoleRef} className="text-gray-300">STANDBY</span>
+            <p
+              className="text-[11px] tracking-[0.16em] uppercase"
+              style={{ color: "var(--portfolio-ink-faint)" }}
+            >
+              ROLE_ID: <span ref={hudRoleRef} className="experience-hud-neutral">STANDBY</span>
             </p>
-            <p className="text-[11px] tracking-[0.16em] text-gray-500 uppercase">
-              STATUS: <span ref={hudStatusRef} className="text-gray-300">READY</span>
+            <p
+              className="text-[11px] tracking-[0.16em] uppercase"
+              style={{ color: "var(--portfolio-ink-faint)" }}
+            >
+              STATUS: <span ref={hudStatusRef} className="experience-hud-neutral">READY</span>
             </p>
-            <p className="text-[11px] tracking-[0.16em] text-gray-500 uppercase">
-              SYSTEM_TIME: <span ref={hudTimeRef} className="text-gray-300">00:00:00</span>
+            <p
+              className="text-[11px] tracking-[0.16em] uppercase"
+              style={{ color: "var(--portfolio-ink-faint)" }}
+            >
+              SYSTEM_TIME: <span ref={hudTimeRef} className="experience-hud-neutral">00:00:00</span>
             </p>
           </div>
         </div>
@@ -512,42 +536,65 @@ export default function ExperiencesPage() {
               ref={(element) => {
                 cardRefs.current[index] = element;
               }}
-              className={`border bg-black font-mono ${
-                role.featured ? "border-gray-700 p-8 md:p-12" : "border-gray-800 p-6 md:p-8"
+              className={`portfolio-panel-strong font-mono ${
+                role.featured ? "p-8 md:p-12" : "p-6 md:p-8"
               }`}
             >
-              <div className="border-b border-gray-800 pb-5">
-                <p data-boot-init className="text-[11px] tracking-[0.18em] text-gray-400 uppercase opacity-0">
+              <div
+                className="border-b pb-5"
+                style={{ borderColor: "var(--portfolio-border)" }}
+              >
+                <p
+                  data-boot-init
+                  className="text-[11px] tracking-[0.18em] uppercase opacity-0"
+                  style={{ color: "var(--portfolio-ink-muted)" }}
+                >
                   {"> INITIALIZING ROLE..."}
                 </p>
                 {role.secureStep ? (
                   <p
                     data-boot-secure
-                    className="mt-2 text-[11px] tracking-[0.18em] text-gray-400 uppercase opacity-0"
+                    className="mt-2 text-[11px] tracking-[0.18em] uppercase opacity-0"
+                    style={{ color: "var(--portfolio-ink-muted)" }}
                   >
                     {role.secureStep}
                   </p>
                 ) : null}
                 <p
                   data-boot-loading
-                  className="mt-2 min-h-[1.1rem] text-[11px] tracking-[0.18em] text-gray-300 uppercase opacity-0"
+                  className="experience-hud-neutral mt-2 min-h-[1.1rem] text-[11px] tracking-[0.18em] uppercase opacity-0"
                 />
 
                 <div className="mt-3 flex items-center gap-3">
-                  <div className="h-1 w-full bg-gray-800">
-                    <div data-boot-progress-fill className="h-full w-0 bg-white" />
+                  <div
+                    className="h-1 w-full"
+                    style={{ background: "var(--portfolio-border)" }}
+                  >
+                    <div
+                      data-boot-progress-fill
+                      className="h-full w-0"
+                      style={{ background: "var(--portfolio-frame-fill)" }}
+                    />
                   </div>
-                  <span data-boot-progress-value className="text-[11px] text-gray-400">
+                  <span
+                    data-boot-progress-value
+                    className="text-[11px]"
+                    style={{ color: "var(--portfolio-ink-muted)" }}
+                  >
                     0%
                   </span>
-                  <span data-boot-cursor className="text-sm text-white opacity-0 animate-pulse">
+                  <span
+                    data-boot-cursor
+                    className="text-sm opacity-0 animate-pulse"
+                    style={{ color: "var(--portfolio-ink)" }}
+                  >
                     {"\u2588"}
                   </span>
                 </div>
 
                 <p
                   data-boot-status
-                  className="mt-3 text-[11px] tracking-[0.18em] text-gray-300 uppercase opacity-0"
+                  className="experience-hud-neutral mt-3 text-[11px] tracking-[0.18em] uppercase opacity-0"
                 >
                   [ OK ] SYSTEM AUTHENTICATED
                 </p>
@@ -556,10 +603,11 @@ export default function ExperiencesPage() {
               <div data-boot-content className={role.featured ? "mt-10" : "mt-8"}>
                 <div
                   data-boot-reveal
-                  className="flex flex-col gap-4 border-b border-gray-800 pb-5 md:flex-row md:items-start md:justify-between"
+                  className="flex flex-col gap-4 border-b pb-5 md:flex-row md:items-start md:justify-between"
+                  style={{ borderColor: "var(--portfolio-border)" }}
                 >
                   <h3
-                    className={`tracking-[0.12em] text-white uppercase ${
+                    className={`tracking-[0.12em] uppercase ${
                       role.featured ? "text-3xl md:text-4xl" : "text-2xl md:text-3xl"
                     }`}
                   >
@@ -576,18 +624,21 @@ export default function ExperiencesPage() {
 
                 <div
                   data-boot-reveal
-                  className="mt-5 flex flex-col gap-2 border-b border-gray-800 pb-5 md:flex-row md:items-center md:justify-between"
+                  className="mt-5 flex flex-col gap-2 border-b pb-5 md:flex-row md:items-center md:justify-between"
+                  style={{ borderColor: "var(--portfolio-border)" }}
                 >
-                  <p className="text-base text-white md:text-lg">{role.title}</p>
-                  <p className="text-sm text-gray-500">{role.dates}</p>
+                  <p className="text-base md:text-lg">{role.title}</p>
+                  <p
+                    className="text-sm"
+                    style={{ color: "var(--portfolio-ink-faint)" }}
+                  >
+                    {role.dates}
+                  </p>
                 </div>
 
                 <div data-boot-reveal className="mt-4 flex flex-wrap gap-2">
                   {role.impactHighlights.map((highlight) => (
-                    <span
-                      key={highlight}
-                      className="border border-gray-700 bg-black px-2 py-0.5 text-[11px] tracking-[0.08em] text-gray-300 uppercase"
-                    >
+                    <span key={highlight} className="portfolio-chip-muted px-2 py-0.5 text-[11px] tracking-[0.08em] uppercase">
                       {highlight}
                     </span>
                   ))}
@@ -595,21 +646,32 @@ export default function ExperiencesPage() {
 
                 <ul data-boot-reveal className="mt-6 space-y-3">
                   {role.bullets.map((bullet) => (
-                    <li key={bullet} className="max-w-[80ch] text-sm leading-7 text-white md:text-base">
-                      <span className="mr-2 text-gray-500">{"\u25B8"}</span>
+                    <li key={bullet} className="max-w-[80ch] text-sm leading-7 md:text-base">
+                      <span
+                        className="mr-2"
+                        style={{ color: "var(--portfolio-ink-faint)" }}
+                      >
+                        {"\u25B8"}
+                      </span>
                       {bullet}
                     </li>
                   ))}
                 </ul>
 
-                <div data-boot-reveal className="mt-7 border-t border-gray-800 pt-5">
-                  <p className="mb-3 text-[11px] tracking-[0.16em] text-gray-500 uppercase">STACK://</p>
+                <div
+                  data-boot-reveal
+                  className="mt-7 border-t pt-5"
+                  style={{ borderColor: "var(--portfolio-border)" }}
+                >
+                  <p
+                    className="mb-3 text-[11px] tracking-[0.16em] uppercase"
+                    style={{ color: "var(--portfolio-ink-faint)" }}
+                  >
+                    STACK://
+                  </p>
                   <div className="flex flex-wrap gap-2">
                     {role.stack.map((tech) => (
-                      <span
-                        key={tech}
-                        className="border border-gray-700 bg-gray-900 px-2 py-0.5 text-xs text-gray-400"
-                      >
+                      <span key={tech} className="portfolio-chip-muted px-2 py-0.5 text-xs">
                         {tech}
                       </span>
                     ))}
