@@ -121,7 +121,7 @@ function normalizeValue(value: string) {
 
 function getToneClass(tone: EntryTone = "default") {
   if (tone === "muted") return "text-[#888888]";
-  if (tone === "success") return "text-white/90";
+  if (tone === "success") return "text-emerald-300";
   if (tone === "warning") return "text-white/70";
   return "text-white";
 }
@@ -285,10 +285,8 @@ export default function ProtocolTerminal() {
     ]);
   }
 
-<<<<<<< Updated upstream
-=======
-  void appendStatusEntries;
 
+  /*
   function appendStatusEntriesCurrent() {
     appendEntries([
       createTextEntry(
@@ -300,7 +298,7 @@ export default function ProtocolTerminal() {
     ]);
   }
 
->>>>>>> Stashed changes
+  */
   function appendContactEntries() {
     appendEntries([
       {

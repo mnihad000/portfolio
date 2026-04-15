@@ -46,7 +46,7 @@ export const aboutPageContent = {
       description:
         "Joining Bloom Energy to work on backend tooling and infrastructure-scale systems.",
       tone: "success",
-      ctaLabel: "Download Resume ->",
+      ctaLabel: "Download Resume",
       ctaHref: "/resume",
     },
     {

@@ -77,7 +77,7 @@ function loadUnicornStudioScript() {
 
 export default function HeroAsciiOne() {
   const quote =
-    "The struggle itself toward the heights is enough to fill a man's heart.";
+    "The struggle itself toward the heights is enough to fill a man's heart. - The Myth of Sisyphus";
   const [typedQuote, setTypedQuote] = useState('');
   const [typingDone, setTypingDone] = useState(false);
   const [unicornLoaded, setUnicornLoaded] = useState(false);
@@ -207,7 +207,7 @@ export default function HeroAsciiOne() {
         className="relative z-10 flex min-h-screen items-center justify-end pt-24 lg:pt-16"
         style={{ marginTop: '5vh' }}
       >
-        <aside className="pointer-events-none absolute left-[3%] top-[85%] z-10 hidden w-[30vw] max-w-[420px] -translate-y-1/2 border-l border-white/30 pl-5 lg:block">
+        <aside className="pointer-events-none absolute left-[11%] top-[85%] z-10 hidden w-[30vw] max-w-[420px] -translate-y-1/2 border-l border-white/30 pl-5 lg:block">
           <p className="mb-2 font-mono text-[10px] tracking-[0.16em] text-white/45 uppercase">
             SISYPHUS NOTE
           </p>
