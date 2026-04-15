@@ -207,7 +207,7 @@ export default function HeroAsciiOne() {
         className="relative z-10 flex min-h-screen items-center justify-end pt-16 lg:pt-8"
         style={{ marginTop: '3vh' }}
       >
-        <aside className="pointer-events-none absolute left-[12%] top-[85%] z-10 hidden w-[30vw] max-w-[420px] -translate-y-1/2 border-l border-white/30 pl-5 lg:block">
+        <aside className="pointer-events-none absolute left-[11%] top-[85%] z-10 hidden w-[30vw] max-w-[420px] -translate-y-1/2 border-l border-white/30 pl-5 lg:block">
           <p className="mb-2 font-mono text-[10px] tracking-[0.16em] text-white/45 uppercase">
             SISYPHUS NOTE
           </p>
