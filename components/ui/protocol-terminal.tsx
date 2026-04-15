@@ -87,6 +87,7 @@ const BOOT_LINES = [
 const COMMAND_SUGGESTIONS = [
   "help",
   "whoami",
+  "about",
   "projects",
   "skills",
   "status",
@@ -235,6 +236,7 @@ export default function ProtocolTerminal() {
     appendEntries([
       createTextEntry("Available commands:", "muted"),
       createTextEntry("  whoami       -> who is this guy", "muted"),
+      createTextEntry("  about        -> open the about page", "muted"),
       createTextEntry("  projects     -> things i've built", "muted"),
       createTextEntry("  skills       -> what i work with", "muted"),
       createTextEntry("  status       -> current availability", "muted"),
@@ -277,11 +279,28 @@ export default function ProtocolTerminal() {
 
   function appendStatusEntries() {
     appendEntries([
-      createTextEntry("● AVAILABLE — Actively seeking Summer 2026 internships"),
+      createTextEntry("● Accepted Software Engineering Intern at Bloom Energy for Summer 2026", "success"),
+      createTextEntry("Looking for co-ops / Summer 2027 internships", "muted"),
       createTextEntry("Last updated: April 2026", "muted"),
     ]);
   }
 
+<<<<<<< Updated upstream
+=======
+  void appendStatusEntries;
+
+  function appendStatusEntriesCurrent() {
+    appendEntries([
+      createTextEntry(
+        "● Accepted Software Engineering Intern at Bloom Energy for Summer 2026",
+        "success"
+      ),
+      createTextEntry("Looking for co-ops / Summer 2027 internships", "muted"),
+      createTextEntry("Last updated: April 2026", "muted"),
+    ]);
+  }
+
+>>>>>>> Stashed changes
   function appendContactEntries() {
     appendEntries([
       {
@@ -367,6 +386,12 @@ export default function ProtocolTerminal() {
 
     if (normalized === "whoami") {
       appendWhoAmIEntries();
+      return;
+    }
+
+    if (normalized === "about") {
+      appendEntries([createTextEntry("Opening /about...", "muted")]);
+      openInternalRoute("/about");
       return;
     }
 
