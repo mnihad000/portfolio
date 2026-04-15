@@ -77,7 +77,7 @@ function loadUnicornStudioScript() {
 
 export default function HeroAsciiOne() {
   const quote =
-    "The struggle itself toward the heights is enough to fill a man's heart.";
+    "The struggle itself toward the heights is enough to fill a man's heart. - The Myth of Sisyphus";
   const [typedQuote, setTypedQuote] = useState('');
   const [typingDone, setTypingDone] = useState(false);
   const [unicornLoaded, setUnicornLoaded] = useState(false);
