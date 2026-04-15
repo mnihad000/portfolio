@@ -121,11 +121,7 @@ function normalizeValue(value: string) {
 
 function getToneClass(tone: EntryTone = "default") {
   if (tone === "muted") return "text-[#888888]";
-<<<<<<< HEAD
   if (tone === "success") return "text-[#7CFFB2]";
-=======
-  if (tone === "success") return "text-emerald-300";
->>>>>>> random-features
   if (tone === "warning") return "text-white/70";
   return "text-white";
 }
@@ -289,32 +285,16 @@ export default function ProtocolTerminal() {
     ]);
   }
 
-<<<<<<< HEAD
   function appendStatusEntriesCurrent() {
     appendEntries([
       createTextEntry(
         "● Internship accepted at Bloom Energy for Summer 2026",
         "success"
       ),
-=======
-
-  /*
-  function appendStatusEntriesCurrent() {
-    appendEntries([
-      createTextEntry(
-        "● Accepted Software Engineering Intern at Bloom Energy for Summer 2026",
-        "success"
-      ),
-      createTextEntry("Looking for co-ops / Summer 2027 internships", "muted"),
->>>>>>> random-features
       createTextEntry("Last updated: April 2026", "muted"),
     ]);
   }
 
-<<<<<<< HEAD
-=======
-  */
->>>>>>> random-features
   function appendContactEntries() {
     appendEntries([
       {
@@ -823,3 +803,4 @@ export default function ProtocolTerminal() {
     </div>
   );
 }
+
