@@ -21,7 +21,7 @@ export default function ProjectCard({
       href={`/projects/${project.slug}`}
       className="group block w-full max-w-[410px] overflow-hidden rounded-3xl border border-white/15 bg-black/70 transition-all duration-300 hover:-translate-y-0.5 hover:border-white/25 hover:shadow-[0_20px_40px_rgba(0,0,0,0.5)] lg:max-w-[344px]"
     >
-      <div className="relative h-[210px] overflow-hidden border-b border-white/10 bg-black/80 lg:h-[178px]">
+      <div className="relative h-[210px] overflow-hidden border-b border-white/10 bg-black/80 lg:h-[186px]">
         <Image
           src={project.coverImage}
           alt={`${project.title} cover`}
