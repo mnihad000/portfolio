@@ -40,7 +40,7 @@
 
 upcoming tasks:
 remove the dev unicornstudio logo with css---- DONE 
-make an about section
+put github on about
 thoroughly work on the projects section
-potentially add music
+add on click subtle animation like we have when i click on about, 
 

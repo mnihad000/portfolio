@@ -8,7 +8,7 @@ export default function ProjectsPage() {
       <div className="pointer-events-none absolute inset-0 bg-[linear-gradient(to_bottom,rgba(255,255,255,0.06)_1px,transparent_1px)] bg-[size:100%_3px] opacity-[0.08]" />
       <div className="pointer-events-none absolute inset-0 bg-[radial-gradient(circle_at_top,rgba(255,255,255,0.08),transparent_55%)]" />
 
-      <section className="relative z-10 mx-auto w-full max-w-[1500px] px-6 pt-32 pb-16 md:px-10 lg:pt-40">
+      <section className="route-enter relative z-10 mx-auto w-full max-w-[1500px] px-6 pt-32 pb-16 md:px-10 lg:pt-40">
         <header className="space-y-5 text-center">
           <h1 className="text-3xl tracking-[0.em] md:text-5xl">projects</h1>
           <p className="mx-auto max-w-3xl text-sm leading-8 text-white/70 md:text-base">

@@ -469,7 +469,10 @@ export default function ExperiencesPage() {
   }, []);
 
   return (
-    <section ref={sectionRef} className="relative w-full bg-black py-24 text-white md:py-28">
+    <section
+      ref={sectionRef}
+      className="route-enter-fade-only relative w-full bg-black py-24 text-white md:py-28"
+    >
       <div className="pointer-events-none absolute inset-0 bg-[radial-gradient(rgba(255,255,255,0.12)_1px,transparent_1px)] bg-[size:18px_18px] opacity-25" />
 
       <div className="relative mx-auto w-full max-w-6xl px-6 md:px-10">

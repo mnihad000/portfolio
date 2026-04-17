@@ -24,7 +24,7 @@ export default async function ProjectDetailPage({ params }: ProjectDetailPagePro
       <div className="pointer-events-none absolute inset-0 bg-[linear-gradient(to_bottom,rgba(255,255,255,0.06)_1px,transparent_1px)] bg-[size:100%_3px] opacity-[0.08]" />
       <div className="pointer-events-none absolute inset-0 bg-[radial-gradient(circle_at_top,rgba(255,255,255,0.08),transparent_55%)]" />
 
-      <article className="relative z-10 mx-auto w-full max-w-6xl px-6 pt-28 pb-16 md:px-10">
+      <article className="route-enter relative z-10 mx-auto w-full max-w-6xl px-6 pt-28 pb-16 md:px-10">
         <header className="mb-8 border border-white/15 bg-black/45 p-6 backdrop-blur-sm md:p-8">
           <p className="font-mono text-xs tracking-[0.16em] text-white/55 uppercase">
             {project.dateLabel}

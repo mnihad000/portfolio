@@ -63,7 +63,7 @@ export default function ContactPage() {
       <div className="pointer-events-none absolute inset-0 bg-[linear-gradient(to_bottom,rgba(255,255,255,0.06)_1px,transparent_1px)] bg-[size:100%_3px] opacity-[0.08]" />
       <div className="pointer-events-none absolute inset-0 bg-[radial-gradient(circle_at_top,rgba(255,255,255,0.08),transparent_55%)]" />
 
-      <section className="relative z-10 mx-auto w-full max-w-6xl px-6 pt-28 pb-16 md:px-10 lg:pt-34">
+      <section className="route-enter relative z-10 mx-auto w-full max-w-6xl px-6 pt-28 pb-16 md:px-10 lg:pt-34">
         <header className="max-w-3xl">
           <h1 className="font-mono text-6xl tracking-[0.04em] text-white md:text-7xl">contact</h1>
           <p className="mt-5 max-w-2xl font-mono text-xl leading-relaxed text-gray-400 md:text-2xl">
