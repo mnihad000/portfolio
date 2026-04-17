@@ -17,7 +17,7 @@ export default function ProjectsPage() {
         </header>
 
         {/* Desktop tuning targets: subtitle-to-rail gap ~96px, rail width ~1260-1300px, rail gap ~40-48px. */}
-        <div className="mx-auto mt-20 grid max-w-[1280px] justify-items-center gap-8 md:mt-24 lg:grid-cols-3 lg:gap-10">
+        <div className="mx-auto mt-20 grid max-w-[1280px] justify-items-center gap-8 md:mt-24 lg:max-w-[1120px] lg:grid-cols-3 lg:gap-8">
           {projects.map((project, index) => (
             <ProjectCard
               key={project.slug}
