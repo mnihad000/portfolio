@@ -97,6 +97,18 @@ const COMMAND_SUGGESTIONS = [
   "clear",
 ];
 
+const HELP_COMMANDS = new Set([
+  "whoami",
+  "about",
+  "projects",
+  "skills",
+  "status",
+  "contact",
+  "cat resume",
+  "sudo hire me",
+  "clear",
+]);
+
 function createId() {
   return `${Date.now()}-${Math.random().toString(36).slice(2, 10)}`;
 }
@@ -124,6 +136,22 @@ function getToneClass(tone: EntryTone = "default") {
   if (tone === "success") return "text-[#7CFFB2]";
   if (tone === "warning") return "text-white/70";
   return "text-white";
+}
+
+function splitHelpCommandLine(value: string) {
+  const match = value.match(/^(\s*)(.+?)(\s*)->(\s*)(.+)$/);
+
+  if (!match) return null;
+
+  const [, leading, command, commandSpacing, afterArrowSpacing, description] = match;
+  const normalizedCommand = command.trim().toLowerCase();
+
+  if (!HELP_COMMANDS.has(normalizedCommand)) return null;
+
+  return {
+    commandPart: `${leading}${command}${commandSpacing}`,
+    supportPart: `->${afterArrowSpacing}${description}`,
+  };
 }
 
 function createPersistedState(
@@ -546,14 +574,25 @@ export default function ProtocolTerminal() {
   function renderEntry(entry: TerminalEntry): ReactNode {
     if (entry.kind === "command") {
       return (
-        <div className="flex items-start gap-2 text-white">
-          <span className="shrink-0 text-white/90">{PROMPT}</span>
+        <div className="flex items-start gap-2 text-amber-300">
+          <span className="shrink-0 text-amber-300">{PROMPT}</span>
           <span>{entry.value}</span>
         </div>
       );
     }
 
     if (entry.kind === "text") {
+      const helpCommandLine = splitHelpCommandLine(entry.value);
+
+      if (helpCommandLine) {
+        return (
+          <div>
+            <span className="text-amber-300">{helpCommandLine.commandPart}</span>
+            <span className="text-[#888888]">{helpCommandLine.supportPart}</span>
+          </div>
+        );
+      }
+
       return <div className={getToneClass(entry.tone)}>{entry.value}</div>;
     }
 
@@ -757,8 +796,8 @@ export default function ProtocolTerminal() {
 
             <div className="border-t border-white/10 px-4 py-4">
               <div className="mb-2 text-[11px] tracking-[0.16em] text-[#888888]">{HELP_HINT}</div>
-              <label className="flex min-h-11 items-center gap-2 text-[14px] text-white">
-                <span className="shrink-0 text-white/90">{PROMPT}</span>
+              <label className="flex min-h-11 items-center gap-2 text-[14px] text-amber-300">
+                <span className="shrink-0 text-amber-300">{PROMPT}</span>
                 <input
                   ref={inputRef}
                   value={inputValue}
@@ -768,7 +807,7 @@ export default function ProtocolTerminal() {
                   spellCheck={false}
                   placeholder={"type 'help' to list commands"}
                   disabled={isBooting}
-                  className="min-w-0 flex-1 bg-transparent py-1 text-[14px] text-white outline-none placeholder:text-[#666666] disabled:cursor-not-allowed"
+                  className="min-w-0 flex-1 bg-transparent py-1 text-[14px] text-amber-300 outline-none placeholder:text-[#666666] disabled:cursor-not-allowed"
                 />
               </label>
             </div>
@@ -778,7 +817,23 @@ export default function ProtocolTerminal() {
 
       <style jsx>{`
         input {
-          caret-color: #ffffff;
+          caret-color: #fcd34d;
+        }
+
+        .protocol-tone-default {
+          color: #ffffff;
+        }
+
+        .protocol-tone-muted {
+          color: #888888;
+        }
+
+        .protocol-tone-success {
+          color: #34d399;
+        }
+
+        .protocol-tone-warning {
+          color: #fcd34d;
         }
 
         .protocol-caret,
