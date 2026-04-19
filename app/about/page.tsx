@@ -2,6 +2,10 @@ import type { CSSProperties } from "react";
 import type { Metadata } from "next";
 import AboutTechStackRail from "@/components/ui/about-tech-stack-rail";
 import { aboutPageContent, type RichParagraph } from "@/lib/about";
+import {
+  formatRelativeActivityTime,
+  getRecentGitHubActivity,
+} from "@/lib/github-activity";
 
 export const metadata: Metadata = {
   title: "About | Mohammed Nihad",
@@ -26,7 +30,9 @@ function withAboutDelay(delay: string): CSSProperties {
   };
 }
 
-export default function AboutPage() {
+export default async function AboutPage() {
+  const recentGitHubActivity = await getRecentGitHubActivity(5);
+
   return (
     <main className="relative min-h-screen overflow-hidden bg-black text-white isolate">
       <div className="about-ambient-grid pointer-events-none absolute inset-0 bg-[radial-gradient(rgba(255,255,255,0.08)_1px,transparent_1px)] bg-[size:20px_20px] opacity-[0.15]" />
@@ -111,6 +117,48 @@ export default function AboutPage() {
                 </p>
               ))}
             </div>
+
+            <section
+              className="about-rail-panel about-enter relative mt-8 max-w-3xl overflow-hidden rounded-[20px] border border-white/12 bg-[rgba(14,14,14,0.88)] p-4"
+              style={withAboutDelay("380ms")}
+            >
+              <span className="about-rail-intro-scan pointer-events-none absolute inset-y-0 -left-[34%] w-[32%]" />
+
+              <h2 className="font-mono text-[1.3rem] tracking-[-0.02em] text-white">
+                Recent GitHub Activity
+              </h2>
+
+              {recentGitHubActivity.length > 0 ? (
+                <div className="mt-4 space-y-2.5">
+                  {recentGitHubActivity.map((activity) => (
+                    <article
+                      key={activity.id}
+                      className="rounded-[12px] border border-white/10 bg-black/25 px-3 py-2.5"
+                    >
+                      <p className="font-mono text-[0.88rem] leading-5 text-white/88">
+                        {activity.action}
+                      </p>
+
+                      <div className="mt-1.5 flex items-center justify-between gap-2">
+                        <p className="truncate font-mono text-[0.68rem] tracking-[0.12em] text-white/42 uppercase">
+                          {activity.repo}
+                        </p>
+                        <time
+                          dateTime={activity.occurredAt}
+                          className="shrink-0 font-mono text-[0.73rem] text-white/55"
+                        >
+                          {formatRelativeActivityTime(activity.occurredAt)}
+                        </time>
+                      </div>
+                    </article>
+                  ))}
+                </div>
+              ) : (
+                <p className="mt-4 font-mono text-[0.83rem] leading-6 text-white/55">
+                  No recent public activity available.
+                </p>
+              )}
+            </section>
           </div>
 
           <aside className="about-enter flex flex-col gap-4" style={withAboutDelay("300ms")}>
