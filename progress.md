@@ -42,5 +42,5 @@ upcoming tasks:
 remove the dev unicornstudio logo with css---- DONE 
 put github on about
 thoroughly work on the projects section
-add on click subtle animation like we have when i click on about, 
+add on click subtle animation like we have when i click on about,---- DONE  
 
