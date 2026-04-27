@@ -30,6 +30,19 @@ function withAboutDelay(delay: string): CSSProperties {
   };
 }
 
+function formatCommitCountLabel(commitCount: number): string {
+  return `Pushed ${commitCount} commit${commitCount === 1 ? "" : "s"}`;
+}
+
+function truncateCommitMessage(message: string, maxLength = 92): string {
+  const trimmed = message.trim();
+  if (trimmed.length <= maxLength) {
+    return trimmed;
+  }
+
+  return `${trimmed.slice(0, maxLength - 1)}...`;
+}
+
 export default async function AboutPage() {
   const recentGitHubActivity = await getRecentGitHubActivity(5);
 
@@ -136,12 +149,12 @@ export default async function AboutPage() {
                       className="rounded-[12px] border border-white/10 bg-black/25 px-3 py-2.5"
                     >
                       <p className="font-mono text-[0.88rem] leading-5 text-white/88">
-                        {activity.action}
+                        {formatCommitCountLabel(activity.commitCount)}
                       </p>
 
                       <div className="mt-1.5 flex items-center justify-between gap-2">
                         <p className="truncate font-mono text-[0.68rem] tracking-[0.12em] text-white/42 uppercase">
-                          {activity.repo}
+                          {activity.repo} • {activity.branch}
                         </p>
                         <time
                           dateTime={activity.occurredAt}
@@ -150,6 +163,31 @@ export default async function AboutPage() {
                           {formatRelativeActivityTime(activity.occurredAt)}
                         </time>
                       </div>
+
+                      {activity.commitsPreview.length > 0 ? (
+                        <ul className="mt-2 space-y-1.5">
+                          {activity.commitsPreview.map((commit) => (
+                            <li
+                              key={`${activity.id}-${commit.shortSha}-${commit.message}`}
+                              className="grid grid-cols-[56px_minmax(0,1fr)] items-start gap-2"
+                            >
+                              <span className="font-mono text-[0.68rem] text-white/45">
+                                {commit.shortSha}
+                              </span>
+                              <span className="truncate font-mono text-[0.74rem] leading-5 text-white/70">
+                                {truncateCommitMessage(commit.message)}
+                              </span>
+                            </li>
+                          ))}
+                        </ul>
+                      ) : null}
+
+                      {activity.remainingCommitCount > 0 ? (
+                        <p className="mt-1.5 font-mono text-[0.7rem] text-white/50">
+                          +{activity.remainingCommitCount} more commit
+                          {activity.remainingCommitCount === 1 ? "" : "s"}
+                        </p>
+                      ) : null}
                     </article>
                   ))}
                 </div>

@@ -1,15 +1,14 @@
-type GitHubEventType =
-  | "PushEvent"
-  | "PullRequestEvent"
-  | "IssuesEvent"
-  | "IssueCommentEvent"
-  | "CreateEvent"
-  | "DeleteEvent";
+type GitHubEventType = "PushEvent";
+
+type GitHubPushCommit = {
+  sha?: string;
+  message?: string;
+};
 
 type GitHubEventPayload = {
   size?: number;
-  action?: string;
-  ref_type?: string;
+  ref?: string;
+  commits?: GitHubPushCommit[];
 };
 
 type GitHubPublicEvent = {
@@ -24,80 +23,93 @@ type GitHubPublicEvent = {
 
 export type GitHubActivityItem = {
   id: string;
-  action: string;
   repo: string;
+  branch: string;
+  commitCount: number;
+  commitsPreview: Array<{
+    shortSha: string;
+    message: string;
+  }>;
+  remainingCommitCount: number;
   occurredAt: string;
 };
 
-const GITHUB_PUBLIC_EVENTS_URL =
-  "https://api.github.com/users/mnihad000/events/public";
+const GITHUB_PUBLIC_EVENTS_URL = "https://api.github.com/users/mnihad000/events/public";
+const COMMIT_PREVIEW_LIMIT = 2;
+const UNKNOWN_REPOSITORY = "Unknown repository";
+const UNKNOWN_BRANCH = "unknown branch";
+const UNKNOWN_SHA = "unknown";
 
-function formatEventAction(event: GitHubPublicEvent): string {
-  const eventType = event.type as GitHubEventType | undefined;
-  const payload = event.payload;
-
-  switch (eventType) {
-    case "PushEvent": {
-      const commitCount =
-        typeof payload?.size === "number" && payload.size > 0
-          ? payload.size
-          : undefined;
-
-      if (commitCount === 1) {
-        return "Pushed 1 commit";
-      }
-
-      if (typeof commitCount === "number") {
-        return `Pushed ${commitCount} commits`;
-      }
-
-      return "Pushed commits";
-    }
-    case "PullRequestEvent": {
-      const action = payload?.action;
-      if (action === "opened") {
-        return "Opened pull request";
-      }
-      if (action === "closed") {
-        return "Closed pull request";
-      }
-      if (action === "reopened") {
-        return "Reopened pull request";
-      }
-      return "Updated pull request";
-    }
-    case "IssuesEvent": {
-      const action = payload?.action;
-      if (action === "opened") {
-        return "Opened issue";
-      }
-      if (action === "closed") {
-        return "Closed issue";
-      }
-      if (action === "reopened") {
-        return "Reopened issue";
-      }
-      return "Updated issue";
-    }
-    case "IssueCommentEvent":
-      return "Commented on issue";
-    case "CreateEvent": {
-      const refType = payload?.ref_type;
-      return refType ? `Created ${refType}` : "Created resource";
-    }
-    case "DeleteEvent": {
-      const refType = payload?.ref_type;
-      return refType ? `Deleted ${refType}` : "Deleted resource";
-    }
-    default:
-      return "Updated activity";
+function getRepoName(event: GitHubPublicEvent): string {
+  if (typeof event.repo?.name === "string" && event.repo.name.trim().length > 0) {
+    return event.repo.name;
   }
+
+  return UNKNOWN_REPOSITORY;
+}
+
+function getBranchName(ref: string | undefined): string {
+  if (typeof ref !== "string" || ref.trim().length === 0) {
+    return UNKNOWN_BRANCH;
+  }
+
+  const headsPrefix = "refs/heads/";
+  if (ref.startsWith(headsPrefix) && ref.length > headsPrefix.length) {
+    return ref.slice(headsPrefix.length);
+  }
+
+  return ref;
+}
+
+function getCommitPreview(commits: GitHubPushCommit[] | undefined): GitHubActivityItem["commitsPreview"] {
+  if (!Array.isArray(commits) || commits.length === 0) {
+    return [];
+  }
+
+  return commits
+    .filter(
+      (commit) =>
+        typeof commit.message === "string" &&
+        commit.message.trim().length > 0,
+    )
+    .slice(0, COMMIT_PREVIEW_LIMIT)
+    .map((commit) => ({
+      shortSha:
+        typeof commit.sha === "string" && commit.sha.length > 0
+          ? commit.sha.slice(0, 7)
+          : UNKNOWN_SHA,
+      message: (commit.message ?? "").trim(),
+    }));
+}
+
+function getCommitCount(
+  payloadSize: number | undefined,
+  commitPreviewLength: number,
+  payloadCommitsLength: number,
+): number {
+  if (typeof payloadSize === "number" && payloadSize > 0) {
+    return payloadSize;
+  }
+
+  if (payloadCommitsLength > 0) {
+    return payloadCommitsLength;
+  }
+
+  if (commitPreviewLength > 0) {
+    return commitPreviewLength;
+  }
+
+  return 1;
 }
 
 function toActivityItem(
   event: GitHubPublicEvent,
   index: number,
 ): GitHubActivityItem | null {
+  if ((event.type as GitHubEventType | undefined) !== "PushEvent") {
+    return null;
+  }
+
   if (!event.created_at || typeof event.created_at !== "string") {
     return null;
   }
@@ -107,10 +119,18 @@ function toActivityItem(
     return null;
   }
 
-  const repoName =
-    typeof event.repo?.name === "string" && event.repo.name.trim().length > 0
-      ? event.repo.name
-      : "Unknown repository";
+  const repoName = getRepoName(event);
+  const branch = getBranchName(event.payload?.ref);
+  const payloadCommitsLength = Array.isArray(event.payload?.commits)
+    ? event.payload.commits.length
+    : 0;
+  const commitsPreview = getCommitPreview(event.payload?.commits);
+  const commitCount = getCommitCount(
+    event.payload?.size,
+    commitsPreview.length,
+    payloadCommitsLength,
+  );
+  const remainingCommitCount = Math.max(0, commitCount - commitsPreview.length);
 
   const fallbackId = `${event.type ?? "event"}-${event.created_at}-${repoName}-${index}`;
   const eventId =
@@ -120,8 +140,11 @@ function toActivityItem(
 
   return {
     id: eventId,
-    action: formatEventAction(event),
     repo: repoName,
+    branch,
+    commitCount,
+    commitsPreview,
+    remainingCommitCount,
     occurredAt: event.created_at,
   };
 }
@@ -130,6 +153,20 @@ function sortByRecency(a: GitHubActivityItem, b: GitHubActivityItem): number {
   const aTime = Date.parse(a.occurredAt);
   const bTime = Date.parse(b.occurredAt);
   return bTime - aTime;
+}
+
+export function mapGitHubEventsToActivity(
+  events: unknown[],
+  limit: number,
+): GitHubActivityItem[] {
+  const safeLimit = Math.max(0, limit);
+
+  const items = events
+    .map((event, index) => toActivityItem(event as GitHubPublicEvent, index))
+    .filter((item): item is GitHubActivityItem => item !== null)
+    .sort(sortByRecency);
+
+  return items.slice(0, safeLimit);
 }
 
 export async function getRecentGitHubActivity(
@@ -161,12 +198,7 @@ export async function getRecentGitHubActivity(
       return [];
     }
 
-    const items = parsed
-      .map((event, index) => toActivityItem(event as GitHubPublicEvent, index))
-      .filter((item): item is GitHubActivityItem => item !== null)
-      .sort(sortByRecency);
-
-    return items.slice(0, safeLimit);
+    return mapGitHubEventsToActivity(parsed, safeLimit);
   } catch {
     return [];
   }

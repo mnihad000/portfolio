@@ -249,6 +249,72 @@ adb devices  # should show emulator-5554`,
     technologies: ["Next.js", "TypeScript", "OpenAI API", "PostgreSQL", "Prisma"],
     coverImage: "/projects/squeeze-ai-cover.svg",
   },
+  {
+    slug: "autonomous-dataset-agent",
+    title: "Autonomous Dataset Agent",
+    description:
+      "Agentic pipeline for sourcing, validating, and versioning structured datasets from noisy public inputs.",
+    fullDescription:
+      "Autonomous Dataset Agent is a workflow-oriented project focused on collecting raw sources, normalizing schema, and running quality checks automatically before dataset release.",
+    dateLabel: "APRIL 2026",
+    technologies: ["Python", "TypeScript", "FastAPI", "PostgreSQL"],
+    coverImage: "/projects/autonomous-dataset-agent-cover.svg",
+  },
+  {
+    slug: "familyos",
+    title: "FamilyOS",
+    description:
+      "Unified household command center for planning, reminders, shared tasks, and family-level coordination.",
+    fullDescription:
+      "FamilyOS is a multi-user product concept for organizing day-to-day family logistics, including schedules, recurring tasks, reminders, and shared updates in one interface.",
+    dateLabel: "APRIL 2026",
+    technologies: ["Next.js", "TypeScript", "Supabase", "Tailwind CSS"],
+    coverImage: "/projects/familyos-cover.svg",
+  },
+  {
+    slug: "spendly",
+    title: "Spendly",
+    description:
+      "Personal finance workspace that tracks spending patterns, budgets, and monthly trends with actionable insights.",
+    fullDescription:
+      "Spendly is a budgeting and expense-analysis app that emphasizes fast categorization, behavior-level analytics, and clear weekly or monthly spending breakdowns.",
+    dateLabel: "APRIL 2026",
+    technologies: ["React", "TypeScript", "Node.js", "PostgreSQL"],
+    coverImage: "/projects/spendly-cover.svg",
+  },
+  {
+    slug: "agent-orchestrator",
+    title: "Agent Orchestrator",
+    description:
+      "Coordination layer for multi-agent workflows with retries, routing policies, and traceable execution state.",
+    fullDescription:
+      "Agent Orchestrator is an infrastructure-focused project that manages handoffs between specialized agents, handles failure recovery, and records execution traces for debugging and observability.",
+    dateLabel: "APRIL 2026",
+    technologies: ["TypeScript", "Node.js", "Redis", "OpenAI API"],
+    coverImage: "/projects/agent-orchestrator-cover.svg",
+  },
+  {
+    slug: "amigmi",
+    title: "Amigmi",
+    description:
+      "Social recommendation prototype that matches people to local activities based on interests, vibe, and availability.",
+    fullDescription:
+      "Amigmi is an experimentation project around social discovery and recommendation quality, with a focus on intent matching and low-friction coordination.",
+    dateLabel: "APRIL 2026",
+    technologies: ["Next.js", "TypeScript", "PostgreSQL", "Framer Motion"],
+    coverImage: "/projects/amigmi-cover.svg",
+  },
+  {
+    slug: "mira",
+    title: "MIRA",
+    description:
+      "Research assistant concept for summarizing technical materials, mapping concepts, and maintaining persistent context.",
+    fullDescription:
+      "MIRA is an AI assistant concept oriented around technical research workflows, combining retrieval, synthesis, and iterative note refinement to accelerate deep work.",
+    dateLabel: "APRIL 2026",
+    technologies: ["Next.js", "TypeScript", "Vector DB", "OpenAI API"],
+    coverImage: "/projects/mira-cover.svg",
+  },
 ];
 
 export function getProjectBySlug(slug: string): Project | undefined {
