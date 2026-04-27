@@ -76,8 +76,7 @@ function loadUnicornStudioScript() {
 }
 
 export default function HeroAsciiOne() {
-  const quote =
-    "The struggle itself toward the heights is enough to fill a man's heart. - The Myth of Sisyphus";
+  const quote = "The struggle itself towards the heights is enough to fill a man's heart.- The Myth of Sisyphus";
   const [typedQuote, setTypedQuote] = useState('');
   const [typingDone, setTypingDone] = useState(false);
   const [unicornLoaded, setUnicornLoaded] = useState(false);
@@ -207,20 +206,6 @@ export default function HeroAsciiOne() {
         className="relative z-10 flex min-h-screen items-center justify-end pt-16 lg:pt-8"
         style={{ marginTop: '3vh' }}
       >
-        <aside className="pointer-events-none absolute left-[11%] top-[82%] z-10 hidden w-[30vw] max-w-[420px] -translate-y-1/2 border-l border-white/30 pl-5 lg:block">
-          <p className="mb-2 font-mono text-[10px] tracking-[0.16em] text-white/45 uppercase">
-            SISYPHUS NOTE
-          </p>
-          <blockquote className="font-mono text-sm leading-relaxed text-white/85">
-            {typedQuote}
-            {!typingDone ? (
-              <span className="quote-cursor" aria-hidden="true">
-                _
-              </span>
-            ) : null}
-          </blockquote>
-        </aside>
-
         <div className="w-full px-6 lg:w-1/2 lg:px-16 lg:pr-[15%]">
           <div className="relative max-w-lg lg:ml-auto">
             <div className="mb-3 flex items-center gap-2 opacity-60">
@@ -251,8 +236,13 @@ export default function HeroAsciiOne() {
             </div>
 
             <div className="relative">
-              <p className="mb-5 font-mono text-sm leading-relaxed text-gray-300 opacity-85 lg:mb-6 lg:text-lg">
-                The future has never been more exciting.
+              <p className="mb-5 font-mono text-sm leading-relaxed text-white/95 lg:mb-6 lg:text-lg">
+                {typedQuote}
+                {!typingDone ? (
+                  <span className="quote-cursor" aria-hidden="true">
+                    _
+                  </span>
+                ) : null}
               </p>
 
               <p className="mb-5 font-mono text-xs tracking-[0.12em] text-white/60 lg:mb-7 lg:text-sm">
