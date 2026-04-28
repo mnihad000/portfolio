@@ -1,9 +1,11 @@
 import Home from '@/components/ui/hero-ascii-one';
+import CinematicLoader from '@/components/ui/cinematic-loader';
 
 export default function DemoOne() {
   return (
     <div className="h-screen w-screen">
       <Home />
+      <CinematicLoader />
     </div>
   );
 }
