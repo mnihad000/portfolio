@@ -29,6 +29,11 @@ function ensureUnicornMountStyles() {
     [data-us-project] {
       position: relative !important;
       overflow: hidden !important;
+      pointer-events: none !important;
+    }
+
+    [data-us-project] canvas {
+      pointer-events: none !important;
     }
   `;
   document.head.appendChild(style);
@@ -204,7 +209,7 @@ export default function HeroAsciiOne() {
       }}
     >
       {isDarkTheme ? (
-        <div className="absolute inset-0 h-full w-full">
+        <div className="pointer-events-none absolute inset-0 h-full w-full">
           <div
             ref={unicornContainerRef}
             data-us-project={UNICORN_PROJECT_ID}
