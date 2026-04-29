@@ -40,6 +40,11 @@ function ensureUnicornMountStyles() {
     [data-us-project] {
       position: relative !important;
       overflow: hidden !important;
+      pointer-events: none !important;
+    }
+
+    [data-us-project] canvas {
+      pointer-events: none !important;
     }
   `;
   document.head.appendChild(style);
@@ -234,7 +239,7 @@ export default function HeroAsciiOne() {
   }, [bootVisible]);
 
   useEffect(() => {
-    if (!bootVisible || bootExiting || bootProgress < 100) return undefined;
+    if (!bootVisible || bootProgress < 100) return undefined;
     if (!unicornLoaded && !bootTimedOut) return undefined;
 
     try {
@@ -243,23 +248,20 @@ export default function HeroAsciiOne() {
       // Non-critical: if storage fails, the loader will simply replay next visit.
     }
 
-    const startExitTimer = window.setTimeout(() => {
-      setBootExiting(true);
-    }, 0);
+    setBootExiting(true);
 
     const exitTimer = window.setTimeout(() => {
       setBootVisible(false);
     }, BOOT_EXIT_DURATION_MS);
 
     return () => {
-      window.clearTimeout(startExitTimer);
       window.clearTimeout(exitTimer);
     };
-  }, [bootExiting, bootProgress, bootTimedOut, bootVisible, unicornLoaded]);
+  }, [bootProgress, bootTimedOut, bootVisible, unicornLoaded]);
 
   return (
     <main className="relative min-h-screen overflow-hidden bg-black">
-      <div className="absolute inset-0 h-full w-full -translate-y-[3.5vh]">
+      <div className="pointer-events-none absolute inset-0 h-full w-full -translate-y-[3.5vh]">
         <div
           ref={unicornContainerRef}
           data-us-project={UNICORN_PROJECT_ID}
@@ -274,7 +276,7 @@ export default function HeroAsciiOne() {
       {bootVisible ? (
         <div
           className={`boot-loader fixed inset-0 z-[100] flex items-center justify-center overflow-hidden bg-black px-5 text-white ${
-            bootExiting ? 'boot-loader-exit' : ''
+            bootExiting ? 'boot-loader-exit pointer-events-none' : ''
           }`}
           aria-label="Loading homepage"
           aria-live="polite"
