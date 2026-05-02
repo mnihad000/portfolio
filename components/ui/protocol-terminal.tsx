@@ -277,7 +277,7 @@ export default function ProtocolTerminal() {
 
   function appendProjectEntries() {
     const projectEntries: TerminalEntry[] = [
-      createTextEntry("/projects", "muted"),
+      createTextEntry("/#projects", "muted"),
       ...projects.map((project, index) => ({
         id: createId(),
         kind: "project" as const,
@@ -305,6 +305,7 @@ export default function ProtocolTerminal() {
     ]);
   }
 
+  // eslint-disable-next-line @typescript-eslint/no-unused-vars
   function appendStatusEntries() {
     appendEntries([
       createTextEntry("● Accepted Software Engineering Intern at Bloom Energy for Summer 2026", "success"),
@@ -412,8 +413,8 @@ export default function ProtocolTerminal() {
     }
 
     if (normalized === "about") {
-      appendEntries([createTextEntry("Opening /about...", "muted")]);
-      openInternalRoute("/about");
+      appendEntries([createTextEntry("Scrolling to #about...", "muted")]);
+      openInternalRoute("/#about");
       return;
     }
 
@@ -450,9 +451,9 @@ export default function ProtocolTerminal() {
       await sleep(350);
       appendEntries([createTextEntry("Access granted.", "success")]);
       await sleep(450);
-      appendEntries([createTextEntry("Redirecting to contact page...", "muted")]);
+      appendEntries([createTextEntry("Scrolling to #contact...", "muted")]);
       await sleep(1500);
-      openInternalRoute("/contact");
+      openInternalRoute("/#contact");
       return;
     }
 

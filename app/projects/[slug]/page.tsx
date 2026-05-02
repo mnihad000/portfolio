@@ -30,7 +30,7 @@ export default async function ProjectDetailPage({ params }: ProjectDetailPagePro
 
         <article className="route-enter relative z-10 mx-auto w-full max-w-[1040px] px-6 pt-36 pb-16 md:px-8 lg:pt-40 lg:pb-24">
           <Link
-            href="/projects"
+            href="/#projects"
             className="inline-flex items-center gap-2 text-[1.05rem] text-white/52 transition-colors hover:text-white/78"
           >
             <span aria-hidden>←</span>

@@ -248,19 +248,25 @@ export default function HeroAsciiOne() {
       // Non-critical: if storage fails, the loader will simply replay next visit.
     }
 
-    setBootExiting(true);
+    const exitFrame = window.requestAnimationFrame(() => {
+      setBootExiting(true);
+    });
 
     const exitTimer = window.setTimeout(() => {
       setBootVisible(false);
     }, BOOT_EXIT_DURATION_MS);
 
     return () => {
+      window.cancelAnimationFrame(exitFrame);
       window.clearTimeout(exitTimer);
     };
   }, [bootProgress, bootTimedOut, bootVisible, unicornLoaded]);
 
   return (
-    <main className="relative min-h-screen overflow-hidden bg-black">
+    <section
+      id="home"
+      className="relative min-h-screen scroll-mt-28 overflow-hidden bg-black"
+    >
       <div className="pointer-events-none absolute inset-0 h-full w-full -translate-y-[3.5vh]">
         <div
           ref={unicornContainerRef}
@@ -368,12 +374,14 @@ repeat`}</pre>
       <div className="absolute top-0 right-0 z-20 h-8 w-8 border-t-2 border-r-2 border-white/30 lg:h-12 lg:w-12" />
       <div
         className="absolute left-0 z-20 h-8 w-8 border-b-2 border-l-2 border-white/30 lg:h-12 lg:w-12"
-        style={{ bottom: '5vh' }}
+        style={{ bottom: 0 }}
       />
       <div
         className="absolute right-0 z-20 h-8 w-8 border-b-2 border-r-2 border-white/30 lg:h-12 lg:w-12"
-        style={{ bottom: '5vh' }}
+        style={{ bottom: 0 }}
       />
+
+      <div className="pointer-events-none absolute bottom-3 left-1/2 z-[120] h-21 w-48 -translate-x-1/2 rounded-md bg-black" />
 
       <div
         className="relative z-10 flex min-h-screen items-center justify-end pt-16 lg:pt-8"
@@ -435,7 +443,7 @@ repeat`}</pre>
 
             <div className="flex flex-col gap-3 lg:flex-row lg:gap-4">
               <Link
-                href="/projects"
+                href="/#projects"
                 className="group relative border border-white bg-transparent px-5 py-2 text-xs font-mono text-white transition-all duration-200 hover:bg-white hover:text-black lg:px-6 lg:py-2.5 lg:text-sm"
               >
                 <span className="absolute top-[-0.25rem] left-[-0.25rem] hidden h-2 w-2 border-t border-l border-white opacity-0 transition-opacity group-hover:opacity-100 lg:block" />
@@ -444,7 +452,7 @@ repeat`}</pre>
               </Link>
 
               <Link
-                href="/contact"
+                href="/#contact"
                 className="relative border border-white bg-transparent px-5 py-2 text-xs font-mono text-white transition-all duration-200 hover:bg-white hover:text-black lg:px-6 lg:py-2.5 lg:text-sm"
               >
                 CONTACT ME
@@ -461,46 +469,6 @@ repeat`}</pre>
           </div>
         </div>
       </div>
-
-      <div
-        className="absolute right-0 left-0 z-20 border-t border-white/20 bg-black/40 backdrop-blur-sm"
-        style={{ bottom: '5vh' }}
-      >
-        <div className="container mx-auto flex items-center justify-between px-4 py-2 lg:px-8 lg:py-3">
-          <div className="flex items-center gap-3 font-mono text-[8px] text-white/50 lg:gap-6 lg:text-[9px]">
-            <span className="hidden lg:inline">SYSTEM.ACTIVE</span>
-            <span className="lg:hidden">SYS.ACT</span>
-            <div className="hidden gap-1 lg:flex">
-              {[5, 8, 11, 7, 13, 9, 6, 10].map((height, i) => (
-                <div
-                  key={i}
-                  className="w-1 bg-white/30"
-                  style={{ height: `${height}px` }}
-                />
-              ))}
-            </div>
-            <span>V1.0.0</span>
-          </div>
-
-          <div className="flex items-center gap-2 font-mono text-[8px] text-white/50 lg:gap-4 lg:text-[9px]">
-            <span className="hidden lg:inline">RENDERING</span>
-            <div className="flex gap-1">
-              <div className="h-1 w-1 animate-pulse rounded-full bg-white/60" />
-              <div
-                className="h-1 w-1 animate-pulse rounded-full bg-white/40"
-                style={{ animationDelay: '0.2s' }}
-              />
-              <div
-                className="h-1 w-1 animate-pulse rounded-full bg-white/20"
-                style={{ animationDelay: '0.4s' }}
-              />
-            </div>
-            <span className="hidden lg:inline">FRAME: INF</span>
-          </div>
-        </div>
-      </div>
-
-      <div className="pointer-events-none fixed bottom-[15px] left-1/2 z-[2147483647] h-[80px] w-[230px] -translate-x-1/2 rounded-[20px] bg-black" />
 
       <style jsx>{`
         .dither-pattern {
@@ -917,6 +885,6 @@ repeat`}</pre>
           }
         }
       `}</style>
-    </main>
+    </section>
   );
 }
