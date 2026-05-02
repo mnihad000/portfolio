@@ -28,7 +28,7 @@ export default async function ProjectDetailPage({ params }: ProjectDetailPagePro
         <div className="pointer-events-none absolute inset-0 bg-[linear-gradient(to_bottom,rgba(255,255,255,0.05)_1px,transparent_1px)] bg-[size:100%_3px] opacity-[0.08]" />
         <div className="pointer-events-none absolute inset-0 bg-[radial-gradient(circle_at_top,rgba(255,255,255,0.08),transparent_56%)]" />
 
-        <article className="route-enter relative z-10 mx-auto w-full max-w-[1240px] px-6 pt-36 pb-16 md:px-10 lg:pt-40 lg:pb-24">
+        <article className="route-enter relative z-10 mx-auto w-full max-w-[1040px] px-6 pt-36 pb-16 md:px-8 lg:pt-40 lg:pb-24">
           <Link
             href="/projects"
             className="inline-flex items-center gap-2 text-[1.05rem] text-white/52 transition-colors hover:text-white/78"
@@ -48,16 +48,16 @@ export default async function ProjectDetailPage({ params }: ProjectDetailPagePro
             <div className="pointer-events-none absolute inset-0 bg-[radial-gradient(circle_at_top,rgba(255,255,255,0.18),transparent_64%)]" />
           </div>
 
-          <header className="mt-8 max-w-4xl md:mt-10">
+          <header className="mt-8 max-w-3xl md:mt-10">
             <h1 className="text-5xl leading-none tracking-[0.02em] text-white md:text-7xl">
               {detail.heroTitle}
             </h1>
-            <p className="mt-6 max-w-4xl text-lg leading-relaxed text-white/70 md:text-[2rem] md:leading-[1.45]">
+            <p className="mt-6 max-w-3xl text-lg leading-relaxed text-white/70 md:text-[2rem] md:leading-[1.45]">
               {detail.heroSubtitle}
             </p>
           </header>
 
-          <div className="mt-14 grid gap-10 lg:grid-cols-[minmax(0,1fr)_338px] lg:items-start lg:gap-12">
+          <div className="mt-14 grid gap-10 lg:grid-cols-[minmax(0,1fr)_300px] lg:items-start lg:gap-10">
             <div className="space-y-11">
               <section>
                 <h2 className="text-[2rem] tracking-[0.01em] text-white md:text-[2.45rem]">Overview</h2>
@@ -120,14 +120,14 @@ export default async function ProjectDetailPage({ params }: ProjectDetailPagePro
                 </article>
                 <SetupBlock title="Installation" command={detail.setup.installation} />
                 <SetupBlock title="Environment" command={detail.setup.environment} />
-                <SetupBlock title="Connect to BlueStacks" command={detail.setup.connect} />
-                <SetupBlock title="Download YOLO Models" command={detail.setup.downloadModels} />
-                <SetupBlock title="Run the Agent" command={detail.setup.run} />
+                <SetupBlock title="Connect Services" command={detail.setup.connect} />
+                <SetupBlock title="Model Setup" command={detail.setup.downloadModels} />
+                <SetupBlock title="Run Services" command={detail.setup.run} />
               </section>
 
               <section>
                 <h2 className="text-[2rem] tracking-[0.01em] text-white md:text-[2.45rem]">
-                  How Claude Makes Decisions
+                  Decision Engine
                 </h2>
                 <p className="mt-5 text-sm leading-7 text-white/76">{detail.decisionMaking.cadence}</p>
                 <div className="mt-5 grid gap-5 xl:grid-cols-2">
@@ -141,8 +141,8 @@ export default async function ProjectDetailPage({ params }: ProjectDetailPagePro
                   />
                 </div>
                 <p className="mt-5 text-sm leading-7 text-white/66">
-                  All responses are logged with reasoning so match behavior remains inspectable and
-                  explainable.
+                  Investigation decisions and outputs are logged to keep system behavior inspectable
+                  and explainable.
                 </p>
               </section>
 
@@ -252,7 +252,7 @@ export default async function ProjectDetailPage({ params }: ProjectDetailPagePro
       <div className="pointer-events-none absolute inset-0 bg-[linear-gradient(to_bottom,rgba(255,255,255,0.06)_1px,transparent_1px)] bg-[size:100%_3px] opacity-[0.08]" />
       <div className="pointer-events-none absolute inset-0 bg-[radial-gradient(circle_at_top,rgba(255,255,255,0.08),transparent_55%)]" />
 
-      <article className="route-enter relative z-10 mx-auto w-full max-w-6xl px-6 pt-28 pb-16 md:px-10">
+      <article className="route-enter relative z-10 mx-auto w-full max-w-[1040px] px-6 pt-28 pb-16 md:px-8">
         <header className="mb-8 border border-white/15 bg-black/45 p-6 backdrop-blur-sm md:p-8">
           <p className="font-mono text-xs tracking-[0.16em] text-white/55 uppercase">
             {project.dateLabel}
