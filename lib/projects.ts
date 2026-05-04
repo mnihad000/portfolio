@@ -553,7 +553,7 @@ adb devices  # should show emulator-5554`,
       "Vite",
       "Snowflake API",
     ],
-    coverImage: "/projects/spendly-cover.svg",
+    coverImage: "/projects/spendly-cover-image.png",
     richDetail: {
       heroTitle: "Predict Before Spend",
       heroSubtitle:
@@ -565,7 +565,16 @@ adb devices  # should show emulator-5554`,
       ],
       overviewHighlight:
         "Current production path is FastAPI + PostgreSQL + Twilio, with Snowflake API used for analytics and model iteration.",
-      links: [],
+      links: [
+        {
+          label: "Website: https://hunterhackathon.vercel.app/",
+          href: "https://hunterhackathon.vercel.app/",
+        },
+        {
+          label: "source code: https://github.com/mnihad000/hackhunter",
+          href: "https://github.com/mnihad000/hackhunter",
+        },
+      ],
       techStackGroups: [
         {
           title: "Core Runtime",

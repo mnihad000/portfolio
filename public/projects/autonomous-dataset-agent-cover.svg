@@ -1,20 +1,102 @@
-﻿<svg width="1600" height="900" viewBox="0 0 1600 900" fill="none" xmlns="http://www.w3.org/2000/svg">
-  <rect width="1600" height="900" fill="#05070A"/>
-  <rect x="34" y="34" width="1532" height="832" rx="34" fill="#0B0F14" stroke="#26313E" stroke-width="2"/>
-  <rect x="34" y="34" width="1532" height="832" rx="34" fill="url(#noise)" fill-opacity="0.26"/>
-  <circle cx="1300" cy="180" r="220" fill="" fill-opacity="0.18"/>
-  <circle cx="380" cy="760" r="260" fill="" fill-opacity="0.11"/>
-  <path d="M80 706H1520" stroke="#2A3746" stroke-width="2" stroke-dasharray="8 12"/>
-  <text x="110" y="180" fill="#8FA6BE" font-family="monospace" font-size="26" letter-spacing="5">PROJECT PLACEHOLDER</text>
-  <text x="110" y="330" fill="white" font-family="monospace" font-size="86" font-weight="700"></text>
-  <text x="110" y="405" fill="#A3B4C7" font-family="monospace" font-size="30">Cover asset pending final art direction.</text>
-  <text x="110" y="742" fill="#7890A8" font-family="monospace" font-size="24" letter-spacing="3">/projects/</text>
+<svg width="1600" height="900" viewBox="0 0 1600 900" fill="none" xmlns="http://www.w3.org/2000/svg">
+  <rect width="1600" height="900" fill="#072B45"/>
+  <rect width="1600" height="900" fill="url(#skyGlow)"/>
+  <rect width="1600" height="900" fill="url(#vignette)"/>
+
+  <g opacity="0.9" fill="#F6FBFF">
+    <circle cx="84" cy="86" r="2"/>
+    <circle cx="112" cy="72" r="1.5"/>
+    <circle cx="138" cy="92" r="1.3"/>
+    <circle cx="518" cy="84" r="1.5"/>
+    <circle cx="570" cy="54" r="1.1"/>
+    <circle cx="611" cy="77" r="2"/>
+    <circle cx="775" cy="29" r="1.7"/>
+    <circle cx="861" cy="66" r="1.2"/>
+    <circle cx="1008" cy="34" r="1.2"/>
+    <circle cx="1095" cy="78" r="2.7"/>
+    <circle cx="1321" cy="96" r="1.4"/>
+    <circle cx="1487" cy="64" r="1.2"/>
+    <circle cx="1560" cy="118" r="1.4"/>
+    <circle cx="179" cy="182" r="1.8"/>
+    <circle cx="310" cy="203" r="2.1"/>
+    <circle cx="441" cy="178" r="1.4"/>
+    <circle cx="654" cy="169" r="1.6"/>
+    <circle cx="734" cy="156" r="2"/>
+    <circle cx="864" cy="201" r="1.5"/>
+    <circle cx="1212" cy="213" r="1.2"/>
+    <circle cx="1468" cy="204" r="1.7"/>
+    <circle cx="1513" cy="272" r="1.4"/>
+    <circle cx="194" cy="324" r="3.8" fill="#C9F1FF"/>
+    <circle cx="313" cy="364" r="2.5" fill="#C9F1FF"/>
+    <circle cx="718" cy="278" r="3.6" fill="#E8FAFF"/>
+    <circle cx="797" cy="345" r="2.4" fill="#C9F1FF"/>
+    <circle cx="920" cy="321" r="2.1" fill="#C9F1FF"/>
+    <circle cx="1089" cy="408" r="3.1" fill="#BDEBFF"/>
+    <circle cx="1312" cy="468" r="2.4" fill="#F6FBFF"/>
+    <circle cx="388" cy="703" r="2"/>
+    <circle cx="610" cy="852" r="2.5"/>
+    <circle cx="852" cy="759" r="3.3" fill="#BEE7FF"/>
+    <circle cx="1276" cy="704" r="2.7" fill="#C9F1FF"/>
+    <circle cx="1446" cy="804" r="1.7"/>
+  </g>
+
+  <g fill="#D2F3FF" opacity="0.42">
+    <circle cx="832" cy="326" r="7"/>
+    <circle cx="855" cy="308" r="4"/>
+    <circle cx="879" cy="332" r="5"/>
+    <circle cx="901" cy="316" r="6"/>
+    <circle cx="924" cy="347" r="8"/>
+    <circle cx="946" cy="322" r="5"/>
+    <circle cx="969" cy="356" r="7"/>
+    <circle cx="995" cy="334" r="5"/>
+    <circle cx="1018" cy="364" r="8"/>
+    <circle cx="1045" cy="346" r="5"/>
+    <circle cx="1073" cy="379" r="8"/>
+    <circle cx="1098" cy="362" r="5"/>
+  </g>
+
+  <g fill="#F3FAFF">
+    <rect x="67" y="66" width="26" height="4" rx="2"/>
+    <rect x="67" y="84" width="26" height="4" rx="2"/>
+    <rect x="67" y="102" width="26" height="4" rx="2"/>
+  </g>
+
+  <path d="M0 588L77 585L161 590L243 558L319 512L380 459L450 442L500 408L548 399L602 351L656 377L690 339L753 344L826 332L889 351L945 389L1006 431L1061 442L1118 477L1177 521L1231 551L1286 573L1338 601L1408 644L1470 669L1530 677L1600 698V900H0V588Z" fill="#0D3553"/>
+  <path d="M0 627L90 623L172 602L235 553L308 507L382 473L437 459L506 429L560 402L624 384L685 406L739 396L804 408L873 404L929 455L988 446L1055 500L1116 529L1163 541L1215 571L1278 601L1341 633L1415 656L1485 679L1600 695V900H0V627Z" fill="#08243C"/>
+  <path d="M0 705L71 694L136 649L204 589L280 553L339 520L404 480L472 468L536 433L603 434L680 417L754 412L836 410L888 455L960 445L1022 495L1079 523L1145 541L1192 579L1256 570L1309 601L1368 638L1431 635L1493 687L1600 695V900H0V705Z" fill="#030916"/>
+  <path d="M0 899L0 591L18 590L14 626L65 626L111 668L162 708L230 744L299 781L361 813L425 848L1600 900H0Z" fill="url(#groundGlow)" opacity="0.65"/>
+
+  <g opacity="0.36" fill="#FFF1BA">
+    <circle cx="573" cy="701" r="3"/>
+    <circle cx="611" cy="764" r="2.6"/>
+    <circle cx="994" cy="701" r="2.3"/>
+    <circle cx="1088" cy="771" r="2.3"/>
+    <circle cx="1277" cy="770" r="1.9"/>
+  </g>
+
+  <text x="165" y="420" fill="#F6BF4A" font-family="'Arial', sans-serif" font-size="22" font-weight="700" letter-spacing="8">AUTONOMOUS DATASET AGENT</text>
+  <text x="172" y="577" fill="#FF120A" font-family="'Arial Black', 'Arial', sans-serif" font-size="154" font-weight="900" letter-spacing="10">SEARCH</text>
+
+  <text x="166" y="651" fill="#97A3B5" font-family="'Arial', sans-serif" font-size="28">Autonomous source agents gather footage before a dataset exists.</text>
+  <text x="166" y="709" fill="#97A3B5" font-family="'Arial', sans-serif" font-size="28">Ranking favors coverage across angle, scale, lighting, and environment.</text>
+
+  <text x="1252" y="782" fill="#8998AB" font-family="'Arial', sans-serif" font-size="18" font-weight="700" letter-spacing="6">PIPELINE PROGRESS</text>
+  <path d="M1252 808H1554" stroke="#8998AB" stroke-opacity="0.55" stroke-width="1.5"/>
+  <text x="1252" y="842" fill="#CED6E2" font-family="'Arial', sans-serif" font-size="28" font-weight="700" letter-spacing="4">01 / 03</text>
+
   <defs>
-    <pattern id="noise" width="12" height="12" patternUnits="userSpaceOnUse">
-      <rect width="12" height="12" fill="#0B0F14"/>
-      <circle cx="2" cy="2" r="1" fill="#131B24"/>
-      <circle cx="8" cy="6" r="1" fill="#151E28"/>
-      <circle cx="4" cy="10" r="1" fill="#101822"/>
-    </pattern>
+    <radialGradient id="skyGlow" cx="0" cy="0" r="1" gradientUnits="userSpaceOnUse" gradientTransform="translate(916 200) rotate(90) scale(517 669.44)">
+      <stop stop-color="#8AC2E7"/>
+      <stop offset="0.45" stop-color="#5FA0CA" stop-opacity="0.86"/>
+      <stop offset="1" stop-color="#0B4165" stop-opacity="0"/>
+    </radialGradient>
+    <radialGradient id="vignette" cx="0" cy="0" r="1" gradientUnits="userSpaceOnUse" gradientTransform="translate(800 450) rotate(90) scale(640 1138)">
+      <stop offset="0.63" stop-color="#000000" stop-opacity="0"/>
+      <stop offset="1" stop-color="#02111F" stop-opacity="0.54"/>
+    </radialGradient>
+    <radialGradient id="groundGlow" cx="0" cy="0" r="1" gradientUnits="userSpaceOnUse" gradientTransform="translate(-60 780) rotate(4.8) scale(301 195)">
+      <stop stop-color="#6A4017"/>
+      <stop offset="1" stop-color="#6A4017" stop-opacity="0"/>
+    </radialGradient>
   </defs>
 </svg>
