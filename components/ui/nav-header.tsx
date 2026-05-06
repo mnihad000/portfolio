@@ -5,6 +5,11 @@ import { motion } from "framer-motion";
 import { usePathname } from "next/navigation";
 import React, { useEffect, useMemo, useRef, useState } from "react";
 import { useSiteTheme } from "@/components/providers/site-theme-provider";
+import {
+  LIGHTMODE_HOME_ROUTE,
+  LIGHTMODE_PROJECTS_ROUTE,
+  isLightModeRoute,
+} from "@/lib/theme-routes";
 import ThemeToggle from "@/components/ui/theme-toggle";
 
 type NavItem = {
@@ -23,6 +28,11 @@ type IndicatorPosition = {
   opacity: number;
 };
 
+type LightRouteNavItem = {
+  label: string;
+  href: string;
+};
+
 const DARK_NAV_ITEMS: NavItem[] = [
   { label: "Home", href: "/" },
   { label: "About", href: "/about" },
@@ -36,6 +46,11 @@ const LIGHT_TABS: LightTab[] = [
   { label: "About", targetId: "about" },
   { label: "Projects", targetId: "projects" },
   { label: "Contact", targetId: "contact" },
+];
+
+const LIGHT_ROUTE_NAV_ITEMS: LightRouteNavItem[] = [
+  { label: "Home", href: LIGHTMODE_HOME_ROUTE },
+  { label: "Projects", href: LIGHTMODE_PROJECTS_ROUTE },
 ];
 
 function DarkModeNav() {
@@ -245,6 +260,51 @@ function LightModeTabs() {
   );
 }
 
+function LightModeRouteNav() {
+  const pathname = usePathname();
+  const activeHref = useMemo(() => {
+    if (
+      pathname === LIGHTMODE_PROJECTS_ROUTE ||
+      pathname.startsWith(`${LIGHTMODE_PROJECTS_ROUTE}/`)
+    ) {
+      return LIGHTMODE_PROJECTS_ROUTE;
+    }
+
+    return LIGHTMODE_HOME_ROUTE;
+  }, [pathname]);
+
+  return (
+    <div className="flex items-center gap-2">
+      <nav
+        className="rounded-full border border-white/70 bg-white/28 p-1.5 shadow-[0_14px_40px_rgba(15,23,42,0.12)] ring-1 ring-black/6 backdrop-blur-xl supports-[backdrop-filter]:bg-white/22"
+        aria-label="Light mode"
+      >
+        <ul className="relative flex w-fit items-center gap-1 overflow-hidden rounded-full border border-white/65 bg-white/14 px-1 py-1 text-neutral-950 shadow-[inset_0_1px_0_rgba(255,255,255,0.75)] backdrop-blur-xl">
+          {LIGHT_ROUTE_NAV_ITEMS.map((item) => (
+            <li key={item.href} className="relative">
+              <Link
+                href={item.href}
+                className={`relative z-10 flex min-h-11 items-center rounded-full px-4 py-2 text-xs uppercase tracking-[0.24em] transition-colors duration-200 md:px-6 md:py-3 md:text-sm ${
+                  activeHref === item.href
+                    ? "text-neutral-950"
+                    : "text-neutral-500 hover:text-neutral-800"
+                }`}
+              >
+                {activeHref === item.href ? (
+                  <span className="pointer-events-none absolute inset-0 rounded-full border border-black/10 bg-white/60 shadow-[inset_0_1px_0_rgba(255,255,255,0.8)]" />
+                ) : null}
+                <span className="relative z-10">{item.label}</span>
+              </Link>
+            </li>
+          ))}
+        </ul>
+      </nav>
+
+      <ThemeToggle variant="light" />
+    </div>
+  );
+}
+
 function NavHeader() {
   const pathname = usePathname();
   const { mounted, theme } = useSiteTheme();
@@ -257,13 +317,25 @@ function NavHeader() {
     return () => window.removeEventListener("scroll", handleScroll);
   }, []);
 
-  const showLightTabs = mounted && theme === "light" && pathname === "/";
+  const showLightTabs = mounted && theme === "light" && pathname === LIGHTMODE_HOME_ROUTE;
+  const showLightRouteNav =
+    mounted && theme === "light" && isLightModeRoute(pathname) && pathname !== LIGHTMODE_HOME_ROUTE;
 
   if (showLightTabs) {
     return (
       <div className="pointer-events-none fixed inset-x-0 top-4 z-50 flex justify-center px-4">
         <div className="pointer-events-auto">
           <LightModeTabs />
+        </div>
+      </div>
+    );
+  }
+
+  if (showLightRouteNav) {
+    return (
+      <div className="pointer-events-none fixed inset-x-0 top-4 z-50 flex justify-center px-4">
+        <div className="pointer-events-auto">
+          <LightModeRouteNav />
         </div>
       </div>
     );

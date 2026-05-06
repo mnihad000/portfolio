@@ -12,6 +12,7 @@ import {
 } from "react";
 import { usePathname, useRouter } from "next/navigation";
 import { DEFAULT_THEME, THEME_STORAGE_KEY } from "@/lib/theme";
+import { getCanonicalPathForTheme } from "@/lib/theme-routes";
 
 export type SiteTheme = "light" | "dark";
 export type ThemeTransitionPhase = "idle" | "transitioning" | "swapped";
@@ -192,9 +193,11 @@ export function SiteThemeProvider({ children }: { children: ReactNode }) {
       return;
     }
 
-    if (theme === "light" && pathname !== "/") {
+    const canonicalPath = getCanonicalPathForTheme(pathname, theme);
+
+    if (canonicalPath !== pathname) {
       startTransition(() => {
-        router.replace("/");
+        router.replace(canonicalPath);
       });
     }
   }, [mounted, pathname, router, theme]);
@@ -224,10 +227,11 @@ export function SiteThemeProvider({ children }: { children: ReactNode }) {
         timersRef.current.push(
           window.setTimeout(() => {
             commitTheme(nextTheme);
+            const canonicalPath = getCanonicalPathForTheme(pathname, nextTheme);
 
-            if (nextTheme === "light" && pathname !== "/") {
+            if (canonicalPath !== pathname) {
               startTransition(() => {
-                router.push("/");
+                router.push(canonicalPath);
               });
             }
           }, swapDelay)

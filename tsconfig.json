@@ -31,5 +31,5 @@
     ".next/dev/types/**/*.ts",
     "**/*.mts"
   ],
-  "exclude": ["node_modules", "ronald", "ronald/**"]
+  "exclude": ["node_modules", "ronald", "ronald/**", "lightmode", "lightmode/**"]
 }

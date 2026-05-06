@@ -1,5 +1,5 @@
-import HomeExperienceSwitcher from "@/components/ui/home-experience-switcher";
+import DemoOne from "@/components/ui/demo";
 
 export default function HomePage() {
-  return <HomeExperienceSwitcher />;
+  return <DemoOne />;
 }

@@ -1,8 +1,5 @@
 "use client";
 
-import Link from "next/link";
-import Image from "next/image";
-import { useRouter } from "next/navigation";
 import type { ReactNode } from "react";
 import {
   motion,
@@ -12,20 +9,13 @@ import {
   useTransform,
   type Transition,
 } from "framer-motion";
-import {
-  ArrowUpRight,
-  Cpu,
-  FolderGit2,
-  Link2,
-  Mail,
-  MapPin,
-} from "lucide-react";
+import { ArrowUpRight, Cpu, FolderGit2, Link2, Mail, MapPin } from "lucide-react";
 import { aboutPageContent } from "@/lib/about";
 import { lightModeContent } from "@/lib/light-mode-content";
 import { projects } from "@/lib/projects";
-import { useSiteTheme } from "@/components/providers/site-theme-provider";
 import { AnimatedName } from "@/components/ui/animated-name";
 import { SplineSceneBasic } from "@/components/ui/demo";
+import LightProjectCard from "@/components/ui/light-project-card";
 import { WavyWhatIfText } from "@/components/ui/wavy-what-if-text";
 
 const PROJECT_CARD_COUNT = projects.length;
@@ -53,14 +43,6 @@ function renderRichParagraph(
 }
 
 export default function LightExperience() {
-  const router = useRouter();
-  const { setTheme } = useSiteTheme();
-
-  const openDarkProject = (href: string) => {
-    setTheme("dark");
-    router.push(href);
-  };
-
   return (
     <div
       className="min-h-svh bg-white text-neutral-950"
@@ -73,7 +55,7 @@ export default function LightExperience() {
           <HeroSection />
         </section>
         <AboutSection />
-        <ProjectsSection onOpenProject={openDarkProject} />
+        <ProjectsSection />
         <ContactSection />
       </div>
     </div>
@@ -198,11 +180,7 @@ function AboutSection() {
   );
 }
 
-function ProjectsSection({
-  onOpenProject,
-}: {
-  onOpenProject: (href: string) => void;
-}) {
+function ProjectsSection() {
   return (
     <section id="projects" className="mx-auto mt-24 max-w-6xl scroll-mt-28">
       <div className="mx-auto max-w-4xl text-center">
@@ -238,57 +216,15 @@ function ProjectsSection({
       </motion.div>
 
       <div className="mx-auto mt-10 grid max-w-6xl gap-6 md:grid-cols-2 lg:grid-cols-3">
-        {projects.map((project, index) => {
-          return (
-            <motion.article
-              key={project.slug}
-              initial={{ opacity: 0, y: 20 }}
-              whileInView={{ opacity: 1, y: 0 }}
-              viewport={{ once: true, amount: 0.18 }}
-              transition={{
-                duration: 0.55,
-                delay: 0.06 * (index % PROJECT_CARD_COUNT),
-                ease: [0.22, 1, 0.36, 1],
-              }}
-              onClick={() => onOpenProject(`/projects/${project.slug}`)}
-              onKeyDown={(event) => {
-                if (event.key === "Enter" || event.key === " ") {
-                  event.preventDefault();
-                  onOpenProject(`/projects/${project.slug}`);
-                }
-              }}
-              role="button"
-              tabIndex={0}
-              className="cursor-pointer rounded-[2rem] border border-black/10 bg-white p-5 text-left shadow-[0_18px_45px_rgba(0,0,0,0.05)] transition duration-300 hover:-translate-y-1 hover:shadow-[0_24px_55px_rgba(0,0,0,0.08)] focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-black/20 md:p-6"
-            >
-              <div className="overflow-hidden rounded-[1.5rem] border border-black/8 bg-neutral-100 p-3">
-                <div className="relative aspect-[16/10] overflow-hidden rounded-[1.15rem] border border-black/8 bg-[radial-gradient(circle_at_top,_rgba(255,255,255,0.8),_rgba(231,231,231,0.95)_40%,_rgba(212,212,212,1)_100%)]">
-                  <Image
-                    src={project.coverImage}
-                    alt={`${project.title} cover image`}
-                    fill
-                    sizes="(min-width: 768px) 50vw, 100vw"
-                    className="object-cover"
-                  />
-                </div>
-              </div>
-
-              <div className="mt-5 space-y-4">
-                <div className="space-y-1.5">
-                  <h4 className="text-2xl font-semibold tracking-tight text-neutral-900">
-                    {project.title}
-                  </h4>
-                  <p className="text-base leading-7 text-neutral-500">{project.description}</p>
-                </div>
-
-                <div className="flex items-center gap-2 pt-1 text-sm font-medium uppercase tracking-[0.24em] text-neutral-600">
-                  <span>Open Project</span>
-                  <ArrowUpRight className="h-4 w-4" />
-                </div>
-              </div>
-            </motion.article>
-          );
-        })}
+        {projects.map((project, index) => (
+          <LightProjectCard
+            key={project.slug}
+            project={project}
+            index={index}
+            total={PROJECT_CARD_COUNT}
+            priority={index === 0}
+          />
+        ))}
       </div>
     </section>
   );
