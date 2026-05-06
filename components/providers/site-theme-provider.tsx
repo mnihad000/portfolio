@@ -44,15 +44,6 @@ function getInitialTheme(): SiteTheme {
     return datasetTheme;
   }
 
-  try {
-    const storedTheme = window.localStorage.getItem(THEME_STORAGE_KEY);
-    if (isTheme(storedTheme)) {
-      return storedTheme;
-    }
-  } catch {
-    // Ignore storage failures and fall back to the default theme.
-  }
-
   return DEFAULT_THEME as SiteTheme;
 }
 
