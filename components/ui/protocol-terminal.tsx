@@ -10,6 +10,7 @@ import {
   type ReactNode,
 } from "react";
 import { usePathname, useRouter } from "next/navigation";
+import { useSiteTheme } from "@/components/providers/site-theme-provider";
 import { projects } from "@/lib/projects";
 
 type EntryTone = "default" | "muted" | "success" | "warning";
@@ -171,6 +172,7 @@ function createPersistedState(
 export default function ProtocolTerminal() {
   const router = useRouter();
   const pathname = usePathname();
+  const { mounted, theme } = useSiteTheme();
   const inputRef = useRef<HTMLInputElement | null>(null);
   const outputRef = useRef<HTMLDivElement | null>(null);
   const didHydrateRef = useRef(false);
@@ -302,14 +304,6 @@ export default function ProtocolTerminal() {
       createTextEntry("FRAMEWORKS  React · Node · Express", "muted"),
       createTextEntry("TOOLS       Git · Docker · Linux", "muted"),
       createTextEntry("LEARNING    AI agents · systems design · low-latency infra", "muted"),
-    ]);
-  }
-
-  function appendStatusEntries() {
-    appendEntries([
-      createTextEntry("● Accepted Software Engineering Intern at Bloom Energy for Summer 2026", "success"),
-      createTextEntry("Looking for co-ops / Summer 2027 internships", "muted"),
-      createTextEntry("Last updated: April 2026", "muted"),
     ]);
   }
 
@@ -717,6 +711,10 @@ export default function ProtocolTerminal() {
     if (!outputRef.current) return;
     outputRef.current.scrollTop = outputRef.current.scrollHeight;
   }, [entries, isOpen]);
+
+  if (mounted && theme === "light") {
+    return null;
+  }
 
   return (
     <div

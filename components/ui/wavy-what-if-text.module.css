@@ -1,0 +1,197 @@
+.shell {
+  position: relative;
+  margin: 0 auto;
+  width: min(100%, 60rem);
+}
+
+.defs {
+  position: absolute;
+}
+
+.stage {
+  position: relative;
+  height: clamp(10rem, 22vw, 16rem);
+  width: 100%;
+  overflow: visible;
+  isolation: isolate;
+}
+
+.stage::before {
+  content: "";
+  position: absolute;
+  inset: 16% 18%;
+  background: radial-gradient(circle, rgb(120 120 120 / 0.1), transparent 70%);
+  filter: blur(24px);
+  z-index: 0;
+}
+
+.layer {
+  position: absolute;
+  inset: 0;
+  height: 100%;
+  width: 100%;
+  overflow: visible;
+  transform-origin: center;
+  filter: var(--filter-id) blur(0.4px);
+  will-change: transform, opacity, filter;
+}
+
+.word {
+  fill: rgb(126 126 126 / 0.34);
+  font-family: var(--font-retro-mono), "VT323", monospace;
+  font-size: 114px;
+  font-style: normal;
+  font-weight: 400;
+  letter-spacing: -0.03em;
+  text-anchor: middle;
+  dominant-baseline: middle;
+}
+
+.layerA {
+  opacity: 0.9;
+  animation:
+    whatif-float 7.4s ease-in-out infinite,
+    whatif-jitter-a 2.2s ease-in-out infinite,
+    whatif-smear-a 3.1s linear infinite;
+}
+
+.layerA .word {
+  fill: rgb(138 138 138 / 0.36);
+}
+
+.layerB {
+  opacity: 0.58;
+  mix-blend-mode: multiply;
+  animation:
+    whatif-float 8.6s ease-in-out infinite reverse,
+    whatif-jitter-b 1.7s ease-in-out infinite,
+    whatif-smear-b 2.8s linear infinite;
+}
+
+.layerB .word {
+  fill: rgb(166 166 166 / 0.24);
+}
+
+.layerC {
+  opacity: 0.4;
+  animation:
+    whatif-float 6.8s ease-in-out infinite,
+    whatif-jitter-c 1.25s ease-in-out infinite,
+    whatif-smear-c 2.1s linear infinite;
+}
+
+.layerC .word {
+  fill: rgb(196 196 196 / 0.18);
+}
+
+@keyframes whatif-float {
+  0%,
+  100% {
+    transform: translate3d(0, 0, 0) rotate(-0.55deg) skewX(-6deg);
+  }
+  50% {
+    transform: translate3d(10px, -8px, 0) rotate(0.65deg) skewX(-10deg);
+  }
+}
+
+@keyframes whatif-jitter-a {
+  0%,
+  100% {
+    translate: 0 0;
+  }
+  20% {
+    translate: -10px 1px;
+  }
+  45% {
+    translate: 13px -3px;
+  }
+  70% {
+    translate: -6px 2px;
+  }
+}
+
+@keyframes whatif-jitter-b {
+  0%,
+  100% {
+    translate: 0 0;
+  }
+  25% {
+    translate: 14px -2px;
+  }
+  50% {
+    translate: -12px 2px;
+  }
+  80% {
+    translate: 7px -1px;
+  }
+}
+
+@keyframes whatif-jitter-c {
+  0%,
+  100% {
+    translate: 0 0;
+  }
+  15% {
+    translate: -7px 0;
+  }
+  55% {
+    translate: 11px 1px;
+  }
+  82% {
+    translate: -9px -2px;
+  }
+}
+
+@keyframes whatif-smear-a {
+  0%,
+  100% {
+    filter: var(--filter-id) blur(0.45px) drop-shadow(0 0 10px rgb(125 125 125 / 0.12));
+  }
+  50% {
+    filter: var(--filter-id) blur(1.6px) drop-shadow(8px 0 10px rgb(125 125 125 / 0.12));
+  }
+}
+
+@keyframes whatif-smear-b {
+  0%,
+  100% {
+    filter: var(--filter-id) blur(0.8px);
+  }
+  50% {
+    filter: var(--filter-id) blur(2.3px);
+  }
+}
+
+@keyframes whatif-smear-c {
+  0%,
+  100% {
+    filter: var(--filter-id) blur(1px) drop-shadow(0 0 8px rgb(150 150 150 / 0.08));
+  }
+  50% {
+    filter: var(--filter-id) blur(2.7px) drop-shadow(-10px 0 8px rgb(150 150 150 / 0.08));
+  }
+}
+
+@media (max-width: 768px) {
+  .word {
+    font-size: 96px;
+  }
+}
+
+@media (max-width: 520px) {
+  .word {
+    font-size: 76px;
+  }
+
+  .stage {
+    height: clamp(8rem, 28vw, 11rem);
+  }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .layer {
+    animation: none;
+    filter: var(--filter-id) blur(0.7px);
+    transform: translate3d(0, 0, 0) rotate(-0.4deg) skewX(-6deg);
+  }
+}

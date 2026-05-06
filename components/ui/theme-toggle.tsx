@@ -1,48 +1,37 @@
 "use client";
 
 import { Moon, SunMedium } from "lucide-react";
-import { useEffect, useState } from "react";
-import { THEME_STORAGE_KEY } from "@/lib/theme";
+import { useSiteTheme } from "@/components/providers/site-theme-provider";
 
-type Theme = "light" | "dark";
+type ThemeToggleProps = {
+  variant?: "dark" | "light";
+};
 
-function applyTheme(theme: Theme) {
-  const root = document.documentElement;
-  root.dataset.theme = theme;
-  root.classList.toggle("dark", theme === "dark");
-  root.style.colorScheme = theme;
-  window.localStorage.setItem(THEME_STORAGE_KEY, theme);
-}
-
-export default function ThemeToggle() {
-  const [theme, setTheme] = useState<Theme>("dark");
-  const [mounted, setMounted] = useState(false);
-
-  useEffect(() => {
-    const frame = window.requestAnimationFrame(() => {
-      const initialTheme =
-        document.documentElement.dataset.theme === "light" ? "light" : "dark";
-      setTheme(initialTheme);
-      setMounted(true);
-    });
-
-    return () => window.cancelAnimationFrame(frame);
-  }, []);
-
+export default function ThemeToggle({ variant = "dark" }: ThemeToggleProps) {
+  const { isTransitioning, mounted, theme, toggleTheme } = useSiteTheme();
   const nextTheme = theme === "dark" ? "light" : "dark";
+  const isLightVariant = variant === "light";
+
+  const className = isLightVariant
+    ? "group relative flex h-12 min-w-12 items-center justify-center overflow-hidden rounded-full border border-black/10 bg-white/76 text-neutral-900 shadow-[0_10px_24px_rgba(15,23,42,0.08)] backdrop-blur-md transition-all duration-300 hover:border-black/20 hover:text-black disabled:cursor-not-allowed disabled:opacity-65"
+    : "group relative flex h-11 min-w-11 items-center justify-center overflow-hidden rounded-full border border-white/15 bg-white/[0.06] text-white shadow-[0_10px_24px_rgba(0,0,0,0.2)] backdrop-blur-md transition-all duration-300 hover:border-white/25 hover:text-white disabled:cursor-not-allowed disabled:opacity-65";
 
   return (
     <button
       type="button"
-      onClick={() => {
-        applyTheme(nextTheme);
-        setTheme(nextTheme);
-      }}
-      className="group relative flex h-11 min-w-11 items-center justify-center overflow-hidden rounded-full border border-border/70 bg-background/85 text-foreground shadow-[0_10px_24px_rgba(15,23,42,0.12)] backdrop-blur-md transition-all duration-300 hover:border-primary/35 hover:text-primary dark:bg-background/75 dark:shadow-[0_12px_28px_rgba(0,0,0,0.32)]"
+      onClick={toggleTheme}
+      disabled={isTransitioning}
+      className={className}
       aria-label={mounted ? `Switch to ${nextTheme} mode` : "Toggle theme"}
       title={mounted ? `Switch to ${nextTheme} mode` : "Toggle theme"}
     >
-      <span className="pointer-events-none absolute inset-0 bg-[radial-gradient(circle_at_top,rgba(var(--signal-rgb),0.16),transparent_68%)] opacity-0 transition-opacity duration-300 group-hover:opacity-100" />
+      <span
+        className={`pointer-events-none absolute inset-0 opacity-0 transition-opacity duration-300 group-hover:opacity-100 ${
+          isLightVariant
+            ? "bg-[radial-gradient(circle_at_top,rgba(17,17,17,0.08),transparent_68%)]"
+            : "bg-[radial-gradient(circle_at_top,rgba(255,255,255,0.16),transparent_68%)]"
+        }`}
+      />
       <SunMedium
         className={`absolute h-4 w-4 transition-all duration-300 ${
           theme === "light"

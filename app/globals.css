@@ -10,6 +10,7 @@
   --font-sans: var(--font-ibm-plex-mono);
   --font-mono: var(--font-ibm-plex-mono);
   --font-heading: var(--font-vt323);
+  --font-retro-mono: var(--font-vt323);
   --color-sidebar-ring: var(--sidebar-ring);
   --color-sidebar-border: var(--sidebar-border);
   --color-sidebar-accent-foreground: var(--sidebar-accent-foreground);
@@ -126,6 +127,190 @@
   }
   html {
     @apply font-sans;
+  }
+}
+
+.animate-spotlight {
+  animation: spotlight 2s ease 0.75s 1 forwards;
+}
+
+.loader {
+  width: 2.25rem;
+  height: 2.25rem;
+  border-radius: 9999px;
+  border: 2px solid rgba(214, 90, 18, 0.18);
+  border-top-color: #d65a12;
+  animation: spline-loader-spin 0.8s linear infinite;
+}
+
+@keyframes spotlight {
+  0% {
+    opacity: 0;
+    transform: translate(-72%, -62%) scale(0.5);
+  }
+  100% {
+    opacity: 1;
+    transform: translate(-50%, -40%) scale(1);
+  }
+}
+
+@keyframes spline-loader-spin {
+  to {
+    transform: rotate(360deg);
+  }
+}
+
+.profile-dots::before {
+  content: "";
+  position: absolute;
+  inset: 0;
+  pointer-events: none;
+  border-radius: inherit;
+  background-image:
+    radial-gradient(circle, rgba(214, 90, 18, 0.34) 0 1.75px, transparent 3px),
+    radial-gradient(circle, rgba(227, 137, 66, 0.26) 0 1.45px, transparent 2.75px),
+    radial-gradient(circle, rgba(246, 186, 104, 0.24) 0 1.2px, transparent 2.5px);
+  background-size:
+    228px 196px,
+    286px 238px,
+    198px 252px;
+  background-position:
+    26px 34px,
+    118px 58px,
+    62px 136px;
+  opacity: 0.82;
+  animation: profile-dots-drift 41s ease-in-out infinite;
+  z-index: 0;
+}
+
+.profile-dots::after {
+  content: "";
+  position: absolute;
+  inset: 0;
+  pointer-events: none;
+  border-radius: inherit;
+  background-image:
+    radial-gradient(circle, rgba(195, 98, 69, 0.22) 0 1.25px, transparent 2.55px),
+    radial-gradient(circle, rgba(240, 199, 132, 0.28) 0 1.55px, transparent 2.9px),
+    radial-gradient(circle, rgba(229, 160, 108, 0.18) 0 1.05px, transparent 2.35px);
+  background-size:
+    314px 274px,
+    246px 326px,
+    352px 228px;
+  background-position:
+    34px 84px,
+    148px 18px,
+    212px 152px;
+  opacity: 0.72;
+  animation: profile-dots-drift-alt 53s ease-in-out infinite;
+  z-index: 0;
+}
+
+.profile-dots > * {
+  position: relative;
+  z-index: 1;
+}
+
+.floating-accent-dots {
+  position: absolute;
+  inset: -1rem auto auto -0.75rem;
+  width: min(28rem, 84%);
+  height: 96%;
+  pointer-events: none;
+  z-index: -1;
+  opacity: 0.88;
+  background-image:
+    radial-gradient(circle, rgba(214, 90, 18, 0.34) 0 2.15px, transparent 3.85px),
+    radial-gradient(circle, rgba(230, 145, 67, 0.26) 0 1.8px, transparent 3.4px),
+    radial-gradient(circle, rgba(255, 206, 138, 0.24) 0 1.45px, transparent 3px),
+    radial-gradient(circle, rgba(201, 111, 87, 0.2) 0 1.25px, transparent 2.8px);
+  background-size:
+    172px 146px,
+    214px 196px,
+    126px 154px,
+    248px 188px;
+  background-position:
+    14px 18px,
+    94px 34px,
+    36px 96px,
+    142px 112px;
+  animation: floating-accent-dots 27s ease-in-out infinite;
+}
+
+@keyframes profile-dots-drift {
+  0% {
+    transform: translate3d(0, 0, 0);
+    background-position:
+      26px 34px,
+      118px 58px,
+      62px 136px;
+  }
+  37% {
+    transform: translate3d(6px, -8px, 0);
+    background-position:
+      84px 12px,
+      98px 88px,
+      104px 112px;
+  }
+  68% {
+    transform: translate3d(-9px, 5px, 0);
+    background-position:
+      10px 72px,
+      144px 28px,
+      42px 178px;
+  }
+  100% {
+    transform: translate3d(4px, 11px, 0);
+    background-position:
+      52px 58px,
+      164px 44px,
+      88px 154px;
+  }
+}
+
+@keyframes profile-dots-drift-alt {
+  0% {
+    transform: translate3d(0, 0, 0);
+    background-position:
+      34px 84px,
+      148px 18px,
+      212px 152px;
+  }
+  29% {
+    transform: translate3d(-8px, -6px, 0);
+    background-position:
+      82px 46px,
+      126px 64px,
+      248px 120px;
+  }
+  61% {
+    transform: translate3d(7px, 10px, 0);
+    background-position:
+      18px 126px,
+      176px 42px,
+      194px 188px;
+  }
+  100% {
+    transform: translate3d(-5px, 4px, 0);
+    background-position:
+      64px 98px,
+      164px 6px,
+      232px 138px;
+  }
+}
+
+@keyframes floating-accent-dots {
+  0% {
+    transform: translate3d(0, 0, 0) rotate(0deg);
+  }
+  26% {
+    transform: translate3d(10px, -14px, 0) rotate(1.4deg);
+  }
+  57% {
+    transform: translate3d(-7px, -4px, 0) rotate(-1.8deg);
+  }
+  100% {
+    transform: translate3d(6px, 12px, 0) rotate(1deg);
   }
 }
 

@@ -248,13 +248,16 @@ export default function HeroAsciiOne() {
       // Non-critical: if storage fails, the loader will simply replay next visit.
     }
 
-    setBootExiting(true);
+    const exitStartTimer = window.setTimeout(() => {
+      setBootExiting(true);
+    }, 0);
 
     const exitTimer = window.setTimeout(() => {
       setBootVisible(false);
     }, BOOT_EXIT_DURATION_MS);
 
     return () => {
+      window.clearTimeout(exitStartTimer);
       window.clearTimeout(exitTimer);
     };
   }, [bootProgress, bootTimedOut, bootVisible, unicornLoaded]);
