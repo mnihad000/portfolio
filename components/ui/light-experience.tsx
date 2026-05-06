@@ -26,7 +26,6 @@ import { projects } from "@/lib/projects";
 import { useSiteTheme } from "@/components/providers/site-theme-provider";
 import { AnimatedName } from "@/components/ui/animated-name";
 import { SplineSceneBasic } from "@/components/ui/demo";
-import { Spotlight } from "@/components/ui/spotlight";
 import { WavyWhatIfText } from "@/components/ui/wavy-what-if-text";
 
 const PROJECT_CARD_COUNT = projects.length;
@@ -92,51 +91,10 @@ function HeroSection() {
       className="rounded-[2rem] border border-black/7 bg-white p-4 shadow-[0_18px_45px_rgba(0,0,0,0.05)] md:p-5"
     >
       <div className="relative overflow-hidden rounded-[1.7rem] border border-black/8 bg-[#fbfaf8]">
-        <Spotlight className="-top-32 left-0 md:left-60 md:-top-14" fill="#ffffff" />
-        <div className="grid min-h-[540px] gap-10 p-6 md:grid-cols-[1.02fr_0.98fr] md:p-10">
-          <div className="relative z-10 flex flex-col justify-center">
-            <p className="text-xs uppercase tracking-[0.25em] text-neutral-500">
-              Hi, my name is
-            </p>
-            <AnimatedName
-              text={lightModeContent.name}
-              className="mt-2 text-4xl font-bold tracking-tight text-[#d65a12] drop-shadow-[0_4px_18px_rgba(214,90,18,0.2)] md:text-6xl"
-            />
-            <p className="mt-3 text-xl font-medium text-neutral-700">
-              {lightModeContent.role}
-            </p>
-            <p className="mt-6 max-w-xl text-base leading-8 text-neutral-700 md:text-lg">
-              {lightModeContent.heroSummary}
-            </p>
-            <p className="mt-4 max-w-xl text-sm leading-7 text-neutral-500 md:text-base">
-              {lightModeContent.heroSecondary}
-            </p>
-
-            <div className="mt-8 flex flex-wrap gap-3">
-              <a
-                href="#projects"
-                className="rounded-full border border-neutral-300 bg-white px-5 py-2.5 text-sm font-semibold text-neutral-900 shadow-sm transition hover:bg-neutral-100"
-              >
-                View Projects
-              </a>
-              <a
-                href="#contact"
-                className="rounded-full border border-neutral-900 bg-neutral-900 px-5 py-2.5 text-sm font-semibold text-white transition hover:bg-neutral-700"
-              >
-                Contact
-              </a>
-            </div>
-          </div>
-
-          <FutureScenePanel />
-        </div>
+        <SplineSceneBasic />
       </div>
     </motion.section>
   );
-}
-
-function FutureScenePanel() {
-  return <SplineSceneBasic />;
 }
 
 function AboutSection() {
