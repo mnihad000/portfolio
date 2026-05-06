@@ -11,11 +11,10 @@ export function SplineSceneBasic() {
       <div className="flex h-full">
         <div className="relative z-10 flex flex-1 flex-col justify-center p-8">
           <h1 className="bg-gradient-to-b from-neutral-900 to-neutral-500 bg-clip-text text-4xl font-bold text-transparent md:text-5xl">
-            Interactive 3D
+            Welcome to the Future
           </h1>
           <p className="mt-4 max-w-lg text-neutral-600">
-            Bring your UI to life with beautiful 3D scenes. Create immersive experiences
-            that capture attention and enhance your design.
+            Come see what I've been building.
           </p>
         </div>
 

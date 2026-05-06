@@ -29,7 +29,7 @@ function renderRichParagraph(
   keyPrefix: string
 ) {
   return (
-    <p className="text-base leading-8 text-neutral-700 md:text-lg">
+    <p key={keyPrefix} className="text-base leading-8 text-neutral-700 md:text-lg">
       {paragraph.map((segment, index) => (
         <span
           key={`${keyPrefix}-${index}`}
