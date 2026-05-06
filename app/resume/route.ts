@@ -1,7 +1,7 @@
 import { readFile } from "node:fs/promises";
 import path from "node:path";
 
-const FILE_NAME = "Mohammed_Nihad_resume (1).pdf";
+const FILE_NAME = "Mohammed_Nihad_resume.pdf";
 
 export async function GET() {
   const filePath = path.join(process.cwd(), "app", "resume", FILE_NAME);
