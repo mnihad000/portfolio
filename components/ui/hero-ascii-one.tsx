@@ -264,7 +264,7 @@ export default function HeroAsciiOne() {
 
   return (
     <main className="relative min-h-screen overflow-hidden bg-black">
-      <div className="pointer-events-none absolute inset-0 h-full w-full -translate-y-[3.5vh]">
+      <div className="pointer-events-none absolute inset-1 h-full w-full -translate-y-[3.5vh]">
         <div
           ref={unicornContainerRef}
           data-us-project={UNICORN_PROJECT_ID}
