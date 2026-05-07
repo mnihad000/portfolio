@@ -1,6 +1,6 @@
 "use client";
 
-import type { ReactNode } from "react";
+import { useEffect, type ReactNode } from "react";
 import {
   motion,
   useMotionValue,
@@ -52,6 +52,57 @@ function renderRichParagraph(
 }
 
 export default function LightExperience() {
+  useEffect(() => {
+    const timers: number[] = [];
+
+    const clearHighlight = (element: Element) => {
+      element.classList.remove("galaxy-highlight");
+      void (element as HTMLElement).offsetWidth;
+      element.classList.add("galaxy-highlight");
+      timers.push(
+        window.setTimeout(() => {
+          element.classList.remove("galaxy-highlight");
+        }, 1600)
+      );
+    };
+
+    const highlightProjectFromHash = (attempt = 0) => {
+      const hash = window.location.hash;
+
+      if (!hash.startsWith("#project-")) {
+        return;
+      }
+
+      const target = document.querySelector(hash);
+
+      if (!target) {
+        if (attempt < 12) {
+          timers.push(
+            window.setTimeout(() => {
+              highlightProjectFromHash(attempt + 1);
+            }, 120)
+          );
+        }
+        return;
+      }
+
+      target.scrollIntoView({ behavior: "smooth", block: "center" });
+      clearHighlight(target);
+    };
+
+    const handleHashChange = () => {
+      highlightProjectFromHash();
+    };
+
+    highlightProjectFromHash();
+    window.addEventListener("hashchange", handleHashChange);
+
+    return () => {
+      window.removeEventListener("hashchange", handleHashChange);
+      timers.forEach((timer) => window.clearTimeout(timer));
+    };
+  }, []);
+
   return (
     <div
       className="min-h-svh bg-white text-neutral-950"

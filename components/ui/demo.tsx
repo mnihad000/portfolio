@@ -14,7 +14,7 @@ export function SplineSceneBasic() {
             Welcome to the Future
           </h1>
           <p className="mt-4 max-w-lg text-neutral-600">
-            Come see what I've been building.
+            Come see what I&apos;ve been building.
           </p>
         </div>
 
