@@ -11,7 +11,7 @@ import {
   type ReactNode,
 } from "react";
 import { usePathname, useRouter } from "next/navigation";
-import { DEFAULT_THEME, THEME_STORAGE_KEY } from "@/lib/theme";
+import { DEFAULT_THEME } from "@/lib/theme";
 import { getCanonicalPathForTheme } from "@/lib/theme-routes";
 
 export type SiteTheme = "light" | "dark";
@@ -53,12 +53,6 @@ function applyTheme(theme: SiteTheme) {
   root.dataset.theme = theme;
   root.classList.toggle("dark", theme === "dark");
   root.style.colorScheme = theme;
-
-  try {
-    window.localStorage.setItem(THEME_STORAGE_KEY, theme);
-  } catch {
-    // Ignore storage failures and keep the in-memory state authoritative.
-  }
 }
 
 function ThemeTransitionOverlay({
@@ -75,6 +69,12 @@ function ThemeTransitionOverlay({
   }
 
   const isToLight = targetTheme === "light";
+  const heading = isToLight
+    ? "transitioning to the future"
+    : "returning to the age of terminals";
+  const body = isToLight
+    ? "Rebuilding the interface in a brighter register."
+    : "Leaving the future interface for a colder, earlier machine language.";
   const overlayClassName =
     phase === "swapped"
       ? isToLight
@@ -117,12 +117,10 @@ function ThemeTransitionOverlay({
           Mode Shift
         </p>
         <h2 className="mt-4 text-3xl font-semibold tracking-tight md:text-5xl">
-          transitioning to the future
+          {heading}
         </h2>
         <p className={`mt-4 text-sm md:text-base ${copyClassName}`}>
-          {isToLight
-            ? "Rebuilding the interface in a brighter register."
-            : "Returning to the darker operating layer."}
+          {body}
         </p>
         <div className="mt-8 grid grid-cols-8 gap-2">
           {Array.from({ length: 8 }).map((_, index) => (

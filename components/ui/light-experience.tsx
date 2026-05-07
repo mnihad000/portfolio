@@ -215,10 +215,17 @@ function AboutSection() {
           <div className="space-y-8 md:space-y-10">
             {lightModeContent.experienceItems.map((item, index) => (
               <article key={`${item.title}-${index}`} className="relative">
-                <div
-                  className="absolute left-[-25px] top-1 h-4 w-4 rounded-full border border-neutral-300 bg-neutral-900 md:left-[-31px]"
-                  aria-hidden="true"
-                />
+                {item.title.includes("Bloom Energy") ? (
+                  <div
+                    className="absolute left-[-25px] top-1 h-4 w-4 rounded-full border border-emerald-300 bg-emerald-500 md:left-[-31px]"
+                    aria-hidden="true"
+                  />
+                ) : (
+                  <div
+                    className="absolute left-[-25px] top-1 h-4 w-4 rounded-full border border-neutral-300 bg-neutral-900 md:left-[-31px]"
+                    aria-hidden="true"
+                  />
+                )}
 
                 <div className="space-y-2">
                   <p className="text-xs font-medium uppercase tracking-[0.18em] text-neutral-400">

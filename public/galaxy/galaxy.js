@@ -15,6 +15,38 @@
   var PLANET_REVEAL_STAGGER_MS = 200;
   var ASTEROID_REVEAL_START_MS = 900;
   var ASTEROID_REVEAL_DURATION_MS = 420;
+  var LABEL_MARGIN = 20;
+  var LABEL_GAP = 16;
+  var LABEL_CONNECTOR_GAP = 8;
+  var LABEL_PLACEHOLDER_DELAY_MS = 160;
+  var LABEL_SMOOTHING = 0.24;
+  var LABEL_FOCUS_FREEZE_MS = 1250;
+  var LABEL_LAYOUT_HYSTERESIS = 18;
+  var DETAIL_VISIBILITY_WIDTH = 1320;
+  var PANEL_SAFE_WIDTH = 388;
+  var PANEL_SAFE_GAP = 18;
+
+  var LABEL_PLACEMENTS = {
+    top: { x: 0, y: -1 },
+    "top-right": { x: 1, y: -1 },
+    right: { x: 1, y: 0 },
+    "bottom-right": { x: 1, y: 1 },
+    bottom: { x: 0, y: 1 },
+    "bottom-left": { x: -1, y: 1 },
+    left: { x: -1, y: 0 },
+    "top-left": { x: -1, y: -1 },
+  };
+
+  var LABEL_PLACEMENT_FALLBACKS = {
+    top: ["top", "top-right", "top-left", "right", "left", "bottom"],
+    "top-right": ["top-right", "right", "top", "bottom-right", "top-left", "left"],
+    right: ["right", "top-right", "bottom-right", "top", "bottom", "left"],
+    "bottom-right": ["bottom-right", "right", "bottom", "top-right", "left"],
+    bottom: ["bottom", "bottom-right", "bottom-left", "right", "left", "top"],
+    "bottom-left": ["bottom-left", "left", "bottom", "top-left", "right"],
+    left: ["left", "top-left", "bottom-left", "top", "bottom", "right"],
+    "top-left": ["top-left", "left", "top", "bottom-left", "top-right", "right"],
+  };
 
   var root = null;
   var triggerButton = null;
@@ -47,6 +79,7 @@
   var isMobile = false;
   var userInteracting = false;
   var entranceStartTime = 0;
+  var labelLayoutFreezeUntil = 0;
 
   var clickablePlanets = [];
   var clickableAsteroids = [];
@@ -98,6 +131,10 @@
     return Math.min(Math.max(value, min), max);
   }
 
+  function lerp(a, b, t) {
+    return a + (b - a) * t;
+  }
+
   function createRoot() {
     if (root) {
       return;
@@ -110,10 +147,10 @@
       "button",
       "galaxy-trigger",
       [
-        '<span class="galaxy-trigger-glyph" aria-hidden="true">⬡</span>',
+        '<span class="galaxy-trigger-glyph" aria-hidden="true">[]</span>',
         '<span class="galaxy-trigger-copy">',
         '<span class="galaxy-trigger-copy-default">View Galaxy</span>',
-        '<span class="galaxy-trigger-copy-hover">Enter System →</span>',
+        '<span class="galaxy-trigger-copy-hover">Enter System -></span>',
         "</span>",
       ].join("")
     );
@@ -125,7 +162,7 @@
     canvasWrapper.id = "galaxy-canvas-wrapper";
     labelLayer = createElement("div", "galaxy-label-layer");
     asteroidCardLayer = createElement("div", "galaxy-asteroid-card-layer");
-    exitButton = createElement("button", "galaxy-exit", "✕ Exit System");
+    exitButton = createElement("button", "galaxy-exit", "Exit System");
     exitButton.type = "button";
     panelShell = createElement("div", "galaxy-panel-shell");
     panel = createElement("aside", "galaxy-planet-panel");
@@ -202,6 +239,7 @@
     addSceneListener(renderer.domElement, "click", handleCanvasClick);
 
     entranceStartTime = performance.now();
+    labelLayoutFreezeUntil = entranceStartTime + LABEL_PLACEHOLDER_DELAY_MS;
     sceneReady = true;
     animate();
   }
@@ -428,41 +466,122 @@
     });
   }
 
-  function createLabel(kind, html) {
-    var label = createElement("div", "galaxy-label", html);
-    label.dataset.kind = kind;
-    labelLayer.appendChild(label);
-    return label;
+  function getLabelPreferredPlacements(preferredPlacement) {
+    return LABEL_PLACEMENT_FALLBACKS[preferredPlacement] || LABEL_PLACEMENT_FALLBACKS.top;
+  }
+
+  function createLabel(kind, config) {
+    var element = createElement("div", "galaxy-label");
+    element.dataset.kind = kind;
+
+    var connector = createElement("div", "galaxy-label-connector");
+    var content = createElement("div", "galaxy-label-content");
+    var main = createElement("span", "galaxy-label-main");
+    var sub = createElement("span", "galaxy-label-sub");
+
+    main.textContent = config.mainText;
+    sub.textContent = config.subText || "";
+
+    if (!config.subText) {
+      sub.hidden = true;
+    }
+
+    content.appendChild(main);
+    content.appendChild(sub);
+    element.appendChild(connector);
+    element.appendChild(content);
+    labelLayer.appendChild(element);
+
+    return {
+      element: element,
+      connector: connector,
+      content: content,
+      main: main,
+      sub: sub,
+    };
   }
 
   function createLabels() {
     labelEntries = [];
 
+    var sunLabel = createLabel("sun", {
+      mainText: "Download Resume",
+      subText: "Primary orbit",
+    });
+
     labelEntries.push({
       kind: "sun",
       entry: null,
-      element: createLabel("sun", "☀ Download Resume"),
+      data: {
+        label: "Download Resume",
+        labelShort: "Resume",
+        labelDetail: "Primary orbit",
+        labelPriority: 90,
+        preferredLabelPlacement: "top",
+      },
+      element: sunLabel.element,
+      connector: sunLabel.connector,
+      content: sunLabel.content,
+      main: sunLabel.main,
+      sub: sunLabel.sub,
+      anchorWorldPosition: new THREE.Vector3(),
+      anchorScreenPosition: { x: 0, y: 0 },
+      smoothedPosition: { x: 0, y: 0 },
+      targetPosition: { x: 0, y: 0 },
+      currentPlacement: "top",
+      currentRect: null,
+      currentConnector: null,
+      visible: false,
     });
 
     planetEntries.forEach(function (planetEntry) {
+      var label = createLabel("planet", {
+        mainText: planetEntry.data.labelShort || planetEntry.data.label,
+        subText: planetEntry.data.labelDetail || planetEntry.data.sublabel,
+      });
+
       labelEntries.push({
         kind: "planet",
         entry: planetEntry,
-        element: createLabel(
-          "planet",
-          [
-            '<span class="galaxy-label-main">' + planetEntry.data.label + "</span>",
-            '<span class="galaxy-label-sub">' + planetEntry.data.sublabel + "</span>",
-          ].join("")
-        ),
+        data: planetEntry.data,
+        element: label.element,
+        connector: label.connector,
+        content: label.content,
+        main: label.main,
+        sub: label.sub,
+        anchorWorldPosition: new THREE.Vector3(),
+        anchorScreenPosition: { x: 0, y: 0 },
+        smoothedPosition: { x: 0, y: 0 },
+        targetPosition: { x: 0, y: 0 },
+        currentPlacement: planetEntry.data.preferredLabelPlacement || "top",
+        currentRect: null,
+        currentConnector: null,
+        visible: false,
       });
     });
 
     asteroidEntries.forEach(function (asteroidEntry) {
+      var label = createLabel("asteroid", {
+        mainText: asteroidEntry.data.labelShort || asteroidEntry.data.label,
+      });
+
       labelEntries.push({
         kind: "asteroid",
         entry: asteroidEntry,
-        element: createLabel("asteroid", asteroidEntry.data.label),
+        data: asteroidEntry.data,
+        element: label.element,
+        connector: label.connector,
+        content: label.content,
+        main: label.main,
+        sub: label.sub,
+        anchorWorldPosition: new THREE.Vector3(),
+        anchorScreenPosition: { x: 0, y: 0 },
+        smoothedPosition: { x: 0, y: 0 },
+        targetPosition: { x: 0, y: 0 },
+        currentPlacement: asteroidEntry.data.preferredLabelPlacement || "top",
+        currentRect: null,
+        currentConnector: null,
+        visible: false,
       });
     });
   }
@@ -485,9 +604,13 @@
       return;
     }
 
+    isMobile = window.innerWidth < 768;
     camera.aspect = window.innerWidth / window.innerHeight;
     camera.updateProjectionMatrix();
     renderer.setSize(window.innerWidth, window.innerHeight);
+    labelEntries.forEach(function (labelEntry) {
+      labelEntry.currentRect = null;
+    });
   }
 
   function projectToScreen(position) {
@@ -516,69 +639,19 @@
 
   function getWorldPositionForLabel(kind, entry) {
     if (kind === "sun") {
-      return new THREE.Vector3(0, 28, 0);
+      return new THREE.Vector3(0, 0, 0);
     }
 
     if (kind === "planet") {
-      return entry.group.position.clone().add(new THREE.Vector3(0, entry.radius + 6, 0));
+      return entry.group.position.clone();
     }
 
-    return entry.mesh.position.clone().add(new THREE.Vector3(0, 6, 0));
+    return entry.mesh.position.clone();
   }
 
-  function getBaseLabelOpacity(kind) {
-    if (kind === "planet") {
-      return 0.55;
-    }
-    if (kind === "asteroid") {
-      return 0.4;
-    }
-    return 0.88;
-  }
-
-  function getRevealProgress(startTime, delay, duration) {
-    var elapsed = startTime - entranceStartTime - delay;
+  function getRevealProgress(now, delay, duration) {
+    var elapsed = now - entranceStartTime - delay;
     return clamp(elapsed / duration, 0, 1);
-  }
-
-  function updateLabels(now) {
-    labelEntries.forEach(function (labelEntry) {
-      var position = getWorldPositionForLabel(labelEntry.kind, labelEntry.entry);
-      var isVisible = isObjectVisible(position);
-      var screenPoint = projectToScreen(position);
-      var revealReady =
-        labelEntry.kind === "sun" ||
-        !labelEntry.entry ||
-        now - entranceStartTime >= labelEntry.entry.labelReadyAt;
-      var opacity = 0;
-      var isHovered = false;
-
-      labelEntry.element.style.left = screenPoint.x + "px";
-      labelEntry.element.style.top = screenPoint.y + "px";
-
-      if (!isVisible || !revealReady) {
-        labelEntry.element.classList.add("is-hidden");
-        return;
-      }
-
-      labelEntry.element.classList.remove("is-hidden");
-
-      if (labelEntry.kind === "sun") {
-        isHovered = hoveredObject === sun;
-        opacity = isHovered ? 1 : getBaseLabelOpacity("sun");
-      } else if (labelEntry.kind === "planet") {
-        isHovered = hoveredObject === labelEntry.entry.mesh;
-        opacity = isHovered ? 1 : getBaseLabelOpacity("planet");
-      } else {
-        isHovered = hoveredObject === labelEntry.entry.mesh;
-        opacity = isHovered ? 0.9 : getBaseLabelOpacity("asteroid");
-      }
-
-      labelEntry.element.style.opacity = String(opacity);
-      labelEntry.element.style.transform = isHovered
-        ? "translate(-50%, calc(-50% - 4px))"
-        : "translate(-50%, -50%)";
-    });
   }
 
   function updateRevealState(now) {
@@ -712,33 +785,6 @@
     });
   }
 
-  function animate() {
-    frameId = window.requestAnimationFrame(animate);
-
-    var now = performance.now();
-    updateRevealState(now);
-    updatePlanets();
-    updateAsteroids();
-    updateRipples(now);
-    updateTweens(now);
-
-    if (!userInteracting && systemGroup && !selectedPlanet) {
-      systemGroup.rotation.y += 0.0008;
-    }
-
-    if (sun) {
-      sun.rotation.y += 0.002;
-    }
-    if (sunRing) {
-      sunRing.rotation.z -= 0.003;
-    }
-
-    controls.update();
-    updateLabels(now);
-    updateAsteroidCardPosition();
-    renderer.render(scene, camera);
-  }
-
   function getIntersectedObject(event) {
     if (!renderer || !raycaster || !camera) {
       return null;
@@ -853,7 +899,7 @@
       '<div class="galaxy-panel-moons">' + moons + "</div>",
       "</section>",
       '<div class="galaxy-panel-spacer"></div>',
-      '<button type="button" class="galaxy-panel-back">← Back to System</button>',
+      '<button type="button" class="galaxy-panel-back"><- Back to System</button>',
     ].join("");
 
     var backButton = panel.querySelector(".galaxy-panel-back");
@@ -875,6 +921,7 @@
     selectedPlanet.frozen = true;
     controls.enabled = false;
     renderPlanetPanel(planetEntry);
+    labelLayoutFreezeUntil = performance.now() + LABEL_FOCUS_FREEZE_MS;
 
     var fromPosition = camera.position.clone();
     var fromTarget = controls.target.clone();
@@ -902,6 +949,7 @@
     }
 
     panel.classList.remove("is-visible");
+    labelLayoutFreezeUntil = performance.now() + LABEL_FOCUS_FREEZE_MS;
 
     var fromPosition = camera.position.clone();
     var fromTarget = controls.target.clone();
@@ -1000,7 +1048,7 @@
           })
           .join("") +
         "</div>",
-      '<button type="button" class="galaxy-asteroid-action">View Project ↓</button>',
+      '<button type="button" class="galaxy-asteroid-action">View Project</button>',
     ].join("");
 
     asteroidCardLayer.appendChild(card);
@@ -1041,6 +1089,429 @@
     }
 
     closeAsteroidCard();
+  }
+
+  function shouldShowLabelDetails(labelEntry) {
+    if (labelEntry.kind === "sun") {
+      return true;
+    }
+
+    if (labelEntry.kind === "asteroid") {
+      return false;
+    }
+
+    if (selectedPlanet && labelEntry.entry === selectedPlanet) {
+      return true;
+    }
+
+    if (hoveredObject && labelEntry.entry && hoveredObject === labelEntry.entry.mesh) {
+      return true;
+    }
+
+    return window.innerWidth >= DETAIL_VISIBILITY_WIDTH && labelEntry.data.labelPriority >= 80;
+  }
+
+  function getLabelPriority(labelEntry) {
+    var basePriority = labelEntry.data.labelPriority || 0;
+
+    if (labelEntry.kind === "sun") {
+      basePriority = 88;
+    }
+
+    if (selectedPlanet && labelEntry.entry === selectedPlanet) {
+      return basePriority + 300;
+    }
+
+    if (hoveredObject && labelEntry.entry && hoveredObject === labelEntry.entry.mesh) {
+      return basePriority + 220;
+    }
+
+    if (hoveredObject === sun && labelEntry.kind === "sun") {
+      return basePriority + 180;
+    }
+
+    return basePriority;
+  }
+
+  function getSafeRects() {
+    var rects = [];
+    var viewportWidth = renderer.domElement.clientWidth;
+    var viewportHeight = renderer.domElement.clientHeight;
+
+    rects.push({
+      left: -Infinity,
+      top: -Infinity,
+      right: LABEL_MARGIN,
+      bottom: Infinity,
+    });
+    rects.push({
+      left: viewportWidth - LABEL_MARGIN,
+      top: -Infinity,
+      right: Infinity,
+      bottom: Infinity,
+    });
+    rects.push({
+      left: -Infinity,
+      top: -Infinity,
+      right: Infinity,
+      bottom: LABEL_MARGIN,
+    });
+    rects.push({
+      left: -Infinity,
+      top: viewportHeight - LABEL_MARGIN,
+      right: Infinity,
+      bottom: Infinity,
+    });
+
+    if (exitButton) {
+      var exitRect = exitButton.getBoundingClientRect();
+      rects.push({
+        left: exitRect.left - 12,
+        top: exitRect.top - 12,
+        right: exitRect.right + 12,
+        bottom: exitRect.bottom + 12,
+      });
+    }
+
+    if (panel && panel.classList.contains("is-visible")) {
+      rects.push({
+        left: viewportWidth - PANEL_SAFE_WIDTH - PANEL_SAFE_GAP,
+        top: 0,
+        right: viewportWidth,
+        bottom: viewportHeight,
+      });
+    }
+
+    return rects;
+  }
+
+  function rectsIntersect(a, b) {
+    return !(
+      a.right <= b.left ||
+      a.left >= b.right ||
+      a.bottom <= b.top ||
+      a.top >= b.bottom
+    );
+  }
+
+  function isRectInsideViewport(rect, viewportWidth, viewportHeight) {
+    return (
+      rect.left >= LABEL_MARGIN &&
+      rect.top >= LABEL_MARGIN &&
+      rect.right <= viewportWidth - LABEL_MARGIN &&
+      rect.bottom <= viewportHeight - LABEL_MARGIN
+    );
+  }
+
+  function getPlacementMetrics(anchor, width, height, placement) {
+    var vector = LABEL_PLACEMENTS[placement] || LABEL_PLACEMENTS.top;
+    var horizontalBias = vector.x === 0 ? 0.5 : vector.x > 0 ? 0 : 1;
+    var verticalBias = vector.y === 0 ? 0.5 : vector.y > 0 ? 0 : 1;
+    var horizontalGap = width * 0.18 + LABEL_GAP;
+    var verticalGap = height * 0.18 + LABEL_GAP;
+    var x = anchor.x + vector.x * horizontalGap - width * horizontalBias;
+    var y = anchor.y + vector.y * verticalGap - height * verticalBias;
+
+    return {
+      rect: {
+        left: x,
+        top: y,
+        right: x + width,
+        bottom: y + height,
+      },
+      boxX: x,
+      boxY: y,
+      contentX: x,
+      contentY: y,
+    };
+  }
+
+  function clampPlacementRect(rect, viewportWidth, viewportHeight) {
+    var width = rect.right - rect.left;
+    var height = rect.bottom - rect.top;
+    var left = clamp(rect.left, LABEL_MARGIN, viewportWidth - LABEL_MARGIN - width);
+    var top = clamp(rect.top, LABEL_MARGIN, viewportHeight - LABEL_MARGIN - height);
+
+    return {
+      left: left,
+      top: top,
+      right: left + width,
+      bottom: top + height,
+    };
+  }
+
+  function getConnectorGeometry(rect, anchor) {
+    var edgeX = clamp(anchor.x, rect.left + 10, rect.right - 10);
+    var edgeY = clamp(anchor.y, rect.top + 10, rect.bottom - 10);
+
+    if (anchor.x < rect.left) {
+      edgeX = rect.left;
+    } else if (anchor.x > rect.right) {
+      edgeX = rect.right;
+    }
+
+    if (anchor.y < rect.top) {
+      edgeY = rect.top;
+    } else if (anchor.y > rect.bottom) {
+      edgeY = rect.bottom;
+    }
+
+    var dx = edgeX - anchor.x;
+    var dy = edgeY - anchor.y;
+    var distance = Math.max(Math.sqrt(dx * dx + dy * dy) - LABEL_CONNECTOR_GAP, 0);
+    var angle = Math.atan2(dy, dx);
+
+    return {
+      left: anchor.x,
+      top: anchor.y,
+      width: distance,
+      angle: angle,
+    };
+  }
+
+  function measureLabel(labelEntry) {
+    var rect = labelEntry.content.getBoundingClientRect();
+    return {
+      width: Math.ceil(rect.width),
+      height: Math.ceil(rect.height),
+    };
+  }
+
+  function computeLabelAnchors(now) {
+    labelEntries.forEach(function (labelEntry) {
+      var worldPosition = getWorldPositionForLabel(labelEntry.kind, labelEntry.entry);
+      var revealReady =
+        labelEntry.kind === "sun" ||
+        !labelEntry.entry ||
+        now - entranceStartTime >= labelEntry.entry.labelReadyAt;
+
+      labelEntry.anchorWorldPosition.copy(worldPosition);
+      labelEntry.isAnchorVisible = revealReady && isObjectVisible(worldPosition);
+
+      if (labelEntry.isAnchorVisible) {
+        labelEntry.anchorScreenPosition = projectToScreen(worldPosition);
+      }
+
+      var showDetails = shouldShowLabelDetails(labelEntry);
+      labelEntry.element.classList.toggle("is-detailed", showDetails);
+      labelEntry.sub.hidden = !showDetails || !labelEntry.sub.textContent;
+      labelEntry.layoutPriority = getLabelPriority(labelEntry);
+    });
+  }
+
+  function shouldKeepLabelDuringFreeze(labelEntry) {
+    if (labelEntry.kind === "sun") {
+      return true;
+    }
+
+    if (selectedPlanet && labelEntry.entry === selectedPlanet) {
+      return true;
+    }
+
+    if (hoveredObject && labelEntry.entry && hoveredObject === labelEntry.entry.mesh) {
+      return true;
+    }
+
+    return false;
+  }
+
+  function selectPlacementForLabel(labelEntry, viewportWidth, viewportHeight, safeRects, placedRects) {
+    var dimensions = measureLabel(labelEntry);
+    var placements = getLabelPreferredPlacements(
+      labelEntry.data.preferredLabelPlacement || labelEntry.currentPlacement || "top"
+    );
+    var anchor = labelEntry.anchorScreenPosition;
+    var bestFit = null;
+
+    placements.forEach(function (placement) {
+      var metrics = getPlacementMetrics(anchor, dimensions.width, dimensions.height, placement);
+      var rect = metrics.rect;
+      var insideViewport = isRectInsideViewport(rect, viewportWidth, viewportHeight);
+      var collides = false;
+
+      if (!insideViewport) {
+        return;
+      }
+
+      for (var index = 0; index < safeRects.length; index += 1) {
+        if (rectsIntersect(rect, safeRects[index])) {
+          collides = true;
+          break;
+        }
+      }
+
+      if (collides) {
+        return;
+      }
+
+      for (var placedIndex = 0; placedIndex < placedRects.length; placedIndex += 1) {
+        if (rectsIntersect(rect, placedRects[placedIndex])) {
+          collides = true;
+          break;
+        }
+      }
+
+      if (collides) {
+        return;
+      }
+
+      var distance = Math.abs(rect.left + rect.right - anchor.x * 2) + Math.abs(rect.top + rect.bottom - anchor.y * 2);
+      if (labelEntry.currentPlacement === placement) {
+        distance -= LABEL_LAYOUT_HYSTERESIS;
+      }
+
+      if (!bestFit || distance < bestFit.score) {
+        bestFit = {
+          placement: placement,
+          rect: rect,
+          score: distance,
+        };
+      }
+    });
+
+    if (bestFit) {
+      return bestFit;
+    }
+
+    if (labelEntry.layoutPriority >= 88 || (selectedPlanet && labelEntry.entry === selectedPlanet)) {
+      var fallbackMetrics = getPlacementMetrics(
+        anchor,
+        dimensions.width,
+        dimensions.height,
+        labelEntry.currentPlacement || placements[0]
+      );
+      var clampedRect = clampPlacementRect(fallbackMetrics.rect, viewportWidth, viewportHeight);
+
+      return {
+        placement: labelEntry.currentPlacement || placements[0],
+        rect: clampedRect,
+        score: 9999,
+      };
+    }
+
+    return null;
+  }
+
+  function applyLabelPlacement(labelEntry, placementResult) {
+    var rect = placementResult.rect;
+    var connector = getConnectorGeometry(rect, labelEntry.anchorScreenPosition);
+
+    if (!labelEntry.visible) {
+      labelEntry.smoothedPosition.x = rect.left;
+      labelEntry.smoothedPosition.y = rect.top;
+    } else {
+      labelEntry.smoothedPosition.x = lerp(
+        labelEntry.smoothedPosition.x,
+        rect.left,
+        LABEL_SMOOTHING
+      );
+      labelEntry.smoothedPosition.y = lerp(
+        labelEntry.smoothedPosition.y,
+        rect.top,
+        LABEL_SMOOTHING
+      );
+    }
+
+    labelEntry.targetPosition.x = rect.left;
+    labelEntry.targetPosition.y = rect.top;
+    labelEntry.currentPlacement = placementResult.placement;
+    labelEntry.currentRect = {
+      left: labelEntry.smoothedPosition.x,
+      top: labelEntry.smoothedPosition.y,
+      right: labelEntry.smoothedPosition.x + (rect.right - rect.left),
+      bottom: labelEntry.smoothedPosition.y + (rect.bottom - rect.top),
+    };
+    labelEntry.currentConnector = connector;
+    labelEntry.visible = true;
+
+    labelEntry.element.classList.remove("is-hidden");
+    labelEntry.element.dataset.placement = placementResult.placement;
+    labelEntry.element.style.opacity = String(
+      hoveredObject && labelEntry.entry && hoveredObject === labelEntry.entry.mesh ? 1 : 0.96
+    );
+
+    labelEntry.content.style.left = labelEntry.smoothedPosition.x + "px";
+    labelEntry.content.style.top = labelEntry.smoothedPosition.y + "px";
+    labelEntry.connector.style.left = connector.left + "px";
+    labelEntry.connector.style.top = connector.top + "px";
+    labelEntry.connector.style.width = connector.width + "px";
+    labelEntry.connector.style.transform = "rotate(" + connector.angle + "rad)";
+  }
+
+  function hideLabel(labelEntry) {
+    labelEntry.visible = false;
+    labelEntry.currentRect = null;
+    labelEntry.element.classList.add("is-hidden");
+    labelEntry.element.style.opacity = "0";
+  }
+
+  function layoutLabels(now) {
+    var viewportWidth = renderer.domElement.clientWidth;
+    var viewportHeight = renderer.domElement.clientHeight;
+    var safeRects = getSafeRects();
+    var placedRects = [];
+    var freezeActive = now < labelLayoutFreezeUntil;
+    var activeLabels = labelEntries
+      .slice()
+      .sort(function (a, b) {
+        return b.layoutPriority - a.layoutPriority;
+      });
+
+    activeLabels.forEach(function (labelEntry) {
+      if (!labelEntry.isAnchorVisible) {
+        hideLabel(labelEntry);
+        return;
+      }
+
+      if (freezeActive && !shouldKeepLabelDuringFreeze(labelEntry)) {
+        hideLabel(labelEntry);
+        return;
+      }
+
+      var placementResult = selectPlacementForLabel(
+        labelEntry,
+        viewportWidth,
+        viewportHeight,
+        safeRects,
+        placedRects
+      );
+
+      if (!placementResult) {
+        hideLabel(labelEntry);
+        return;
+      }
+
+      applyLabelPlacement(labelEntry, placementResult);
+      placedRects.push(labelEntry.currentRect);
+    });
+  }
+
+  function animate() {
+    frameId = window.requestAnimationFrame(animate);
+
+    var now = performance.now();
+    updateRevealState(now);
+    updatePlanets();
+    updateAsteroids();
+    updateRipples(now);
+    updateTweens(now);
+
+    if (!userInteracting && systemGroup && !selectedPlanet) {
+      systemGroup.rotation.y += 0.0008;
+    }
+
+    if (sun) {
+      sun.rotation.y += 0.002;
+    }
+    if (sunRing) {
+      sunRing.rotation.z -= 0.003;
+    }
+
+    controls.update();
+    computeLabelAnchors(now);
+    layoutLabels(now);
+    updateAsteroidCardPosition();
+    renderer.render(scene, camera);
   }
 
   function destroyThreeObjects() {
@@ -1120,6 +1591,7 @@
     clickableAsteroids = [];
     planetEntries = [];
     asteroidEntries = [];
+    labelLayoutFreezeUntil = 0;
   }
 
   function openGalaxy() {

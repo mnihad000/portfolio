@@ -7,6 +7,11 @@
       {
         id: "buildify",
         label: "Buildify",
+        labelShort: "Buildify",
+        labelDetail: "Software Engineering Intern · Dec 2025-Present",
+        labelPriority: 82,
+        preferredLabelPlacement: "top-left",
+        labelGroup: "internship",
         sublabel: "Software Engineering Intern · Dec 2025-Present",
         type: "internship",
         prestige: 10,
@@ -29,6 +34,11 @@
       {
         id: "bloom-energy",
         label: "Bloom Energy",
+        labelShort: "Bloom Energy",
+        labelDetail: "Incoming SWE Intern · Summer 2026",
+        labelPriority: 80,
+        preferredLabelPlacement: "top-right",
+        labelGroup: "internship",
         sublabel: "Software Engineering Intern (Incoming) · Summer 2026",
         type: "internship",
         prestige: 9,
@@ -51,6 +61,11 @@
       {
         id: "ccny",
         label: "CCNY",
+        labelShort: "CCNY",
+        labelDetail: "B.E. Computer Engineering",
+        labelPriority: 74,
+        preferredLabelPlacement: "left",
+        labelGroup: "education",
         sublabel: "B.E. Computer Engineering",
         type: "education",
         prestige: 8,
@@ -73,6 +88,11 @@
       {
         id: "cornell-breakthrough-tech",
         label: "Cornell Tech",
+        labelShort: "Cornell Tech",
+        labelDetail: "Break Through Tech AI",
+        labelPriority: 70,
+        preferredLabelPlacement: "top-right",
+        labelGroup: "education",
         sublabel: "Break Through Tech AI",
         type: "education",
         prestige: 7,
@@ -90,6 +110,11 @@
       {
         id: "research-paper",
         label: "Research Paper",
+        labelShort: "Research Paper",
+        labelDetail: "Co-Author / Research Contributor · 2025",
+        labelPriority: 76,
+        preferredLabelPlacement: "bottom-right",
+        labelGroup: "research",
         sublabel: "Co-Author / Research Contributor · 2025",
         type: "job",
         prestige: 7,
@@ -112,6 +137,11 @@
       {
         id: "stemkasa",
         label: "STEMKasa",
+        labelShort: "STEMKasa",
+        labelDetail: "Software Engineering Intern · Summer 2025",
+        labelPriority: 68,
+        preferredLabelPlacement: "right",
+        labelGroup: "internship",
         sublabel: "Software Engineering Intern · Summer 2025",
         type: "internship",
         prestige: 6,
@@ -134,6 +164,11 @@
       {
         id: "universacare",
         label: "Universacare",
+        labelShort: "Universacare",
+        labelDetail: "Software Automation Intern · 2023",
+        labelPriority: 64,
+        preferredLabelPlacement: "top-right",
+        labelGroup: "internship",
         sublabel: "Software Automation Intern · 2023",
         type: "internship",
         prestige: 5,
@@ -158,6 +193,10 @@
       {
         id: "rhetoriq",
         label: "RhetoriQ",
+        labelShort: "RhetoriQ",
+        labelPriority: 36,
+        preferredLabelPlacement: "top",
+        labelGroup: "project",
         description:
           "Autonomous pipeline that detects, investigates, and visualizes political narrative spread across platforms.",
         tags: ["Python", "LLMs", "TypeScript"],
@@ -167,6 +206,10 @@
       {
         id: "clash-royale-ai-agent",
         label: "Clash Royale AI Agent",
+        labelShort: "Clash Royale AI",
+        labelPriority: 34,
+        preferredLabelPlacement: "right",
+        labelGroup: "project",
         description:
           "Autonomous gameplay agent using computer vision, strategic LLM planning, and ADB automation.",
         tags: ["Python", "Computer Vision", "LLMs"],
@@ -176,6 +219,10 @@
       {
         id: "squeeze-ai",
         label: "Squeeze AI",
+        labelShort: "Squeeze AI",
+        labelPriority: 30,
+        preferredLabelPlacement: "bottom-left",
+        labelGroup: "project",
         description:
           "AI compression workspace that distills long-form content into concise structured outputs for faster decision-making.",
         tags: ["Next.js", "TypeScript", "LLMs"],
@@ -185,6 +232,10 @@
       {
         id: "autonomous-dataset-agent",
         label: "Autonomous Dataset Agent",
+        labelShort: "Dataset Agent",
+        labelPriority: 32,
+        preferredLabelPlacement: "left",
+        labelGroup: "project",
         description:
           "Agentic pipeline for sourcing, validating, and versioning structured datasets from noisy public inputs.",
         tags: ["Python", "FastAPI", "PostgreSQL"],

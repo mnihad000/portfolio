@@ -1,5 +1,4 @@
-export const THEME_STORAGE_KEY = "nihad.theme";
-export const DEFAULT_THEME = "dark";
+export const DEFAULT_THEME = "light";
 
 export const THEME_BOOTSTRAP_SCRIPT = `
   (() => {
