@@ -9,7 +9,16 @@ import {
   useTransform,
   type Transition,
 } from "framer-motion";
-import { ArrowUpRight, Cpu, FolderGit2, Link2, Mail, MapPin } from "lucide-react";
+import {
+  ArrowUpRight,
+  BriefcaseBusiness,
+  Cpu,
+  Download,
+  FolderGit2,
+  Link2,
+  Mail,
+  MapPin,
+} from "lucide-react";
 import { aboutPageContent } from "@/lib/about";
 import { lightModeContent } from "@/lib/light-mode-content";
 import { projects } from "@/lib/projects";
@@ -231,6 +240,9 @@ function ProjectsSection() {
 }
 
 function ContactSection() {
+  const primaryStatus = aboutPageContent.statuses[0];
+  const recruitingStatus = aboutPageContent.statuses[1];
+
   return (
     <section
       id="contact"
@@ -316,27 +328,173 @@ function ContactSection() {
           whileInView={{ opacity: 1, y: 0 }}
           viewport={{ once: true, amount: 0.25 }}
           transition={{ ...revealTransition, delay: 0.16 }}
-          className="rounded-[1.75rem] border border-black/8 bg-[radial-gradient(circle_at_top,_rgba(255,255,255,0.95),_rgba(244,244,245,0.95)_42%,_rgba(236,236,239,0.98)_100%)] p-5 md:p-6"
+          className="rounded-[1.9rem] border border-black/8 bg-[radial-gradient(circle_at_top,_rgba(255,255,255,0.98),_rgba(246,244,240,0.96)_44%,_rgba(235,233,228,0.98)_100%)] p-5 shadow-[0_22px_55px_rgba(0,0,0,0.07)] md:p-6"
         >
-          <div className="flex flex-col items-center gap-6 text-center">
-            <RadarOrb />
+          <div className="relative overflow-hidden rounded-[1.5rem] border border-black/8 bg-white/70 p-5 shadow-[inset_0_1px_0_rgba(255,255,255,0.85)] backdrop-blur-xl md:p-6">
+            <div
+              aria-hidden="true"
+              className="pointer-events-none absolute inset-0 bg-[radial-gradient(circle_at_top_right,_rgba(214,90,18,0.14),_transparent_36%),linear-gradient(to_bottom,rgba(255,255,255,0.65),transparent_38%)]"
+            />
 
-            <div className="space-y-2">
-              <p className="text-sm uppercase tracking-[0.24em] text-neutral-500">Signal is open</p>
-              <p className="mx-auto max-w-sm text-sm leading-7 text-neutral-600 md:text-base">
-                Best for AI product work, full-stack engineering, backend systems, and ambitious
-                teams shipping fast.
-              </p>
-            </div>
+            <div className="relative z-10 space-y-6">
+              <div className="flex items-start justify-between gap-4">
+                <div className="space-y-2">
+                  <p className="text-[11px] uppercase tracking-[0.3em] text-neutral-500">
+                    Command Deck
+                  </p>
+                  <h4 className="text-3xl font-semibold tracking-tight text-neutral-900">
+                    Ready for the next build.
+                  </h4>
+                  <p className="max-w-md text-sm leading-7 text-neutral-600 md:text-base">
+                    Current status, recruiting signal, and direct actions in one place. Download
+                    the resume or open a channel without leaving light mode.
+                  </p>
+                </div>
 
-            <div className="inline-flex items-center gap-2 rounded-full border border-black/10 bg-white px-4 py-2 text-sm text-neutral-600 shadow-[0_8px_20px_rgba(0,0,0,0.05)]">
-              <MapPin className="h-4 w-4" strokeWidth={1.8} />
-              <span>{lightModeContent.location}</span>
+                <div className="rounded-[1.25rem] border border-black/10 bg-[#fff6ee] p-3 shadow-sm">
+                  <BriefcaseBusiness
+                    className="h-6 w-6 text-[#d65a12] md:h-7 md:w-7"
+                    strokeWidth={1.8}
+                  />
+                </div>
+              </div>
+
+              <div className="grid gap-3">
+                <StatusCard
+                  label={primaryStatus.label}
+                  title={primaryStatus.title}
+                  description={primaryStatus.description}
+                  tone={primaryStatus.tone}
+                />
+                <StatusCard
+                  label={recruitingStatus.label}
+                  title={recruitingStatus.title}
+                  description={recruitingStatus.description}
+                  tone={recruitingStatus.tone}
+                />
+              </div>
+
+              <a
+                href={primaryStatus.ctaHref ?? "/resume"}
+                className="group flex items-center justify-between gap-4 rounded-[1.4rem] border border-neutral-900 bg-neutral-900 px-5 py-4 text-white shadow-[0_18px_40px_rgba(17,17,17,0.18)] transition hover:bg-neutral-800 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-black/25"
+              >
+                <div>
+                  <p className="text-[11px] uppercase tracking-[0.24em] text-white/58">
+                    Primary Action
+                  </p>
+                  <p className="mt-1 text-lg font-semibold tracking-tight">Download Resume</p>
+                </div>
+                <span className="inline-flex items-center gap-2 text-sm font-medium text-white/88">
+                  <Download className="h-4 w-4" strokeWidth={1.9} />
+                  Get PDF
+                </span>
+              </a>
+
+              <div className="grid gap-3 sm:grid-cols-3">
+                <QuickActionCard
+                  href={`mailto:${lightModeContent.email}`}
+                  icon={<Mail className="h-4 w-4" strokeWidth={1.9} />}
+                  label="Email"
+                  value="Start a conversation"
+                />
+                <QuickActionCard
+                  href={lightModeContent.linkedin}
+                  target="_blank"
+                  rel="noreferrer"
+                  icon={<Link2 className="h-4 w-4" strokeWidth={1.9} />}
+                  label="LinkedIn"
+                  value="Open profile"
+                />
+                <QuickActionCard
+                  href={lightModeContent.github}
+                  target="_blank"
+                  rel="noreferrer"
+                  icon={<FolderGit2 className="h-4 w-4" strokeWidth={1.9} />}
+                  label="GitHub"
+                  value="Browse repos"
+                />
+              </div>
+
+              <div className="flex flex-wrap items-center gap-3 border-t border-black/8 pt-1">
+                <div className="inline-flex items-center gap-2 rounded-full border border-black/10 bg-white px-3.5 py-2 text-sm text-neutral-600 shadow-[0_8px_20px_rgba(0,0,0,0.04)]">
+                  <MapPin className="h-4 w-4" strokeWidth={1.8} />
+                  <span>{lightModeContent.location}</span>
+                </div>
+                <p className="text-sm leading-6 text-neutral-500">
+                  Best fit: product engineering, AI systems, backend-heavy builds, and ambitious
+                  teams shipping fast.
+                </p>
+              </div>
             </div>
           </div>
         </motion.div>
       </div>
     </section>
+  );
+}
+
+function StatusCard({
+  label,
+  title,
+  description,
+  tone,
+}: {
+  label: string;
+  title: string;
+  description: string;
+  tone: "success" | "warning";
+}) {
+  const accentClass =
+    tone === "success"
+      ? "border-emerald-200/90 bg-emerald-50/80 text-emerald-700"
+      : "border-amber-200/90 bg-amber-50/80 text-amber-700";
+
+  return (
+    <article className="rounded-[1.35rem] border border-black/8 bg-white px-4 py-4 shadow-[0_14px_30px_rgba(0,0,0,0.04)]">
+      <div className="flex flex-wrap items-start justify-between gap-3">
+        <span
+          className={`inline-flex items-center rounded-full border px-2.5 py-1 text-[10px] font-medium uppercase tracking-[0.22em] ${accentClass}`}
+        >
+          {label}
+        </span>
+      </div>
+      <h5 className="mt-3 text-base font-semibold leading-7 text-neutral-900">{title}</h5>
+      <p className="mt-1 text-sm leading-7 text-neutral-600">{description}</p>
+    </article>
+  );
+}
+
+function QuickActionCard({
+  href,
+  icon,
+  label,
+  value,
+  target,
+  rel,
+}: {
+  href: string;
+  icon: ReactNode;
+  label: string;
+  value: string;
+  target?: string;
+  rel?: string;
+}) {
+  return (
+    <a
+      href={href}
+      target={target}
+      rel={rel}
+      className="group rounded-[1.25rem] border border-black/8 bg-white px-4 py-3 shadow-[0_12px_24px_rgba(0,0,0,0.04)] transition hover:-translate-y-0.5 hover:border-black/14 hover:shadow-[0_18px_34px_rgba(0,0,0,0.06)] focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-black/20"
+    >
+      <div className="flex items-center justify-between gap-3">
+        <span className="inline-flex h-9 w-9 items-center justify-center rounded-2xl bg-black/5 text-neutral-800">
+          {icon}
+        </span>
+        <ArrowUpRight className="h-4 w-4 text-neutral-400 transition-transform group-hover:translate-x-0.5 group-hover:-translate-y-0.5" />
+      </div>
+      <p className="mt-4 text-[11px] uppercase tracking-[0.22em] text-neutral-400">{label}</p>
+      <p className="mt-1 text-sm font-medium text-neutral-800">{value}</p>
+    </a>
   );
 }
 
@@ -443,85 +601,3 @@ function MagneticContactCard({
   );
 }
 
-function RadarOrb() {
-  const reducedMotion = useReducedMotion();
-
-  return (
-    <div
-      aria-hidden="true"
-      className="relative flex h-[280px] w-full max-w-[320px] items-center justify-center overflow-hidden rounded-[2rem] border border-black/8 bg-[radial-gradient(circle_at_center,_rgba(255,255,255,1),_rgba(242,242,243,0.98)_48%,_rgba(232,232,235,1)_100%)]"
-    >
-      <motion.div
-        animate={
-          reducedMotion
-            ? { opacity: 0.8, scale: 1 }
-            : { opacity: [0.55, 0.85, 0.55], scale: [0.96, 1.02, 0.96] }
-        }
-        transition={{ duration: 4.8, repeat: Number.POSITIVE_INFINITY, ease: "easeInOut" }}
-        className="absolute h-44 w-44 rounded-full bg-[radial-gradient(circle,_rgba(214,90,18,0.14),_rgba(214,90,18,0.03)_55%,_transparent_72%)] blur-xl"
-      />
-
-      {[0, 1, 2].map((ring) => (
-        <motion.div
-          key={ring}
-          animate={
-            reducedMotion
-              ? { opacity: 0.32, scale: 1 }
-              : { opacity: [0.18, 0.42, 0.18], scale: [0.94, 1.03, 0.94] }
-          }
-          transition={{
-            duration: 4.2,
-            delay: ring * 0.5,
-            repeat: Number.POSITIVE_INFINITY,
-            ease: "easeInOut",
-          }}
-          className={`absolute rounded-full border border-black/10 ${
-            ring === 0 ? "h-36 w-36" : ring === 1 ? "h-52 w-52" : "h-64 w-64"
-          }`}
-        />
-      ))}
-
-      <motion.div
-        animate={reducedMotion ? undefined : { rotate: 360 }}
-        transition={
-          reducedMotion
-            ? undefined
-            : { duration: 12, repeat: Number.POSITIVE_INFINITY, ease: "linear" }
-        }
-        className="absolute h-64 w-64 rounded-full"
-        style={{
-          background:
-            "conic-gradient(from 180deg, rgba(255,255,255,0) 0deg, rgba(214,90,18,0.22) 54deg, rgba(255,255,255,0) 104deg)",
-          maskImage:
-            "radial-gradient(circle at center, transparent 0 39%, black 40% 67%, transparent 68% 100%)",
-          WebkitMaskImage:
-            "radial-gradient(circle at center, transparent 0 39%, black 40% 67%, transparent 68% 100%)",
-        }}
-      />
-
-      <div className="absolute h-4 w-4 rounded-full bg-neutral-900 shadow-[0_0_20px_rgba(17,17,17,0.18)]" />
-
-      {[
-        { className: "left-[22%] top-[28%]", duration: 2.2, delay: 0.2 },
-        { className: "right-[24%] top-[34%]", duration: 2.7, delay: 0.5 },
-        { className: "bottom-[24%] left-[30%]", duration: 2.4, delay: 0.9 },
-      ].map((dot) => (
-        <motion.div
-          key={dot.className}
-          animate={
-            reducedMotion
-              ? { opacity: 0.55 }
-              : { opacity: [0.35, 0.95, 0.35], scale: [1, 1.25, 1] }
-          }
-          transition={{
-            duration: dot.duration,
-            delay: dot.delay,
-            repeat: Number.POSITIVE_INFINITY,
-            ease: "easeInOut",
-          }}
-          className={`absolute h-2.5 w-2.5 rounded-full bg-[#d65a12] ${dot.className}`}
-        />
-      ))}
-    </div>
-  );
-}
