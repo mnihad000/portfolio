@@ -11,13 +11,11 @@ import {
 } from "framer-motion";
 import {
   ArrowUpRight,
-  BriefcaseBusiness,
   Cpu,
   Download,
   FolderGit2,
   Link2,
   Mail,
-  MapPin,
 } from "lucide-react";
 import { aboutPageContent } from "@/lib/about";
 import { lightModeContent } from "@/lib/light-mode-content";
@@ -25,6 +23,8 @@ import { projects } from "@/lib/projects";
 import { AnimatedName } from "@/components/ui/animated-name";
 import { SplineSceneBasic } from "@/components/ui/demo";
 import LightProjectCard from "@/components/ui/light-project-card";
+import RecentCommitsSection from "@/components/ui/recent-commits-section";
+import TechStackSection from "@/components/ui/tech-stack-section";
 import { WavyWhatIfText } from "@/components/ui/wavy-what-if-text";
 
 const PROJECT_CARD_COUNT = projects.length;
@@ -115,6 +115,8 @@ export default function LightExperience() {
           <HeroSection />
         </section>
         <AboutSection />
+        <TechStackSection />
+        <RecentCommitsSection />
         <ProjectsSection />
         <ContactSection />
       </div>
@@ -163,9 +165,6 @@ function AboutSection() {
             {aboutPageContent.heroParagraphs.map((paragraph, index) =>
               renderRichParagraph(paragraph, `about-paragraph-${index}`)
             )}
-            <p className="text-base leading-8 text-neutral-700 md:text-lg">
-              {lightModeContent.aboutSummary}
-            </p>
           </div>
 
           <div className="flex flex-wrap gap-3">
@@ -268,7 +267,7 @@ function ProjectsSection() {
           transition={{ ...revealTransition, delay: 0.12 }}
           className="mx-auto mt-4 max-w-2xl text-base leading-8 text-neutral-500 md:text-2xl md:leading-10"
         >
-          things I build, most of these started with a
+          Things I built, most of these started with a
         </motion.p>
       </div>
 
@@ -306,7 +305,7 @@ function ContactSection() {
       id="contact"
       className="mx-auto mt-24 max-w-6xl scroll-mt-28 rounded-[2rem] border border-black/10 bg-white px-5 py-8 shadow-[0_20px_55px_rgba(0,0,0,0.06)] md:px-8 md:py-10"
     >
-      <div className="grid gap-10 md:grid-cols-[1.05fr_0.95fr] md:items-center">
+      <div className="grid gap-10 md:grid-cols-[1.05fr_0.95fr] md:items-start">
         <div className="space-y-6">
           <motion.div
             initial={{ opacity: 0, y: 20 }}
@@ -395,28 +394,6 @@ function ContactSection() {
             />
 
             <div className="relative z-10 space-y-6">
-              <div className="flex items-start justify-between gap-4">
-                <div className="space-y-2">
-                  <p className="text-[11px] uppercase tracking-[0.3em] text-neutral-500">
-                    Command Deck
-                  </p>
-                  <h4 className="text-3xl font-semibold tracking-tight text-neutral-900">
-                    Ready for the next build.
-                  </h4>
-                  <p className="max-w-md text-sm leading-7 text-neutral-600 md:text-base">
-                    Current status, recruiting signal, and direct actions in one place. Download
-                    the resume or open a channel without leaving light mode.
-                  </p>
-                </div>
-
-                <div className="rounded-[1.25rem] border border-black/10 bg-[#fff6ee] p-3 shadow-sm">
-                  <BriefcaseBusiness
-                    className="h-6 w-6 text-[#d65a12] md:h-7 md:w-7"
-                    strokeWidth={1.8}
-                  />
-                </div>
-              </div>
-
               <div className="grid gap-3">
                 <StatusCard
                   label={primaryStatus.label}
@@ -448,41 +425,6 @@ function ContactSection() {
                 </span>
               </a>
 
-              <div className="grid gap-3 sm:grid-cols-3">
-                <QuickActionCard
-                  href={`mailto:${lightModeContent.email}`}
-                  icon={<Mail className="h-4 w-4" strokeWidth={1.9} />}
-                  label="Email"
-                  value="Start a conversation"
-                />
-                <QuickActionCard
-                  href={lightModeContent.linkedin}
-                  target="_blank"
-                  rel="noreferrer"
-                  icon={<Link2 className="h-4 w-4" strokeWidth={1.9} />}
-                  label="LinkedIn"
-                  value="Open profile"
-                />
-                <QuickActionCard
-                  href={lightModeContent.github}
-                  target="_blank"
-                  rel="noreferrer"
-                  icon={<FolderGit2 className="h-4 w-4" strokeWidth={1.9} />}
-                  label="GitHub"
-                  value="Browse repos"
-                />
-              </div>
-
-              <div className="flex flex-wrap items-center gap-3 border-t border-black/8 pt-1">
-                <div className="inline-flex items-center gap-2 rounded-full border border-black/10 bg-white px-3.5 py-2 text-sm text-neutral-600 shadow-[0_8px_20px_rgba(0,0,0,0.04)]">
-                  <MapPin className="h-4 w-4" strokeWidth={1.8} />
-                  <span>{lightModeContent.location}</span>
-                </div>
-                <p className="text-sm leading-6 text-neutral-500">
-                  Best fit: product engineering, AI systems, backend-heavy builds, and ambitious
-                  teams shipping fast.
-                </p>
-              </div>
             </div>
           </div>
         </motion.div>
@@ -519,40 +461,6 @@ function StatusCard({
       <h5 className="mt-3 text-base font-semibold leading-7 text-neutral-900">{title}</h5>
       <p className="mt-1 text-sm leading-7 text-neutral-600">{description}</p>
     </article>
-  );
-}
-
-function QuickActionCard({
-  href,
-  icon,
-  label,
-  value,
-  target,
-  rel,
-}: {
-  href: string;
-  icon: ReactNode;
-  label: string;
-  value: string;
-  target?: string;
-  rel?: string;
-}) {
-  return (
-    <a
-      href={href}
-      target={target}
-      rel={rel}
-      className="group rounded-[1.25rem] border border-black/8 bg-white px-4 py-3 shadow-[0_12px_24px_rgba(0,0,0,0.04)] transition hover:-translate-y-0.5 hover:border-black/14 hover:shadow-[0_18px_34px_rgba(0,0,0,0.06)] focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-black/20"
-    >
-      <div className="flex items-center justify-between gap-3">
-        <span className="inline-flex h-9 w-9 items-center justify-center rounded-2xl bg-black/5 text-neutral-800">
-          {icon}
-        </span>
-        <ArrowUpRight className="h-4 w-4 text-neutral-400 transition-transform group-hover:translate-x-0.5 group-hover:-translate-y-0.5" />
-      </div>
-      <p className="mt-4 text-[11px] uppercase tracking-[0.22em] text-neutral-400">{label}</p>
-      <p className="mt-1 text-sm font-medium text-neutral-800">{value}</p>
-    </a>
   );
 }
 

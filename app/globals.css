@@ -160,6 +160,67 @@
   }
 }
 
+.belt {
+  -webkit-mask-image: linear-gradient(
+    90deg,
+    transparent 0,
+    rgba(0, 0, 0, 0.92) 8%,
+    rgba(0, 0, 0, 1) 16%,
+    rgba(0, 0, 0, 1) 84%,
+    rgba(0, 0, 0, 0.92) 92%,
+    transparent 100%
+  );
+  mask-image: linear-gradient(
+    90deg,
+    transparent 0,
+    rgba(0, 0, 0, 0.92) 8%,
+    rgba(0, 0, 0, 1) 16%,
+    rgba(0, 0, 0, 1) 84%,
+    rgba(0, 0, 0, 0.92) 92%,
+    transparent 100%
+  );
+}
+
+.belt-inner {
+  will-change: transform;
+}
+
+.belt-inner[data-animate="true"][data-direction="left"] {
+  animation: scroll-left 25s linear infinite;
+}
+
+.belt-inner[data-animate="true"][data-direction="right"] {
+  animation: scroll-right 25s linear infinite;
+}
+
+.belt-inner[data-animate="false"] {
+  animation: none;
+}
+
+.belt:hover .belt-inner[data-animate="true"] {
+  animation-play-state: paused;
+}
+
+@keyframes scroll-left {
+  0% {
+    transform: translateX(0);
+  }
+
+  100% {
+    transform: translateX(-50%);
+  }
+}
+
+@keyframes scroll-right {
+  0% {
+    transform: translateX(-50%);
+  }
+
+  100% {
+    transform: translateX(0);
+  }
+}
+
 .profile-dots::before {
   content: "";
   position: absolute;
@@ -635,7 +696,8 @@
   .about-portrait-surface,
   .about-portrait-shimmer,
   .about-status-pulse,
-  .about-rail-intro-scan {
+  .about-rail-intro-scan,
+  .belt-inner {
     animation: none !important;
   }
 
