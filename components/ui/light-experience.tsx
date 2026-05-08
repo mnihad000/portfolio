@@ -319,8 +319,7 @@ function ContactSection() {
               Contact Me
             </h3>
             <p className="max-w-xl text-base leading-8 text-neutral-600 md:text-lg">
-              Open to internships, projects, research, and ambitious product work. Reach out if
-              you want to build something serious.
+              Got a project idea, opportunity, want to team up for a hackathon, or just want to chat? I'd love to hear from you.
             </p>
           </motion.div>
 
