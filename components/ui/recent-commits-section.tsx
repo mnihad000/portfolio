@@ -28,7 +28,7 @@ type RecentCommit = {
   repo: string;
   branch: string;
   message: string;
-  shortSha: string;
+  shortSha: string | null;
   relativeTime: string;
   createdAt: string;
 };
@@ -77,14 +77,15 @@ function mapEventsToCommits(events: GitHubPushEvent[]) {
     .map((event, index) => {
       const latestCommit = event.payload?.commits?.at(-1);
 
-      if (!latestCommit?.message || !event.created_at) {
+      if (!event.created_at) {
         return null;
       }
 
       const repoName = event.repo?.name?.replace(/^mnihad000\//, "").trim() || "Unknown repo";
       const branchName =
         event.payload?.ref?.replace(/^refs\/heads\//, "").trim() || "unknown";
-      const shortSha = latestCommit.sha?.slice(0, 7) || "unknown";
+      const shortSha = latestCommit?.sha?.slice(0, 7) ?? null;
+      const fallbackMessage = `Pushed updates to ${branchName}`;
 
       return {
         id:
@@ -92,7 +93,7 @@ function mapEventsToCommits(events: GitHubPushEvent[]) {
           `${repoName}-${branchName}-${event.created_at}-${shortSha}-${index}`,
         repo: repoName,
         branch: branchName,
-        message: truncateMessage(latestCommit.message),
+        message: truncateMessage(latestCommit?.message ?? fallbackMessage),
         shortSha,
         relativeTime: formatRelativeTime(event.created_at),
         createdAt: event.created_at,
@@ -127,7 +128,7 @@ function CommitCard({ commit }: { commit: RecentCommit }) {
           {commit.repo}
         </span>
         <span className="inline-flex items-center rounded-full bg-neutral-100 px-3 py-1 text-[11px] font-medium text-neutral-500">
-          ⎇ {commit.branch}
+          branch: {commit.branch}
         </span>
         <time
           dateTime={commit.createdAt}
@@ -139,7 +140,9 @@ function CommitCard({ commit }: { commit: RecentCommit }) {
 
       <p className="mt-3 text-[14px] leading-[1.5] text-neutral-900">{commit.message}</p>
 
-      <p className="mt-3 font-mono text-xs text-neutral-400">{commit.shortSha}</p>
+      {commit.shortSha ? (
+        <p className="mt-3 font-mono text-xs text-neutral-400">{commit.shortSha}</p>
+      ) : null}
     </article>
   );
 }
@@ -156,6 +159,7 @@ export default function RecentCommitsSection() {
         const response = await fetch(GITHUB_EVENTS_URL, {
           headers: {
             Accept: "application/vnd.github+json",
+            "X-GitHub-Api-Version": "2022-11-28",
           },
           signal: controller.signal,
         });
@@ -256,3 +260,4 @@ export default function RecentCommitsSection() {
     </section>
   );
 }
+
