@@ -225,7 +225,7 @@ export default function TechStackSection() {
   return (
     <section id="stack" className="mx-auto mt-24 max-w-6xl scroll-mt-28">
       <div className="max-w-3xl">
-        <p className="text-xs uppercase tracking-[0.32em] text-neutral-500">MY ARSENAL</p>
+        <p className="text-xs uppercase tracking-[0.32em] text-neutral-500"></p>
         <h3 className="mt-3 text-4xl font-semibold tracking-tight text-neutral-900 md:text-5xl">
           My Stack
         </h3>
