@@ -67,12 +67,12 @@ function DarkModeNav() {
   }, [pathname]);
 
   return (
-    <ul className="relative flex w-fit items-center gap-1">
+    <ul className="relative flex w-max min-w-full items-center gap-1">
       {DARK_NAV_ITEMS.map((item) => (
         <li key={item.href} className="relative">
           <Link
             href={item.href}
-            className={`group relative z-10 flex min-h-11 items-center overflow-hidden rounded-full px-4 py-2.5 font-mono text-xs tracking-[0.12em] uppercase transition-colors md:px-6 md:text-sm ${
+            className={`group relative z-10 flex min-h-10 items-center overflow-hidden rounded-full px-3 py-2 text-[11px] tracking-[0.08em] uppercase transition-colors sm:min-h-11 sm:px-4 sm:py-2.5 sm:tracking-[0.12em] md:px-6 md:text-sm ${
               activeHref === item.href
                 ? "text-white"
                 : "text-white/75 hover:text-white"
@@ -205,9 +205,9 @@ function LightModeTabs() {
   };
 
   return (
-    <div className="flex items-center gap-2">
-      <div className="rounded-full border border-white/70 bg-white/28 p-1.5 shadow-[0_14px_40px_rgba(15,23,42,0.12)] ring-1 ring-black/6 backdrop-blur-xl supports-[backdrop-filter]:bg-white/22">
-        <ul className="relative mx-auto flex w-fit items-center gap-1 overflow-hidden rounded-full border border-white/65 bg-white/14 px-1 py-1 text-neutral-950 shadow-[inset_0_1px_0_rgba(255,255,255,0.75)] backdrop-blur-xl">
+    <div className="flex max-w-full items-center gap-2">
+      <div className="min-w-0 max-w-full rounded-full border border-white/70 bg-white/28 p-1.5 shadow-[0_14px_40px_rgba(15,23,42,0.12)] ring-1 ring-black/6 backdrop-blur-xl supports-[backdrop-filter]:bg-white/22">
+        <ul className="no-scrollbar relative mx-auto flex w-max min-w-full items-center gap-1 overflow-x-auto overflow-y-hidden rounded-full border border-white/65 bg-white/14 px-1 py-1 text-neutral-950 shadow-[inset_0_1px_0_rgba(255,255,255,0.75)] backdrop-blur-xl">
           {LIGHT_TABS.map((tab, index) => (
             <li
               key={tab.label}
@@ -225,7 +225,7 @@ function LightModeTabs() {
                   opacity: 1,
                 });
               }}
-              className={`relative z-10 block cursor-pointer rounded-full px-4 py-2 text-xs uppercase tracking-[0.24em] transition-colors duration-200 md:px-6 md:py-3 md:text-sm ${
+              className={`relative z-10 block shrink-0 cursor-pointer rounded-full px-3 py-2 text-[11px] uppercase tracking-[0.12em] transition-colors duration-200 sm:px-4 sm:tracking-[0.18em] md:px-6 md:py-3 md:text-sm md:tracking-[0.24em] ${
                 selected === index
                   ? "text-neutral-950"
                   : "text-neutral-500 hover:text-neutral-800"
@@ -274,17 +274,17 @@ function LightModeRouteNav() {
   }, [pathname]);
 
   return (
-    <div className="flex items-center gap-2">
+    <div className="flex max-w-full items-center gap-2">
       <nav
-        className="rounded-full border border-white/70 bg-white/28 p-1.5 shadow-[0_14px_40px_rgba(15,23,42,0.12)] ring-1 ring-black/6 backdrop-blur-xl supports-[backdrop-filter]:bg-white/22"
+        className="min-w-0 max-w-full rounded-full border border-white/70 bg-white/28 p-1.5 shadow-[0_14px_40px_rgba(15,23,42,0.12)] ring-1 ring-black/6 backdrop-blur-xl supports-[backdrop-filter]:bg-white/22"
         aria-label="Light mode"
       >
-        <ul className="relative flex w-fit items-center gap-1 overflow-hidden rounded-full border border-white/65 bg-white/14 px-1 py-1 text-neutral-950 shadow-[inset_0_1px_0_rgba(255,255,255,0.75)] backdrop-blur-xl">
+        <ul className="no-scrollbar relative flex w-max min-w-full items-center gap-1 overflow-x-auto overflow-y-hidden rounded-full border border-white/65 bg-white/14 px-1 py-1 text-neutral-950 shadow-[inset_0_1px_0_rgba(255,255,255,0.75)] backdrop-blur-xl">
           {LIGHT_ROUTE_NAV_ITEMS.map((item) => (
             <li key={item.href} className="relative">
               <Link
                 href={item.href}
-                className={`relative z-10 flex min-h-11 items-center rounded-full px-4 py-2 text-xs uppercase tracking-[0.24em] transition-colors duration-200 md:px-6 md:py-3 md:text-sm ${
+                className={`relative z-10 flex min-h-10 shrink-0 items-center rounded-full px-3 py-2 text-[11px] uppercase tracking-[0.12em] transition-colors duration-200 sm:min-h-11 sm:px-4 sm:tracking-[0.18em] md:px-6 md:py-3 md:text-sm md:tracking-[0.24em] ${
                   activeHref === item.href
                     ? "text-neutral-950"
                     : "text-neutral-500 hover:text-neutral-800"
@@ -323,8 +323,8 @@ function NavHeader() {
 
   if (showLightTabs) {
     return (
-      <div className="pointer-events-none fixed inset-x-0 top-4 z-50 flex justify-center px-4">
-        <div className="pointer-events-auto">
+      <div className="pointer-events-none fixed inset-x-0 top-4 z-50 flex justify-center px-3 sm:px-4">
+        <div className="pointer-events-auto flex max-w-full items-center">
           <LightModeTabs />
         </div>
       </div>
@@ -333,8 +333,8 @@ function NavHeader() {
 
   if (showLightRouteNav) {
     return (
-      <div className="pointer-events-none fixed inset-x-0 top-4 z-50 flex justify-center px-4">
-        <div className="pointer-events-auto">
+      <div className="pointer-events-none fixed inset-x-0 top-4 z-50 flex justify-center px-3 sm:px-4">
+        <div className="pointer-events-auto flex max-w-full items-center">
           <LightModeRouteNav />
         </div>
       </div>
@@ -342,16 +342,18 @@ function NavHeader() {
   }
 
   return (
-    <div className="pointer-events-none fixed inset-x-0 top-4 z-50 flex justify-center px-4">
+    <div className="pointer-events-none fixed inset-x-0 top-4 z-50 flex justify-center px-3 sm:px-4">
       <nav
-        className={`pointer-events-auto relative flex items-center gap-2 rounded-full border px-2 py-1.5 backdrop-blur-md transition-all duration-300 ${
+        className={`pointer-events-auto relative flex max-w-full items-center gap-2 rounded-full border px-2 py-1.5 backdrop-blur-md transition-all duration-300 ${
           scrolled
             ? "border-white/20 bg-black/70 shadow-[0_10px_30px_rgba(0,0,0,0.45)]"
             : "border-white/10 bg-black/45"
         }`}
         aria-label="Primary"
       >
-        <DarkModeNav />
+        <div className="no-scrollbar min-w-0 overflow-x-auto overflow-y-hidden">
+          <DarkModeNav />
+        </div>
         <ThemeToggle />
       </nav>
     </div>

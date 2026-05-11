@@ -379,6 +379,15 @@
   animation: galaxyPulse 1.5s ease forwards;
 }
 
+.no-scrollbar {
+  -ms-overflow-style: none;
+  scrollbar-width: none;
+}
+
+.no-scrollbar::-webkit-scrollbar {
+  display: none;
+}
+
 @keyframes galaxyPulse {
   0%,
   100% {

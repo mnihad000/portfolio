@@ -65,6 +65,7 @@
   var raycaster = null;
   var mouse = null;
   var systemGroup = null;
+  var projectGroup = null;
   var sun = null;
   var sunRing = null;
   var starField = null;
@@ -220,7 +221,9 @@
     controls.addEventListener("end", scheduleAutoRotationResume);
 
     systemGroup = new THREE.Group();
+    projectGroup = new THREE.Group();
     scene.add(systemGroup);
+    scene.add(projectGroup);
 
     createLighting();
     createStarField();
@@ -427,42 +430,65 @@
     asteroidEntries = [];
 
     var asteroids = PORTFOLIO.asteroids || [];
-    var beltRadius = 65 + (PORTFOLIO.planets.length * 50) / 2;
+    var beltRadius = 65 + (PORTFOLIO.planets.length * 50) / 2 + 26;
+    var visibleRadius = isMobile ? 3.9 : 3.3;
+    var hitRadius = isMobile ? 9.5 : 7.6;
 
     asteroids.forEach(function (asteroid, index) {
       var geometry =
         index % 2 === 0
-          ? new THREE.DodecahedronGeometry(2.2, 0)
-          : new THREE.IcosahedronGeometry(2, 0);
-      var shade = THREE.MathUtils.randInt(0x888888, 0xaaaaaa);
+          ? new THREE.DodecahedronGeometry(visibleRadius, 0)
+          : new THREE.IcosahedronGeometry(visibleRadius * 0.92, 0);
+      var shade = index % 2 === 0 ? 0xa3a3a3 : 0xc1c1c1;
       var material = new THREE.MeshStandardMaterial({
         color: shade,
         roughness: 0.92,
         metalness: 0.02,
       });
       var mesh = new THREE.Mesh(geometry, material);
-      var angle =
-        (index / Math.max(asteroids.length, 1)) * Math.PI * 2 +
-        THREE.MathUtils.randFloatSpread(0.24);
-      var speed = 0.0006 + Math.random() * 0.0003;
+      var hitGeometry = new THREE.SphereGeometry(hitRadius, 14, 14);
+      var hitMaterial = new THREE.MeshBasicMaterial({
+        transparent: true,
+        opacity: 0,
+        depthWrite: false,
+      });
+      var hitArea = new THREE.Mesh(hitGeometry, hitMaterial);
+      var baseAngle = (index / Math.max(asteroids.length, 1)) * Math.PI * 2;
+      var angleOffset = Math.sin((index + 1) * 2.71) * 0.16;
+      var angle = baseAngle + angleOffset;
+      var radialJitter = Math.cos((index + 1) * 1.93) * 14;
+      var verticalJitter = Math.sin((index + 1) * 1.37) * 8;
+      var finalRadius = beltRadius + radialJitter;
+      var position = new THREE.Vector3(
+        Math.cos(angle) * finalRadius,
+        verticalJitter,
+        Math.sin(angle) * finalRadius
+      );
 
       mesh.userData.kind = "asteroid";
       mesh.userData.asteroidId = asteroid.id;
       mesh.scale.set(0, 0, 0);
-      systemGroup.add(mesh);
+      mesh.position.copy(position);
+      projectGroup.add(mesh);
+
+      hitArea.userData.kind = "asteroid";
+      hitArea.userData.asteroidId = asteroid.id;
+      hitArea.userData.hitTarget = mesh;
+      hitArea.scale.set(0, 0, 0);
+      hitArea.position.copy(position);
+      projectGroup.add(hitArea);
 
       asteroidEntries.push({
         data: asteroid,
         mesh: mesh,
-        angle: angle,
-        speed: speed,
-        orbitRadius: beltRadius,
-        rotationX: THREE.MathUtils.randFloat(0.004, 0.009),
-        rotationZ: THREE.MathUtils.randFloat(0.003, 0.007),
+        hitArea: hitArea,
+        position: position,
+        rotationX: 0.0009 + index * 0.00008,
+        rotationZ: 0.0007 + index * 0.00007,
         revealStart: ASTEROID_REVEAL_START_MS,
         labelReadyAt: ASTEROID_REVEAL_START_MS + ASTEROID_REVEAL_DURATION_MS,
       });
-      clickableAsteroids.push(mesh);
+      clickableAsteroids.push(hitArea);
     });
   }
 
@@ -678,7 +704,9 @@
         asteroidEntry.revealStart,
         ASTEROID_REVEAL_DURATION_MS
       );
-      asteroidEntry.mesh.scale.setScalar(easeOutCubic(asteroidProgress));
+      var scale = easeOutCubic(asteroidProgress);
+      asteroidEntry.mesh.scale.setScalar(scale);
+      asteroidEntry.hitArea.scale.setScalar(scale);
     });
   }
 
@@ -710,12 +738,6 @@
 
   function updateAsteroids() {
     asteroidEntries.forEach(function (asteroidEntry) {
-      asteroidEntry.angle += asteroidEntry.speed;
-      asteroidEntry.mesh.position.set(
-        Math.cos(asteroidEntry.angle) * asteroidEntry.orbitRadius,
-        Math.sin(asteroidEntry.angle * 1.3) * 5.5,
-        Math.sin(asteroidEntry.angle) * asteroidEntry.orbitRadius
-      );
       asteroidEntry.mesh.rotation.x += asteroidEntry.rotationX;
       asteroidEntry.mesh.rotation.z += asteroidEntry.rotationZ;
     });
@@ -807,7 +829,7 @@
 
     var asteroidHits = raycaster.intersectObjects(clickableAsteroids, false);
     if (asteroidHits.length) {
-      return asteroidHits[0].object;
+      return asteroidHits[0].object.userData.hitTarget || asteroidHits[0].object;
     }
 
     return null;
@@ -840,7 +862,7 @@
 
   function getAsteroidEntryByMesh(mesh) {
     return asteroidEntries.find(function (asteroidEntry) {
-      return asteroidEntry.mesh === mesh;
+      return asteroidEntry.mesh === mesh || asteroidEntry.hitArea === mesh;
     });
   }
 
@@ -1584,6 +1606,7 @@
     raycaster = null;
     mouse = null;
     systemGroup = null;
+    projectGroup = null;
     sun = null;
     sunRing = null;
     starField = null;
