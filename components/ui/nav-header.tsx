@@ -6,9 +6,9 @@ import { usePathname } from "next/navigation";
 import React, { useEffect, useMemo, useRef, useState } from "react";
 import { useSiteTheme } from "@/components/providers/site-theme-provider";
 import {
-  LIGHTMODE_HOME_ROUTE,
-  LIGHTMODE_PROJECTS_ROUTE,
-  isLightModeRoute,
+  DARKMODE_HOME_ROUTE,
+  DARKMODE_PROJECTS_ROUTE,
+  isDarkModeRoute,
 } from "@/lib/theme-routes";
 import ThemeToggle from "@/components/ui/theme-toggle";
 
@@ -34,11 +34,11 @@ type LightRouteNavItem = {
 };
 
 const DARK_NAV_ITEMS: NavItem[] = [
-  { label: "Home", href: "/" },
-  { label: "About", href: "/about" },
-  { label: "Projects", href: "/projects" },
-  { label: "Experiences", href: "/experiences" },
-  { label: "Contact", href: "/contact" },
+  { label: "Home", href: DARKMODE_HOME_ROUTE },
+  { label: "About", href: `${DARKMODE_HOME_ROUTE}/about` },
+  { label: "Projects", href: DARKMODE_PROJECTS_ROUTE },
+  { label: "Experiences", href: `${DARKMODE_HOME_ROUTE}/experiences` },
+  { label: "Contact", href: `${DARKMODE_HOME_ROUTE}/contact` },
 ];
 
 const LIGHT_TABS: LightTab[] = [
@@ -49,8 +49,8 @@ const LIGHT_TABS: LightTab[] = [
 ];
 
 const LIGHT_ROUTE_NAV_ITEMS: LightRouteNavItem[] = [
-  { label: "Home", href: LIGHTMODE_HOME_ROUTE },
-  { label: "Projects", href: LIGHTMODE_PROJECTS_ROUTE },
+  { label: "Home", href: "/" },
+  { label: "Projects", href: "/projects" },
 ];
 
 function DarkModeNav() {
@@ -264,13 +264,13 @@ function LightModeRouteNav() {
   const pathname = usePathname();
   const activeHref = useMemo(() => {
     if (
-      pathname === LIGHTMODE_PROJECTS_ROUTE ||
-      pathname.startsWith(`${LIGHTMODE_PROJECTS_ROUTE}/`)
+      pathname === "/projects" ||
+      pathname.startsWith("/projects/")
     ) {
-      return LIGHTMODE_PROJECTS_ROUTE;
+      return "/projects";
     }
 
-    return LIGHTMODE_HOME_ROUTE;
+    return "/";
   }, [pathname]);
 
   return (
@@ -317,9 +317,9 @@ function NavHeader() {
     return () => window.removeEventListener("scroll", handleScroll);
   }, []);
 
-  const showLightTabs = mounted && theme === "light" && pathname === LIGHTMODE_HOME_ROUTE;
+  const showLightTabs = mounted && theme === "light" && pathname === "/";
   const showLightRouteNav =
-    mounted && theme === "light" && isLightModeRoute(pathname) && pathname !== LIGHTMODE_HOME_ROUTE;
+    mounted && theme === "light" && !isDarkModeRoute(pathname) && pathname !== "/";
 
   if (showLightTabs) {
     return (

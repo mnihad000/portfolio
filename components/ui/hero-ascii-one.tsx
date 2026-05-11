@@ -438,7 +438,7 @@ repeat`}</pre>
 
             <div className="flex flex-col gap-3 lg:flex-row lg:gap-4">
               <Link
-                href="/projects"
+                href="/darkmode/projects"
                 className="group relative border border-white bg-transparent px-5 py-2 text-xs font-mono text-white transition-all duration-200 hover:bg-white hover:text-black lg:px-6 lg:py-2.5 lg:text-sm"
               >
                 <span className="absolute top-[-0.25rem] left-[-0.25rem] hidden h-2 w-2 border-t border-l border-white opacity-0 transition-opacity group-hover:opacity-100 lg:block" />
@@ -447,7 +447,7 @@ repeat`}</pre>
               </Link>
 
               <Link
-                href="/contact"
+                href="/darkmode/contact"
                 className="relative border border-white bg-transparent px-5 py-2 text-xs font-mono text-white transition-all duration-200 hover:bg-white hover:text-black lg:px-6 lg:py-2.5 lg:text-sm"
               >
                 CONTACT ME

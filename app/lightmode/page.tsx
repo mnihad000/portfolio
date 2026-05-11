@@ -1,5 +1,5 @@
-import LightExperience from "@/components/ui/light-experience";
+import { redirect } from "next/navigation";
 
-export default function LightModeHomePage() {
-  return <LightExperience />;
+export default function LegacyLightModeHomePage() {
+  redirect("/");
 }

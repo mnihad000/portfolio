@@ -12,6 +12,7 @@ import {
 import { usePathname, useRouter } from "next/navigation";
 import { useSiteTheme } from "@/components/providers/site-theme-provider";
 import { projects } from "@/lib/projects";
+import { getCanonicalPathForTheme } from "@/lib/theme-routes";
 
 type EntryTone = "default" | "muted" | "success" | "warning";
 
@@ -238,6 +239,10 @@ export default function ProtocolTerminal() {
     });
   }
 
+  function openThemedRoute(href: string) {
+    openInternalRoute(getCanonicalPathForTheme(href, theme));
+  }
+
   function triggerResumeDownload() {
     const link = document.createElement("a");
     link.href = RESUME_URL;
@@ -278,8 +283,9 @@ export default function ProtocolTerminal() {
   }
 
   function appendProjectEntries() {
+    const projectsRoute = getCanonicalPathForTheme("/projects", theme);
     const projectEntries: TerminalEntry[] = [
-      createTextEntry("/projects", "muted"),
+      createTextEntry(projectsRoute, "muted"),
       ...projects.map((project, index) => ({
         id: createId(),
         kind: "project" as const,
@@ -406,8 +412,9 @@ export default function ProtocolTerminal() {
     }
 
     if (normalized === "about") {
-      appendEntries([createTextEntry("Opening /about...", "muted")]);
-      openInternalRoute("/about");
+      const aboutRoute = getCanonicalPathForTheme("/about", theme);
+      appendEntries([createTextEntry(`Opening ${aboutRoute}...`, "muted")]);
+      openThemedRoute("/about");
       return;
     }
 
@@ -446,7 +453,7 @@ export default function ProtocolTerminal() {
       await sleep(450);
       appendEntries([createTextEntry("Redirecting to contact page...", "muted")]);
       await sleep(1500);
-      openInternalRoute("/contact");
+      openThemedRoute("/contact");
       return;
     }
 
@@ -461,8 +468,9 @@ export default function ProtocolTerminal() {
         return;
       }
 
-      appendEntries([createTextEntry(`Opening /projects/${project.slug}...`, "muted")]);
-      openInternalRoute(`/projects/${project.slug}`);
+      const projectRoute = getCanonicalPathForTheme(`/projects/${project.slug}`, theme);
+      appendEntries([createTextEntry(`Opening ${projectRoute}...`, "muted")]);
+      openThemedRoute(`/projects/${project.slug}`);
       return;
     }
 
@@ -610,7 +618,7 @@ export default function ProtocolTerminal() {
           </div>
           <button
             type="button"
-            onClick={() => openInternalRoute(`/projects/${entry.slug}`)}
+            onClick={() => openThemedRoute(`/projects/${entry.slug}`)}
             className="shrink-0 text-[#888888] transition-colors hover:text-white"
           >
             [open]

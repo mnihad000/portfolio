@@ -198,7 +198,7 @@ function AboutSection() {
         </div>
       </div>
 
-      <div className="mx-auto mt-16 max-w-6xl">
+      <div id="experiences" className="mx-auto mt-16 max-w-6xl scroll-mt-28">
         <div className="max-w-3xl">
           <h3 className="text-2xl font-semibold tracking-tight text-neutral-900 md:text-3xl">
             Experiences
@@ -319,7 +319,7 @@ function ContactSection() {
               Contact Me
             </h3>
             <p className="max-w-xl text-base leading-8 text-neutral-600 md:text-lg">
-              Got a project idea, opportunity, want to team up for a hackathon, or just want to chat? I'd love to hear from you.
+              Got a project idea, opportunity, want to team up for a hackathon, or just want to chat? I&apos;d love to hear from you.
             </p>
           </motion.div>
 

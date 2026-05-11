@@ -1,24 +1,12 @@
-import { notFound } from "next/navigation";
-import LightProjectDetailPage from "@/components/ui/light-project-detail-page";
-import { getProjectBySlug, projects } from "@/lib/projects";
+import { redirect } from "next/navigation";
 
-type LightProjectDetailRouteProps = {
+type LegacyLightModeProjectDetailPageProps = {
   params: Promise<{ slug: string }>;
 };
 
-export function generateStaticParams() {
-  return projects.map((project) => ({ slug: project.slug }));
-}
-
-export default async function LightProjectDetailRoute({
+export default async function LegacyLightModeProjectDetailPage({
   params,
-}: LightProjectDetailRouteProps) {
+}: LegacyLightModeProjectDetailPageProps) {
   const { slug } = await params;
-  const project = getProjectBySlug(slug);
-
-  if (!project) {
-    notFound();
-  }
-
-  return <LightProjectDetailPage project={project} />;
+  redirect(`/projects/${slug}`);
 }

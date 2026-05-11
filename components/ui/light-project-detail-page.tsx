@@ -276,7 +276,7 @@ export default function LightProjectDetailPage({
 function BackToProjectsLink() {
   return (
     <Link
-      href="/lightmode/projects"
+      href="/projects"
       className="inline-flex items-center gap-2 text-sm font-medium uppercase tracking-[0.22em] text-neutral-500 transition-colors hover:text-neutral-900"
     >
       <span aria-hidden>&larr;</span>

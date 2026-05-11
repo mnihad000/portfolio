@@ -1,5 +1,5 @@
-import HomeExperienceSwitcher from "@/components/ui/home-experience-switcher";
+import LightExperience from "@/components/ui/light-experience";
 
 export default function HomePage() {
-  return <HomeExperienceSwitcher />;
+  return <LightExperience />;
 }

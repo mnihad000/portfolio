@@ -1,49 +1,73 @@
-import type { SiteTheme } from "@/components/providers/site-theme-provider";
+import type { SiteTheme } from "@/lib/theme";
 
-export const LIGHTMODE_HOME_ROUTE = "/lightmode";
-export const LIGHTMODE_PROJECTS_ROUTE = "/lightmode/projects";
+export const DARKMODE_HOME_ROUTE = "/darkmode";
+export const DARKMODE_PROJECTS_ROUTE = "/darkmode/projects";
 
-export function isLightModeRoute(pathname: string) {
-  return pathname === LIGHTMODE_HOME_ROUTE || pathname.startsWith(`${LIGHTMODE_HOME_ROUTE}/`);
+export function isDarkModeRoute(pathname: string) {
+  return pathname === DARKMODE_HOME_ROUTE || pathname.startsWith(`${DARKMODE_HOME_ROUTE}/`);
 }
 
 export function getCanonicalPathForTheme(
   pathname: string,
   theme: SiteTheme
 ): string {
-  if (theme === "light") {
+  if (theme === "dark") {
     if (pathname === "/") {
-      return LIGHTMODE_HOME_ROUTE;
+      return DARKMODE_HOME_ROUTE;
     }
 
     if (pathname === "/projects") {
-      return LIGHTMODE_PROJECTS_ROUTE;
+      return DARKMODE_PROJECTS_ROUTE;
     }
 
     if (pathname.startsWith("/projects/")) {
-      return `${LIGHTMODE_HOME_ROUTE}${pathname}`;
+      return `${DARKMODE_HOME_ROUTE}${pathname}`;
     }
 
-    if (isLightModeRoute(pathname)) {
+    if (pathname === "/about") {
+      return `${DARKMODE_HOME_ROUTE}/about`;
+    }
+
+    if (pathname === "/contact") {
+      return `${DARKMODE_HOME_ROUTE}/contact`;
+    }
+
+    if (pathname === "/experiences") {
+      return `${DARKMODE_HOME_ROUTE}/experiences`;
+    }
+
+    if (isDarkModeRoute(pathname)) {
       return pathname;
     }
 
-    return LIGHTMODE_HOME_ROUTE;
+    return DARKMODE_HOME_ROUTE;
   }
 
-  if (pathname === LIGHTMODE_HOME_ROUTE) {
+  if (pathname === DARKMODE_HOME_ROUTE) {
     return "/";
   }
 
-  if (pathname === LIGHTMODE_PROJECTS_ROUTE) {
+  if (pathname === DARKMODE_PROJECTS_ROUTE) {
     return "/projects";
   }
 
-  if (pathname.startsWith(`${LIGHTMODE_PROJECTS_ROUTE}/`)) {
-    return pathname.replace(LIGHTMODE_HOME_ROUTE, "");
+  if (pathname.startsWith(`${DARKMODE_PROJECTS_ROUTE}/`)) {
+    return pathname.replace(DARKMODE_HOME_ROUTE, "");
   }
 
-  if (isLightModeRoute(pathname)) {
+  if (pathname === `${DARKMODE_HOME_ROUTE}/about`) {
+    return "/#about";
+  }
+
+  if (pathname === `${DARKMODE_HOME_ROUTE}/contact`) {
+    return "/#contact";
+  }
+
+  if (pathname === `${DARKMODE_HOME_ROUTE}/experiences`) {
+    return "/#experiences";
+  }
+
+  if (isDarkModeRoute(pathname)) {
     return "/";
   }
 

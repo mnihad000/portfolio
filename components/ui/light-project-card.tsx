@@ -36,7 +36,7 @@ export default function LightProjectCard({
       }}
     >
       <Link
-        href={`/lightmode/projects/${project.slug}`}
+        href={`/projects/${project.slug}`}
         className="group flex h-full flex-col overflow-hidden rounded-[2rem] border border-black/10 bg-white text-left shadow-[0_18px_45px_rgba(0,0,0,0.05)] transition duration-300 hover:-translate-y-1 hover:shadow-[0_24px_55px_rgba(0,0,0,0.08)] focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-black/20"
       >
         <div className="relative aspect-[16/10] overflow-hidden bg-[radial-gradient(circle_at_top,_rgba(255,255,255,0.8),_rgba(231,231,231,0.95)_40%,_rgba(212,212,212,1)_100%)]">

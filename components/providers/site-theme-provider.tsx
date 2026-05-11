@@ -11,10 +11,9 @@ import {
   type ReactNode,
 } from "react";
 import { usePathname, useRouter } from "next/navigation";
-import { DEFAULT_THEME } from "@/lib/theme";
+import { DEFAULT_THEME, type SiteTheme } from "@/lib/theme";
 import { getCanonicalPathForTheme } from "@/lib/theme-routes";
 
-export type SiteTheme = "light" | "dark";
 export type ThemeTransitionPhase = "idle" | "transitioning" | "swapped";
 
 type SiteThemeContextValue = {
@@ -37,7 +36,7 @@ function isTheme(value: string | null | undefined): value is SiteTheme {
 
 function getInitialTheme(): SiteTheme {
   if (typeof document === "undefined") {
-    return DEFAULT_THEME as SiteTheme;
+    return DEFAULT_THEME;
   }
 
   const datasetTheme = document.documentElement.dataset.theme;
@@ -45,7 +44,7 @@ function getInitialTheme(): SiteTheme {
     return datasetTheme;
   }
 
-  return DEFAULT_THEME as SiteTheme;
+  return DEFAULT_THEME;
 }
 
 function applyTheme(theme: SiteTheme) {
@@ -146,7 +145,7 @@ export function SiteThemeProvider({ children }: { children: ReactNode }) {
   const pathname = usePathname();
   const router = useRouter();
   const timersRef = useRef<number[]>([]);
-  const [theme, setThemeState] = useState<SiteTheme>(DEFAULT_THEME as SiteTheme);
+  const [theme, setThemeState] = useState<SiteTheme>(DEFAULT_THEME);
   const [mounted, setMounted] = useState(false);
   const [transitionPhase, setTransitionPhase] =
     useState<ThemeTransitionPhase>("idle");

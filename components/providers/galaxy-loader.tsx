@@ -2,7 +2,7 @@
 
 import { useEffect } from "react";
 import { usePathname } from "next/navigation";
-import { isLightModeRoute } from "@/lib/theme-routes";
+import { isDarkModeRoute } from "@/lib/theme-routes";
 
 declare global {
   interface Window {
@@ -94,7 +94,7 @@ export default function GalaxyLoader() {
       }
     }
 
-    if (isLightModeRoute(pathname)) {
+    if (!isDarkModeRoute(pathname)) {
       mountGalaxy();
       return () => {
         cancelled = true;
