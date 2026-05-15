@@ -78,6 +78,8 @@ const CONTACT_EMAIL = "mnihad1107@gmail.com";
 const GITHUB_URL = "https://github.com/mnihad000";
 const LINKEDIN_URL = "https://www.linkedin.com/in/mohammed-nihad-090348263/";
 const RESUME_URL = "/resume";
+const COMMAND_ACCENT_CLASS =
+  "text-[#d65a12] drop-shadow-[0_0_10px_rgba(214,90,18,0.45)]";
 
 const BOOT_LINES = [
   "Initializing NIHAD.PROTOCOL...",
@@ -576,8 +578,8 @@ export default function ProtocolTerminal() {
   function renderEntry(entry: TerminalEntry): ReactNode {
     if (entry.kind === "command") {
       return (
-        <div className="flex items-start gap-2 text-amber-300">
-          <span className="shrink-0 text-amber-300">{PROMPT}</span>
+        <div className={`flex items-start gap-2 ${COMMAND_ACCENT_CLASS}`}>
+          <span className={`shrink-0 ${COMMAND_ACCENT_CLASS}`}>{PROMPT}</span>
           <span>{entry.value}</span>
         </div>
       );
@@ -589,7 +591,7 @@ export default function ProtocolTerminal() {
       if (helpCommandLine) {
         return (
           <div>
-            <span className="text-amber-300">{helpCommandLine.commandPart}</span>
+            <span className={COMMAND_ACCENT_CLASS}>{helpCommandLine.commandPart}</span>
             <span className="text-[#888888]">{helpCommandLine.supportPart}</span>
           </div>
         );
@@ -742,7 +744,7 @@ export default function ProtocolTerminal() {
           <span className="pointer-events-none absolute inset-0 bg-[radial-gradient(rgba(255,255,255,0.08)_1px,transparent_1px)] bg-[size:12px_12px] opacity-[0.16]" />
           <span className="pointer-events-none absolute inset-x-0 top-0 h-px bg-white/10" />
           <span className="relative z-10 flex min-w-0 items-center gap-2">
-            <span className="protocol-caret shrink-0 text-[12px] text-amber-300">{">_"}</span>
+            <span className={`protocol-caret shrink-0 text-[12px] ${COMMAND_ACCENT_CLASS}`}>{">_"}</span>
             <span className="truncate text-[11px] tracking-[0.16em] text-white/92 lowercase">
               Start Here
             </span>
@@ -802,8 +804,8 @@ export default function ProtocolTerminal() {
 
             <div className="border-t border-white/10 px-4 py-4">
               <div className="mb-2 text-[11px] tracking-[0.16em] text-[#888888]">{HELP_HINT}</div>
-              <label className="flex min-h-11 items-center gap-2 text-[14px] text-amber-300">
-                <span className="shrink-0 text-amber-300">{PROMPT}</span>
+              <label className={`flex min-h-11 items-center gap-2 text-[14px] ${COMMAND_ACCENT_CLASS}`}>
+                <span className={`shrink-0 ${COMMAND_ACCENT_CLASS}`}>{PROMPT}</span>
                 <input
                   ref={inputRef}
                   value={inputValue}
@@ -813,7 +815,7 @@ export default function ProtocolTerminal() {
                   spellCheck={false}
                   placeholder={"type 'help' to list commands"}
                   disabled={isBooting}
-                  className="min-w-0 flex-1 bg-transparent py-1 text-[14px] text-amber-300 outline-none placeholder:text-[#666666] disabled:cursor-not-allowed"
+                  className={`min-w-0 flex-1 bg-transparent py-1 text-[14px] outline-none placeholder:text-[#666666] disabled:cursor-not-allowed ${COMMAND_ACCENT_CLASS}`}
                 />
               </label>
             </div>
@@ -823,7 +825,7 @@ export default function ProtocolTerminal() {
 
       <style jsx>{`
         input {
-          caret-color: #fcd34d;
+          caret-color: #d65a12;
         }
 
         .protocol-tone-default {
@@ -839,7 +841,7 @@ export default function ProtocolTerminal() {
         }
 
         .protocol-tone-warning {
-          color: #fcd34d;
+          color: #d65a12;
         }
 
         .protocol-caret,

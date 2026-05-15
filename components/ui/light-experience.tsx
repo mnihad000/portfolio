@@ -142,6 +142,8 @@ function HeroSection() {
 }
 
 function AboutSection() {
+  const resumeHref = aboutPageContent.statuses[0]?.ctaHref ?? "/resume";
+
   return (
     <section
       id="about"
@@ -179,6 +181,13 @@ function AboutSection() {
               className="rounded-full border border-neutral-900 bg-neutral-900 px-5 py-2.5 text-sm font-semibold text-white transition hover:bg-neutral-700"
             >
               Contact
+            </a>
+            <a
+              href={resumeHref}
+              className="inline-flex items-center gap-2 rounded-full border border-neutral-900 bg-white px-5 py-2.5 text-sm font-semibold text-neutral-900 shadow-sm transition hover:bg-neutral-100"
+            >
+              <Download className="h-4 w-4" strokeWidth={1.9} />
+              Download Resume
             </a>
           </div>
         </div>
@@ -376,21 +385,6 @@ function ContactSection() {
               </span>
             </MagneticContactCard>
 
-            <a
-              href={resumeHref}
-              className="group flex items-center justify-between gap-4 rounded-[1.75rem] border border-neutral-900 bg-neutral-900 px-5 py-4 text-white shadow-[0_14px_35px_rgba(0,0,0,0.08)] transition hover:bg-neutral-800 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-black/25 sm:col-span-2"
-            >
-              <div>
-                <p className="text-[11px] uppercase tracking-[0.24em] text-white/58">
-                  Primary Action
-                </p>
-                <p className="mt-1 text-lg font-semibold tracking-tight">Download Resume</p>
-              </div>
-              <span className="inline-flex items-center gap-2 text-sm font-medium text-white/88">
-                <Download className="h-4 w-4" strokeWidth={1.9} />
-                Get PDF
-              </span>
-            </a>
           </motion.div>
         </div>
 
@@ -399,7 +393,7 @@ function ContactSection() {
           whileInView={{ opacity: 1, y: 0 }}
           viewport={{ once: true, amount: 0.25 }}
           transition={{ ...revealTransition, delay: 0.16 }}
-          className="h-[430px] md:h-[455px]"
+          className="h-[560px] md:h-[640px] lg:h-[680px]"
         >
           <ContactTerminal resumeHref={resumeHref} />
         </motion.div>
@@ -414,6 +408,9 @@ type TerminalLine = {
   kind: "command" | "output" | "success" | "error";
 };
 
+const TERMINAL_COMMAND_GLOW_CLASS =
+  "text-[#d65a12] drop-shadow-[0_0_10px_rgba(214,90,18,0.45)]";
+
 const TERMINAL_COMMANDS = [
   "help",
   "whoami",
@@ -427,6 +424,65 @@ const TERMINAL_COMMANDS = [
   "sudo hire me",
   "ls secrets/",
 ] as const;
+
+const TERMINAL_COMMAND_PATTERN = new RegExp(
+  `^([\\s>]*)(?:${TERMINAL_COMMANDS.map((command) =>
+    command.replace(/[.*+?^${}()|[\]\\]/g, "\\$&")
+  ).join("|")})(?=\\s+-|\\s|$)`,
+  "i"
+);
+
+const QUOTED_TERMINAL_COMMAND_PATTERN = new RegExp(
+  `'(${TERMINAL_COMMANDS.map((command) =>
+    command.replace(/[.*+?^${}()|[\]\\]/g, "\\$&")
+  ).join("|")})'`,
+  "gi"
+);
+
+function renderCommandHighlights(text: string): ReactNode {
+  return text.split(/(\n)/).map((part, partIndex) => {
+    if (part === "\n") {
+      return part;
+    }
+
+    const leadingCommandMatch = part.match(TERMINAL_COMMAND_PATTERN);
+
+    if (leadingCommandMatch) {
+      const leading = leadingCommandMatch[1] ?? "";
+      const command = leadingCommandMatch[0].slice(leading.length);
+
+      return (
+        <span key={`${partIndex}-${part}`}>
+          {leading}
+          <span className={TERMINAL_COMMAND_GLOW_CLASS}>{command}</span>
+          {part.slice(leadingCommandMatch[0].length)}
+        </span>
+      );
+    }
+
+    const fragments: ReactNode[] = [];
+    let lastIndex = 0;
+
+    part.replace(QUOTED_TERMINAL_COMMAND_PATTERN, (match, command: string, offset: number) => {
+      fragments.push(part.slice(lastIndex, offset), "'");
+      fragments.push(
+        <span key={`${partIndex}-${offset}`} className={TERMINAL_COMMAND_GLOW_CLASS}>
+          {command}
+        </span>
+      );
+      fragments.push("'");
+      lastIndex = offset + match.length;
+      return match;
+    });
+
+    if (!fragments.length) {
+      return part;
+    }
+
+    fragments.push(part.slice(lastIndex));
+    return <span key={`${partIndex}-${part}`}>{fragments}</span>;
+  });
+}
 
 function ContactTerminal({ resumeHref }: { resumeHref: string }) {
   const [lines, setLines] = useState<TerminalLine[]>([
@@ -722,20 +778,20 @@ function ContactTerminal({ resumeHref }: { resumeHref: string }) {
               key={line.id}
               className={`whitespace-pre-wrap break-words font-mono ${
                 line.kind === "command" || line.kind === "success"
-                  ? "text-[#d65a12]"
+                  ? TERMINAL_COMMAND_GLOW_CLASS
                   : line.kind === "error"
                     ? "text-red-600"
                     : "text-neutral-700"
               }`}
             >
-              {line.text}
+              {renderCommandHighlights(line.text)}
             </pre>
           ))}
         </div>
       </div>
 
       <label className="flex items-center gap-2 border-t border-black/8 bg-[#fbfaf8] px-4 py-3 font-mono text-sm md:px-5">
-        <span className="text-[#d65a12]">&gt;</span>
+        <span className={TERMINAL_COMMAND_GLOW_CLASS}>&gt;</span>
         <input
           ref={inputRef}
           value={input}
@@ -744,13 +800,16 @@ function ContactTerminal({ resumeHref }: { resumeHref: string }) {
             setHistoryIndex(null);
           }}
           onKeyDown={handleKeyDown}
-          className="min-w-0 flex-1 bg-transparent font-mono text-[#d65a12] outline-none placeholder:text-neutral-300"
+          className={`min-w-0 flex-1 bg-transparent font-mono outline-none placeholder:text-neutral-300 ${TERMINAL_COMMAND_GLOW_CLASS}`}
           spellCheck={false}
           autoComplete="off"
           aria-label="NIHAD OS terminal command"
           placeholder="type a command"
         />
-        <span className="h-5 w-2 animate-pulse bg-[#d65a12]" aria-hidden="true" />
+        <span
+          className="h-5 w-2 animate-pulse bg-[#d65a12] shadow-[0_0_10px_rgba(214,90,18,0.45)]"
+          aria-hidden="true"
+        />
       </label>
     </div>
   );
@@ -820,6 +879,11 @@ const MISSION_COMPLETE_LINES = [
   "nihad_resume.enc — DECRYPTED.",
 ];
 
+const GUARD_VISION_RANGE = 3;
+const CAMERA_VISION_RANGE = 3;
+const PATROL_TICK_MS = 620;
+const LASER_TICK_MS = 900;
+
 const range = (start: number, end: number) =>
   Array.from({ length: Math.abs(end - start) + 1 }, (_, index) =>
     start <= end ? start + index : start - index
@@ -853,18 +917,16 @@ const FLOOR_LAYOUTS: FloorLayout[] = [
     start: { x: 1, y: 8 },
     server: { x: 12, y: 1 },
     walls: [
-      ...range(1, 11).filter((x) => x !== 3 && x !== 10).map((x) => ({ x, y: 3 })),
-      ...range(2, 12).filter((x) => x !== 6).map((x) => ({ x, y: 6 })),
-      ...range(4, 8).filter((y) => y !== 7).map((y) => ({ x: 8, y })),
+      ...range(1, 11).filter((x) => x !== 3 && x !== 7 && x !== 10).map((x) => ({ x, y: 3 })),
+      ...range(2, 12).filter((x) => x !== 5 && x !== 9).map((x) => ({ x, y: 6 })),
+      ...range(4, 8).filter((y) => y !== 5 && y !== 7).map((y) => ({ x: 8, y })),
     ],
     guards: [
       { path: horizontalPath(1, 4, 9) },
-      { path: verticalPath(12, 4, 8) },
-      { path: horizontalPath(8, 4, 9) },
+      { path: verticalPath(12, 5, 8) },
     ],
     cameras: [
       { x: 3, y: 4, directions: ["right", "down", "left", "up"] },
-      { x: 10, y: 7, directions: ["up", "left", "down", "right"] },
     ],
   },
   {
@@ -873,25 +935,22 @@ const FLOOR_LAYOUTS: FloorLayout[] = [
     start: { x: 1, y: 8 },
     server: { x: 13, y: 1 },
     walls: [
-      ...range(2, 13).filter((x) => x !== 4 && x !== 11).map((x) => ({ x, y: 2 })),
-      ...range(1, 11).filter((x) => x !== 7).map((x) => ({ x, y: 5 })),
-      ...range(4, 13).filter((x) => x !== 10).map((x) => ({ x, y: 7 })),
-      ...range(3, 8).filter((y) => y !== 5).map((y) => ({ x: 6, y })),
+      ...range(2, 13).filter((x) => x !== 4 && x !== 8 && x !== 11).map((x) => ({ x, y: 2 })),
+      ...range(1, 11).filter((x) => x !== 3 && x !== 7).map((x) => ({ x, y: 5 })),
+      ...range(4, 13).filter((x) => x !== 7 && x !== 10).map((x) => ({ x, y: 7 })),
+      ...range(3, 8).filter((y) => y !== 4 && y !== 5).map((y) => ({ x: 6, y })),
     ],
     guards: [
-      { path: horizontalPath(1, 3, 8) },
-      { path: verticalPath(13, 3, 8) },
+      { path: horizontalPath(0, 3, 8) },
       { path: horizontalPath(4, 8, 12) },
-      { path: verticalPath(3, 6, 8) },
+      { path: verticalPath(13, 5, 8) },
     ],
     cameras: [
       { x: 11, y: 3, directions: ["down", "left", "up", "right"] },
-      { x: 4, y: 6, directions: ["right", "up", "left", "down"] },
     ],
     lasers: [
-      { orientation: "horizontal", y: 4, x1: 2, x2: 6 },
-      { orientation: "vertical", x: 10, y1: 3, y2: 8 },
-      { orientation: "horizontal", y: 8, x1: 7, x2: 12 },
+      { orientation: "horizontal", y: 4, x1: 2, x2: 5 },
+      { orientation: "vertical", x: 10, y1: 4, y2: 7 },
     ],
   },
 ];
@@ -902,6 +961,14 @@ function pointKey(point: GridPoint) {
 
 function pointsEqual(a: GridPoint, b: GridPoint) {
   return a.x === b.x && a.y === b.y;
+}
+
+function isOutOfBounds(layout: FloorLayout, point: GridPoint) {
+  return point.x < 0 || point.y < 0 || point.x >= layout.cols || point.y >= layout.rows;
+}
+
+function isWall(layout: FloorLayout, point: GridPoint) {
+  return layout.walls.some((wall) => pointsEqual(wall, point));
 }
 
 function directionBetween(from: GridPoint, to?: GridPoint): Direction {
@@ -958,13 +1025,7 @@ function cloneGameRuntime(runtime: GameRuntime): GameRuntime {
 }
 
 function isBlocked(layout: FloorLayout, point: GridPoint) {
-  return (
-    point.x < 0 ||
-    point.y < 0 ||
-    point.x >= layout.cols ||
-    point.y >= layout.rows ||
-    layout.walls.some((wall) => pointsEqual(wall, point))
-  );
+  return isOutOfBounds(layout, point) || isWall(layout, point);
 }
 
 function advancePatrols(runtime: GameRuntime) {
@@ -1004,16 +1065,34 @@ function detectorPosition(detector: DetectorRuntime, distance: number, offset: n
   return { x: detector.x + distance, y: detector.y + offset };
 }
 
-function isInVision(detector: DetectorRuntime, point: GridPoint) {
-  for (let distance = 1; distance <= detector.range; distance += 1) {
-    for (let offset = -distance; offset <= distance; offset += 1) {
-      if (pointsEqual(detectorPosition(detector, distance, offset), point)) {
-        return true;
+function detectorVisiblePoints(layout: FloorLayout, detector: DetectorRuntime) {
+  const visible = new Map<string, GridPoint>();
+  const maxSpread = Math.max(0, Math.floor(detector.range / 2));
+
+  for (let rayOffset = -maxSpread; rayOffset <= maxSpread; rayOffset += 1) {
+    for (let distance = 1; distance <= detector.range; distance += 1) {
+      const offset = Math.round((rayOffset * distance) / detector.range);
+      const point = detectorPosition(detector, distance, offset);
+
+      if (isOutOfBounds(layout, point)) {
+        break;
       }
+
+      if (isWall(layout, point)) {
+        break;
+      }
+
+      visible.set(pointKey(point), point);
     }
   }
 
-  return false;
+  return Array.from(visible.values());
+}
+
+function isInVision(layout: FloorLayout, detector: DetectorRuntime, point: GridPoint) {
+  return detectorVisiblePoints(layout, detector).some((visiblePoint) =>
+    pointsEqual(visiblePoint, point)
+  );
 }
 
 function getDetectors(runtime: GameRuntime): DetectorRuntime[] {
@@ -1021,14 +1100,14 @@ function getDetectors(runtime: GameRuntime): DetectorRuntime[] {
     ...runtime.guards.map((guard) => ({
       ...guard.path[guard.step],
       dir: guard.dir,
-      range: 4,
+      range: GUARD_VISION_RANGE,
       kind: "guard" as const,
     })),
     ...runtime.cameras.map((camera) => ({
       x: camera.x,
       y: camera.y,
       dir: camera.dir,
-      range: 5,
+      range: CAMERA_VISION_RANGE,
       kind: "camera" as const,
     })),
   ];
@@ -1057,30 +1136,9 @@ function isDetected(runtime: GameRuntime) {
         return true;
       }
 
-      return isInVision(detector, runtime.agent);
+      return isInVision(layout, detector, runtime.agent);
     }) || isLaserHit(layout, runtime.agent, runtime.laserActive)
   );
-}
-
-function visionPolygon(detector: DetectorRuntime) {
-  const apexX = detector.x + 0.5;
-  const apexY = detector.y + 0.5;
-  const rangeLength = detector.range + 0.65;
-  const spread = detector.range + 0.15;
-
-  if (detector.dir === "up") {
-    return `${apexX},${apexY} ${apexX - spread},${apexY - rangeLength} ${apexX + spread},${apexY - rangeLength}`;
-  }
-
-  if (detector.dir === "down") {
-    return `${apexX},${apexY} ${apexX - spread},${apexY + rangeLength} ${apexX + spread},${apexY + rangeLength}`;
-  }
-
-  if (detector.dir === "left") {
-    return `${apexX},${apexY} ${apexX - rangeLength},${apexY - spread} ${apexX - rangeLength},${apexY + spread}`;
-  }
-
-  return `${apexX},${apexY} ${apexX + rangeLength},${apexY - spread} ${apexX + rangeLength},${apexY + spread}`;
 }
 
 function StealthResumeGame({
@@ -1244,7 +1302,7 @@ function StealthResumeGame({
           lastGuardTickRef.current = timestamp;
         }
 
-        if (timestamp - lastGuardTickRef.current >= 400) {
+        if (timestamp - lastGuardTickRef.current >= PATROL_TICK_MS) {
           advancePatrols(runtime);
           lastGuardTickRef.current = timestamp;
 
@@ -1260,7 +1318,7 @@ function StealthResumeGame({
             lastLaserTickRef.current = timestamp;
           }
 
-          if (timestamp - lastLaserTickRef.current >= 600) {
+          if (timestamp - lastLaserTickRef.current >= LASER_TICK_MS) {
             runtime.laserActive = !runtime.laserActive;
             lastLaserTickRef.current = timestamp;
 
@@ -1298,6 +1356,10 @@ function StealthResumeGame({
         a: { x: -1, y: 0 },
         s: { x: 0, y: 1 },
         d: { x: 1, y: 0 },
+        arrowup: { x: 0, y: -1 },
+        arrowleft: { x: -1, y: 0 },
+        arrowdown: { x: 0, y: 1 },
+        arrowright: { x: 1, y: 0 },
       };
       const delta = deltas[event.key.toLowerCase()];
 
@@ -1356,6 +1418,9 @@ function StealthResumeGame({
   const guardByKey = new Map(runtime.guards.map((guard) => [pointKey(guard.path[guard.step]), guard]));
   const cameraByKey = new Map(runtime.cameras.map((camera) => [pointKey(camera), camera]));
   const detectors = getDetectors(runtime);
+  const radarKeys = new Set(
+    detectors.flatMap((detector) => detectorVisiblePoints(layout, detector).map(pointKey))
+  );
   const cells = Array.from({ length: layout.cols * layout.rows }, (_, index) => ({
     x: index % layout.cols,
     y: Math.floor(index / layout.cols),
@@ -1428,23 +1493,6 @@ function StealthResumeGame({
               gridTemplateColumns: `repeat(${layout.cols}, minmax(0, 1fr))`,
             }}
           >
-            <svg
-              className="pointer-events-none absolute inset-0 z-30 h-full w-full"
-              viewBox={`0 0 ${layout.cols} ${layout.rows}`}
-              preserveAspectRatio="none"
-              aria-hidden="true"
-            >
-              {detectors.map((detector, index) => (
-                <polygon
-                  key={`${detector.kind}-${index}-${detector.x}-${detector.y}-${detector.dir}`}
-                  points={visionPolygon(detector)}
-                  fill="rgba(245, 130, 32, 0.34)"
-                  stroke="rgba(214, 90, 18, 0.34)"
-                  strokeWidth="0.04"
-                />
-              ))}
-            </svg>
-
             {(layout.lasers ?? []).map((laser, index) => {
               const activeClass = runtime.laserActive
                 ? "bg-[#ef3b2d] shadow-[0_0_14px_rgba(239,59,45,0.7)]"
@@ -1481,6 +1529,7 @@ function StealthResumeGame({
               const guard = guardByKey.get(key);
               const camera = cameraByKey.get(key);
               const isAgent = pointsEqual(cell, runtime.agent);
+              const isRadarCell = radarKeys.has(key);
 
               return (
                 <div
@@ -1489,8 +1538,14 @@ function StealthResumeGame({
                     isWall ? "bg-neutral-200" : "bg-white"
                   } ${isServer ? "bg-[#f5f5f2]" : ""}`}
                 >
+                  {isRadarCell ? (
+                    <span
+                      className="pointer-events-none absolute inset-0 z-0 bg-[#f58220]/18 ring-1 ring-inset ring-[#d65a12]/20"
+                      aria-hidden="true"
+                    />
+                  ) : null}
                   {isServer ? (
-                    <span className="font-mono text-[7px] font-bold leading-none text-neutral-950 sm:text-[8px]">
+                    <span className="relative z-40 font-mono text-[7px] font-bold leading-none text-neutral-950 sm:text-[8px]">
                       [SERVER]
                     </span>
                   ) : null}
@@ -1513,6 +1568,7 @@ function StealthResumeGame({
 
           <div className="mt-4 flex items-center justify-between gap-4 font-mono text-[10px] uppercase tracking-[0.22em] text-neutral-500">
             <span>Objective: Extract [SERVER]</span>
+            <span className="text-red-600">Move: WASD / Arrows</span>
             <span>{runtime.mode === "floor-clear" ? "Floor Clear" : "Live Patrol"}</span>
           </div>
 
