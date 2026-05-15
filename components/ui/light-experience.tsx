@@ -1,6 +1,6 @@
 "use client";
 
-import { useEffect, type ReactNode } from "react";
+import { useCallback, useEffect, useMemo, useRef, useState, type KeyboardEvent, type ReactNode } from "react";
 import {
   motion,
   useMotionValue,
@@ -297,24 +297,22 @@ function ProjectsSection() {
 }
 
 function ContactSection() {
-  const primaryStatus = aboutPageContent.statuses[0];
-  const recruitingStatus = aboutPageContent.statuses[1];
+  const resumeHref = aboutPageContent.statuses[0]?.ctaHref ?? "/resume";
 
   return (
     <section
       id="contact"
-      className="mx-auto mt-24 max-w-6xl scroll-mt-28 rounded-[2rem] border border-black/10 bg-white px-5 py-8 shadow-[0_20px_55px_rgba(0,0,0,0.06)] md:px-8 md:py-10"
+      className="mx-auto mt-24 max-w-6xl scroll-mt-28 rounded-[2rem] border border-black/10 bg-white px-5 py-6 shadow-[0_20px_55px_rgba(0,0,0,0.06)] md:px-8 md:py-7"
     >
-      <div className="grid gap-10 md:grid-cols-[1.05fr_0.95fr] md:items-start">
+      <div className="grid gap-8 md:grid-cols-[1.05fr_0.95fr] md:items-start">
         <div className="space-y-6">
           <motion.div
             initial={{ opacity: 0, y: 20 }}
             whileInView={{ opacity: 1, y: 0 }}
             viewport={{ once: true, amount: 0.35 }}
             transition={revealTransition}
-            className="space-y-4"
+            className="space-y-3"
           >
-            <p className="text-xs uppercase tracking-[0.28em] text-neutral-500">Let&apos;s connect</p>
             <h3 className="text-4xl font-semibold tracking-tight text-neutral-900 md:text-5xl">
               Contact Me
             </h3>
@@ -370,12 +368,29 @@ function ContactSection() {
               description="Browse the repos behind the portfolio."
               accent="subtle"
               fullWidth
+              compact
             >
               <span className="inline-flex items-center gap-2 text-sm font-medium">
                 Open GitHub
                 <ArrowUpRight className="h-4 w-4" strokeWidth={1.8} />
               </span>
             </MagneticContactCard>
+
+            <a
+              href={resumeHref}
+              className="group flex items-center justify-between gap-4 rounded-[1.75rem] border border-neutral-900 bg-neutral-900 px-5 py-4 text-white shadow-[0_14px_35px_rgba(0,0,0,0.08)] transition hover:bg-neutral-800 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-black/25 sm:col-span-2"
+            >
+              <div>
+                <p className="text-[11px] uppercase tracking-[0.24em] text-white/58">
+                  Primary Action
+                </p>
+                <p className="mt-1 text-lg font-semibold tracking-tight">Download Resume</p>
+              </div>
+              <span className="inline-flex items-center gap-2 text-sm font-medium text-white/88">
+                <Download className="h-4 w-4" strokeWidth={1.9} />
+                Get PDF
+              </span>
+            </a>
           </motion.div>
         </div>
 
@@ -384,82 +399,1211 @@ function ContactSection() {
           whileInView={{ opacity: 1, y: 0 }}
           viewport={{ once: true, amount: 0.25 }}
           transition={{ ...revealTransition, delay: 0.16 }}
-          className="rounded-[1.9rem] border border-black/8 bg-[radial-gradient(circle_at_top,_rgba(255,255,255,0.98),_rgba(246,244,240,0.96)_44%,_rgba(235,233,228,0.98)_100%)] p-5 shadow-[0_22px_55px_rgba(0,0,0,0.07)] md:p-6"
+          className="h-[430px] md:h-[455px]"
         >
-          <div className="relative overflow-hidden rounded-[1.5rem] border border-black/8 bg-white/70 p-5 shadow-[inset_0_1px_0_rgba(255,255,255,0.85)] backdrop-blur-xl md:p-6">
-            <div
-              aria-hidden="true"
-              className="pointer-events-none absolute inset-0 bg-[radial-gradient(circle_at_top_right,_rgba(214,90,18,0.14),_transparent_36%),linear-gradient(to_bottom,rgba(255,255,255,0.65),transparent_38%)]"
-            />
-
-            <div className="relative z-10 space-y-6">
-              <div className="grid gap-3">
-                <StatusCard
-                  label={primaryStatus.label}
-                  title={primaryStatus.title}
-                  description={primaryStatus.description}
-                  tone={primaryStatus.tone}
-                />
-                <StatusCard
-                  label={recruitingStatus.label}
-                  title={recruitingStatus.title}
-                  description={recruitingStatus.description}
-                  tone={recruitingStatus.tone}
-                />
-              </div>
-
-              <a
-                href={primaryStatus.ctaHref ?? "/resume"}
-                className="group flex items-center justify-between gap-4 rounded-[1.4rem] border border-neutral-900 bg-neutral-900 px-5 py-4 text-white shadow-[0_18px_40px_rgba(17,17,17,0.18)] transition hover:bg-neutral-800 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-black/25"
-              >
-                <div>
-                  <p className="text-[11px] uppercase tracking-[0.24em] text-white/58">
-                    Primary Action
-                  </p>
-                  <p className="mt-1 text-lg font-semibold tracking-tight">Download Resume</p>
-                </div>
-                <span className="inline-flex items-center gap-2 text-sm font-medium text-white/88">
-                  <Download className="h-4 w-4" strokeWidth={1.9} />
-                  Get PDF
-                </span>
-              </a>
-
-            </div>
-          </div>
+          <ContactTerminal resumeHref={resumeHref} />
         </motion.div>
       </div>
     </section>
   );
 }
 
-function StatusCard({
-  label,
-  title,
-  description,
-  tone,
-}: {
-  label: string;
-  title: string;
-  description: string;
-  tone: "success" | "warning";
-}) {
-  const accentClass =
-    tone === "success"
-      ? "border-emerald-200/90 bg-emerald-50/80 text-emerald-700"
-      : "border-amber-200/90 bg-amber-50/80 text-amber-700";
+type TerminalLine = {
+  id: number;
+  text: string;
+  kind: "command" | "output" | "success" | "error";
+};
+
+const TERMINAL_COMMANDS = [
+  "help",
+  "whoami",
+  "status",
+  "projects",
+  "skills",
+  "contact",
+  "resume",
+  "clear",
+  "start game",
+  "sudo hire me",
+  "ls secrets/",
+] as const;
+
+function ContactTerminal({ resumeHref }: { resumeHref: string }) {
+  const [lines, setLines] = useState<TerminalLine[]>([
+    {
+      id: 0,
+      text: "NIHAD_OS boot complete. Type 'help' for available commands.",
+      kind: "output",
+    },
+  ]);
+  const [input, setInput] = useState("");
+  const [history, setHistory] = useState<string[]>([]);
+  const [historyIndex, setHistoryIndex] = useState<number | null>(null);
+  const [isGameActive, setIsGameActive] = useState(false);
+  const lineIdRef = useRef(1);
+  const typeTimerRef = useRef<number | null>(null);
+  const inputRef = useRef<HTMLInputElement>(null);
+  const scrollRef = useRef<HTMLDivElement>(null);
+
+  const terminalContent = useMemo(() => {
+    const bio = aboutPageContent.heroParagraphs
+      .map((paragraph) => paragraph.map((segment) => segment.text).join(""))
+      .join(" ");
+
+    const status = aboutPageContent.statuses
+      .map((item) => `${item.label}: ${item.title} ${item.description}`)
+      .join("\n");
+
+    const projectList = projects
+      .map((project) => {
+        const links = [
+          `/projects/${project.slug}`,
+          ...(project.richDetail?.links
+            .filter((link) => link.href.startsWith("http"))
+            .map((link) => link.href) ?? []),
+        ];
+
+        return `${project.title}: ${project.description}\n  link: ${links.join(" | ")}`;
+      })
+      .join("\n\n");
+
+    const skills = aboutPageContent.skillGroups
+      .map((group) => `${group.title}: ${group.items.join(", ")}`)
+      .join("\n");
+
+    return {
+      bio,
+      contact: [
+        `email: ${lightModeContent.email}`,
+        `linkedin: ${lightModeContent.linkedin}`,
+        `github: ${lightModeContent.github}`,
+      ].join("\n"),
+      projectList,
+      skills,
+      status,
+    };
+  }, []);
+
+  useEffect(() => {
+    return () => {
+      if (typeTimerRef.current) {
+        window.clearInterval(typeTimerRef.current);
+      }
+    };
+  }, []);
+
+  useEffect(() => {
+    scrollRef.current?.scrollTo({
+      top: scrollRef.current.scrollHeight,
+      behavior: "smooth",
+    });
+  }, [lines]);
+
+  const addLine = (text: string, kind: TerminalLine["kind"]) => {
+    const id = lineIdRef.current;
+    lineIdRef.current += 1;
+    setLines((current) => [...current, { id, text, kind }]);
+  };
+
+  const addTypedLine = (text: string, kind: TerminalLine["kind"] = "output") => {
+    if (typeTimerRef.current) {
+      window.clearInterval(typeTimerRef.current);
+    }
+
+    const id = lineIdRef.current;
+    lineIdRef.current += 1;
+    let index = 0;
+    setLines((current) => [...current, { id, text: "", kind }]);
+
+    typeTimerRef.current = window.setInterval(() => {
+      index = Math.min(index + 4, text.length);
+      setLines((current) =>
+        current.map((line) =>
+          line.id === id ? { ...line, text: text.slice(0, index) } : line
+        )
+      );
+
+      if (index >= text.length && typeTimerRef.current) {
+        window.clearInterval(typeTimerRef.current);
+        typeTimerRef.current = null;
+      }
+    }, 7);
+  };
+
+  const runCommand = (rawInput: string) => {
+    const submitted = rawInput.trim();
+    const command = submitted.toLowerCase().replace(/\s+/g, " ");
+
+    if (!submitted) {
+      return;
+    }
+
+    addLine(`> ${submitted}`, "command");
+    setHistory((current) => [...current, submitted]);
+    setHistoryIndex(null);
+    setInput("");
+
+    if (command === "clear") {
+      if (typeTimerRef.current) {
+        window.clearInterval(typeTimerRef.current);
+        typeTimerRef.current = null;
+      }
+      setLines([]);
+      return;
+    }
+
+    if (command === "resume") {
+      addTypedLine("Resume download ready. Opening PDF...", "success");
+      window.setTimeout(() => {
+        window.location.href = resumeHref;
+      }, 350);
+      return;
+    }
+
+    if (command === "sudo hire me") {
+      addTypedLine("Access granted. Redirecting to contact form...", "success");
+      return;
+    }
+
+    if (command === "ls secrets/") {
+      addTypedLine("Permission denied. Nice try.", "error");
+      return;
+    }
+
+    if (command === "start game") {
+      addTypedLine("GAME MODULE LOADING...", "success");
+      window.setTimeout(() => {
+        setIsGameActive(true);
+      }, 450);
+      return;
+    }
+
+    const outputs: Partial<Record<(typeof TERMINAL_COMMANDS)[number], string>> = {
+      help: [
+        "Available commands:",
+        "help - list commands",
+        "whoami - short bio",
+        "status - current internship and search signal",
+        "projects - real projects and links",
+        "skills - tech stack",
+        "contact - contact links",
+        "resume - download resume PDF",
+        "clear - clear terminal",
+        "start game - launch stealth extraction module",
+        "sudo hire me - request elevated access",
+        "ls secrets/ - inspect restricted path",
+      ].join("\n"),
+      whoami: terminalContent.bio,
+      status: terminalContent.status,
+      projects: terminalContent.projectList,
+      skills: terminalContent.skills,
+      contact: terminalContent.contact,
+    };
+
+    const output = outputs[command as keyof typeof outputs];
+
+    if (output) {
+      addTypedLine(output);
+      return;
+    }
+
+    addTypedLine(
+      `command not found: ${submitted}. Type 'help' for available commands.`,
+      "error"
+    );
+  };
+
+  const autocompleteCommand = () => {
+    const normalizedInput = input.toLowerCase();
+    const matches = TERMINAL_COMMANDS.filter((command) => command.startsWith(normalizedInput));
+
+    if (matches.length === 1) {
+      setInput(matches[0]);
+      return;
+    }
+
+    if (matches.length > 1 && normalizedInput) {
+      const commonPrefix = matches.reduce<string>((prefix, command) => {
+        let index = 0;
+
+        while (index < prefix.length && prefix[index] === command[index]) {
+          index += 1;
+        }
+
+        return prefix.slice(0, index);
+      }, matches[0]);
+
+      if (commonPrefix.length > normalizedInput.length) {
+        setInput(commonPrefix);
+      }
+    }
+  };
+
+  const handleKeyDown = (event: KeyboardEvent<HTMLInputElement>) => {
+    if (event.key === "Enter") {
+      runCommand(input);
+      return;
+    }
+
+    if (event.key === "ArrowUp") {
+      event.preventDefault();
+
+      if (!history.length) {
+        return;
+      }
+
+      const nextIndex =
+        historyIndex === null
+          ? history.length - 1
+          : historyIndex === 0
+            ? history.length - 1
+            : historyIndex - 1;
+
+      setHistoryIndex(nextIndex);
+      setInput(history[nextIndex]);
+      return;
+    }
+
+    if (event.key === "ArrowDown") {
+      event.preventDefault();
+
+      if (!history.length || historyIndex === null) {
+        return;
+      }
+
+      const nextIndex = historyIndex === history.length - 1 ? 0 : historyIndex + 1;
+      setHistoryIndex(nextIndex);
+      setInput(history[nextIndex]);
+      return;
+    }
+
+    if (event.key === "Tab") {
+      event.preventDefault();
+      autocompleteCommand();
+    }
+  };
+
+  if (isGameActive) {
+    return (
+      <StealthResumeGame
+        resumeHref={resumeHref}
+        onExit={() => {
+          setIsGameActive(false);
+          window.setTimeout(() => inputRef.current?.focus(), 0);
+        }}
+      />
+    );
+  }
 
   return (
-    <article className="rounded-[1.35rem] border border-black/8 bg-white px-4 py-4 shadow-[0_14px_30px_rgba(0,0,0,0.04)]">
-      <div className="flex flex-wrap items-start justify-between gap-3">
-        <span
-          className={`inline-flex items-center rounded-full border px-2.5 py-1 text-[10px] font-medium uppercase tracking-[0.22em] ${accentClass}`}
-        >
-          {label}
-        </span>
+    <div
+      className="flex h-full min-h-0 flex-col overflow-hidden rounded-[1.9rem] border border-black/8 bg-white shadow-[0_22px_55px_rgba(0,0,0,0.07)]"
+      onClick={() => inputRef.current?.focus()}
+    >
+      <div className="flex items-center justify-between border-b border-black/8 bg-[#fbfaf8] px-4 py-3">
+        <div className="flex items-center gap-2" aria-hidden="true">
+          <span className="h-3 w-3 rounded-full bg-[#ff5f57]" />
+          <span className="h-3 w-3 rounded-full bg-[#febc2e]" />
+          <span className="h-3 w-3 rounded-full bg-[#28c840]" />
+        </div>
+        <p className="font-mono text-[11px] font-semibold uppercase tracking-[0.24em] text-neutral-500">
+          NIHAD_OS v1.0
+        </p>
+        <div className="w-[52px]" aria-hidden="true" />
       </div>
-      <h5 className="mt-3 text-base font-semibold leading-7 text-neutral-900">{title}</h5>
-      <p className="mt-1 text-sm leading-7 text-neutral-600">{description}</p>
-    </article>
+
+      <div
+        ref={scrollRef}
+        className="min-h-0 flex-1 overflow-y-auto px-4 py-4 font-mono text-sm leading-7 text-neutral-700 md:px-5 md:py-5"
+      >
+        <div className="space-y-3">
+          {lines.map((line) => (
+            <pre
+              key={line.id}
+              className={`whitespace-pre-wrap break-words font-mono ${
+                line.kind === "command" || line.kind === "success"
+                  ? "text-[#d65a12]"
+                  : line.kind === "error"
+                    ? "text-red-600"
+                    : "text-neutral-700"
+              }`}
+            >
+              {line.text}
+            </pre>
+          ))}
+        </div>
+      </div>
+
+      <label className="flex items-center gap-2 border-t border-black/8 bg-[#fbfaf8] px-4 py-3 font-mono text-sm md:px-5">
+        <span className="text-[#d65a12]">&gt;</span>
+        <input
+          ref={inputRef}
+          value={input}
+          onChange={(event) => {
+            setInput(event.target.value);
+            setHistoryIndex(null);
+          }}
+          onKeyDown={handleKeyDown}
+          className="min-w-0 flex-1 bg-transparent font-mono text-[#d65a12] outline-none placeholder:text-neutral-300"
+          spellCheck={false}
+          autoComplete="off"
+          aria-label="NIHAD OS terminal command"
+          placeholder="type a command"
+        />
+        <span className="h-5 w-2 animate-pulse bg-[#d65a12]" aria-hidden="true" />
+      </label>
+    </div>
+  );
+}
+
+type Direction = "up" | "right" | "down" | "left";
+
+type GridPoint = {
+  x: number;
+  y: number;
+};
+
+type GuardPlan = {
+  path: GridPoint[];
+};
+
+type CameraPlan = GridPoint & {
+  directions: Direction[];
+};
+
+type LaserPlan =
+  | { orientation: "horizontal"; y: number; x1: number; x2: number }
+  | { orientation: "vertical"; x: number; y1: number; y2: number };
+
+type FloorLayout = {
+  cols: number;
+  rows: number;
+  start: GridPoint;
+  server: GridPoint;
+  walls: GridPoint[];
+  guards: GuardPlan[];
+  cameras?: CameraPlan[];
+  lasers?: LaserPlan[];
+};
+
+type GuardRuntime = GuardPlan & {
+  step: number;
+  forward: 1 | -1;
+  dir: Direction;
+};
+
+type CameraRuntime = CameraPlan & {
+  dir: Direction;
+  dirIndex: number;
+};
+
+type DetectorRuntime = GridPoint & {
+  dir: Direction;
+  range: number;
+  kind: "guard" | "camera";
+};
+
+type GameRuntime = {
+  floorIndex: number;
+  agent: GridPoint;
+  guards: GuardRuntime[];
+  cameras: CameraRuntime[];
+  laserActive: boolean;
+  mode: "playing" | "compromised" | "floor-clear" | "complete";
+  completeText: string;
+  completeReady: boolean;
+};
+
+const MISSION_COMPLETE_LINES = [
+  "BREACH SUCCESSFUL.",
+  "ACCESSING CLASSIFIED FILE...",
+  "nihad_resume.enc — DECRYPTED.",
+];
+
+const range = (start: number, end: number) =>
+  Array.from({ length: Math.abs(end - start) + 1 }, (_, index) =>
+    start <= end ? start + index : start - index
+  );
+
+const horizontalPath = (y: number, x1: number, x2: number) =>
+  range(x1, x2).map((x) => ({ x, y }));
+
+const verticalPath = (x: number, y1: number, y2: number) =>
+  range(y1, y2).map((y) => ({ x, y }));
+
+const FLOOR_LAYOUTS: FloorLayout[] = [
+  {
+    cols: 13,
+    rows: 9,
+    start: { x: 1, y: 7 },
+    server: { x: 11, y: 1 },
+    walls: [
+      ...range(2, 10).filter((x) => x !== 5).map((x) => ({ x, y: 2 })),
+      ...range(2, 11).filter((x) => x !== 9).map((x) => ({ x, y: 5 })),
+      ...range(3, 6).filter((y) => y !== 5).map((y) => ({ x: 7, y })),
+    ],
+    guards: [
+      { path: horizontalPath(1, 3, 8) },
+      { path: verticalPath(11, 6, 7) },
+    ],
+  },
+  {
+    cols: 14,
+    rows: 10,
+    start: { x: 1, y: 8 },
+    server: { x: 12, y: 1 },
+    walls: [
+      ...range(1, 11).filter((x) => x !== 3 && x !== 10).map((x) => ({ x, y: 3 })),
+      ...range(2, 12).filter((x) => x !== 6).map((x) => ({ x, y: 6 })),
+      ...range(4, 8).filter((y) => y !== 7).map((y) => ({ x: 8, y })),
+    ],
+    guards: [
+      { path: horizontalPath(1, 4, 9) },
+      { path: verticalPath(12, 4, 8) },
+      { path: horizontalPath(8, 4, 9) },
+    ],
+    cameras: [
+      { x: 3, y: 4, directions: ["right", "down", "left", "up"] },
+      { x: 10, y: 7, directions: ["up", "left", "down", "right"] },
+    ],
+  },
+  {
+    cols: 15,
+    rows: 10,
+    start: { x: 1, y: 8 },
+    server: { x: 13, y: 1 },
+    walls: [
+      ...range(2, 13).filter((x) => x !== 4 && x !== 11).map((x) => ({ x, y: 2 })),
+      ...range(1, 11).filter((x) => x !== 7).map((x) => ({ x, y: 5 })),
+      ...range(4, 13).filter((x) => x !== 10).map((x) => ({ x, y: 7 })),
+      ...range(3, 8).filter((y) => y !== 5).map((y) => ({ x: 6, y })),
+    ],
+    guards: [
+      { path: horizontalPath(1, 3, 8) },
+      { path: verticalPath(13, 3, 8) },
+      { path: horizontalPath(4, 8, 12) },
+      { path: verticalPath(3, 6, 8) },
+    ],
+    cameras: [
+      { x: 11, y: 3, directions: ["down", "left", "up", "right"] },
+      { x: 4, y: 6, directions: ["right", "up", "left", "down"] },
+    ],
+    lasers: [
+      { orientation: "horizontal", y: 4, x1: 2, x2: 6 },
+      { orientation: "vertical", x: 10, y1: 3, y2: 8 },
+      { orientation: "horizontal", y: 8, x1: 7, x2: 12 },
+    ],
+  },
+];
+
+function pointKey(point: GridPoint) {
+  return `${point.x}:${point.y}`;
+}
+
+function pointsEqual(a: GridPoint, b: GridPoint) {
+  return a.x === b.x && a.y === b.y;
+}
+
+function directionBetween(from: GridPoint, to?: GridPoint): Direction {
+  if (!to) {
+    return "right";
+  }
+
+  if (to.x > from.x) {
+    return "right";
+  }
+
+  if (to.x < from.x) {
+    return "left";
+  }
+
+  if (to.y > from.y) {
+    return "down";
+  }
+
+  return "up";
+}
+
+function createGameRuntime(floorIndex: number): GameRuntime {
+  const layout = FLOOR_LAYOUTS[floorIndex];
+
+  return {
+    floorIndex,
+    agent: { ...layout.start },
+    guards: layout.guards.map((guard) => ({
+      path: guard.path,
+      step: 0,
+      forward: 1,
+      dir: directionBetween(guard.path[0], guard.path[1]),
+    })),
+    cameras: (layout.cameras ?? []).map((camera) => ({
+      ...camera,
+      dir: camera.directions[0],
+      dirIndex: 0,
+    })),
+    laserActive: false,
+    mode: "playing",
+    completeText: "",
+    completeReady: false,
+  };
+}
+
+function cloneGameRuntime(runtime: GameRuntime): GameRuntime {
+  return {
+    ...runtime,
+    agent: { ...runtime.agent },
+    guards: runtime.guards.map((guard) => ({ ...guard })),
+    cameras: runtime.cameras.map((camera) => ({ ...camera })),
+  };
+}
+
+function isBlocked(layout: FloorLayout, point: GridPoint) {
+  return (
+    point.x < 0 ||
+    point.y < 0 ||
+    point.x >= layout.cols ||
+    point.y >= layout.rows ||
+    layout.walls.some((wall) => pointsEqual(wall, point))
+  );
+}
+
+function advancePatrols(runtime: GameRuntime) {
+  runtime.guards.forEach((guard) => {
+    let nextStep = guard.step + guard.forward;
+
+    if (!guard.path[nextStep]) {
+      guard.forward = guard.forward === 1 ? -1 : 1;
+      nextStep = guard.step + guard.forward;
+    }
+
+    if (guard.path[nextStep]) {
+      guard.dir = directionBetween(guard.path[guard.step], guard.path[nextStep]);
+      guard.step = nextStep;
+    }
+  });
+
+  runtime.cameras.forEach((camera) => {
+    camera.dirIndex = (camera.dirIndex + 1) % camera.directions.length;
+    camera.dir = camera.directions[camera.dirIndex];
+  });
+}
+
+function detectorPosition(detector: DetectorRuntime, distance: number, offset: number) {
+  if (detector.dir === "up") {
+    return { x: detector.x + offset, y: detector.y - distance };
+  }
+
+  if (detector.dir === "down") {
+    return { x: detector.x + offset, y: detector.y + distance };
+  }
+
+  if (detector.dir === "left") {
+    return { x: detector.x - distance, y: detector.y + offset };
+  }
+
+  return { x: detector.x + distance, y: detector.y + offset };
+}
+
+function isInVision(detector: DetectorRuntime, point: GridPoint) {
+  for (let distance = 1; distance <= detector.range; distance += 1) {
+    for (let offset = -distance; offset <= distance; offset += 1) {
+      if (pointsEqual(detectorPosition(detector, distance, offset), point)) {
+        return true;
+      }
+    }
+  }
+
+  return false;
+}
+
+function getDetectors(runtime: GameRuntime): DetectorRuntime[] {
+  return [
+    ...runtime.guards.map((guard) => ({
+      ...guard.path[guard.step],
+      dir: guard.dir,
+      range: 4,
+      kind: "guard" as const,
+    })),
+    ...runtime.cameras.map((camera) => ({
+      x: camera.x,
+      y: camera.y,
+      dir: camera.dir,
+      range: 5,
+      kind: "camera" as const,
+    })),
+  ];
+}
+
+function isLaserHit(layout: FloorLayout, agent: GridPoint, laserActive: boolean) {
+  if (!laserActive) {
+    return false;
+  }
+
+  return (layout.lasers ?? []).some((laser) => {
+    if (laser.orientation === "horizontal") {
+      return agent.y === laser.y && agent.x >= laser.x1 && agent.x <= laser.x2;
+    }
+
+    return agent.x === laser.x && agent.y >= laser.y1 && agent.y <= laser.y2;
+  });
+}
+
+function isDetected(runtime: GameRuntime) {
+  const layout = FLOOR_LAYOUTS[runtime.floorIndex];
+
+  return (
+    getDetectors(runtime).some((detector) => {
+      if (pointsEqual(detector, runtime.agent)) {
+        return true;
+      }
+
+      return isInVision(detector, runtime.agent);
+    }) || isLaserHit(layout, runtime.agent, runtime.laserActive)
+  );
+}
+
+function visionPolygon(detector: DetectorRuntime) {
+  const apexX = detector.x + 0.5;
+  const apexY = detector.y + 0.5;
+  const rangeLength = detector.range + 0.65;
+  const spread = detector.range + 0.15;
+
+  if (detector.dir === "up") {
+    return `${apexX},${apexY} ${apexX - spread},${apexY - rangeLength} ${apexX + spread},${apexY - rangeLength}`;
+  }
+
+  if (detector.dir === "down") {
+    return `${apexX},${apexY} ${apexX - spread},${apexY + rangeLength} ${apexX + spread},${apexY + rangeLength}`;
+  }
+
+  if (detector.dir === "left") {
+    return `${apexX},${apexY} ${apexX - rangeLength},${apexY - spread} ${apexX - rangeLength},${apexY + spread}`;
+  }
+
+  return `${apexX},${apexY} ${apexX + rangeLength},${apexY - spread} ${apexX + rangeLength},${apexY + spread}`;
+}
+
+function StealthResumeGame({
+  resumeHref,
+  onExit,
+}: {
+  resumeHref: string;
+  onExit: () => void;
+}) {
+  const gameRef = useRef<GameRuntime>(createGameRuntime(0));
+  const [view, setView] = useState<GameRuntime>(() => createGameRuntime(0));
+  const rafRef = useRef<number | null>(null);
+  const lastGuardTickRef = useRef(0);
+  const lastLaserTickRef = useRef(0);
+  const completeTimerRef = useRef<number | null>(null);
+  const floorTimerRef = useRef<number | null>(null);
+  const audioContextRef = useRef<AudioContext | null>(null);
+  const surfaceRef = useRef<HTMLDivElement>(null);
+
+  const syncView = useCallback(() => {
+    setView(cloneGameRuntime(gameRef.current));
+  }, []);
+
+  const clearTypewriter = useCallback(() => {
+    if (completeTimerRef.current) {
+      window.clearInterval(completeTimerRef.current);
+      completeTimerRef.current = null;
+    }
+  }, []);
+
+  const playTone = useCallback((frequencies: number[], duration = 0.08, gap = 0.03) => {
+    const AudioContextConstructor =
+      window.AudioContext ||
+      (window as typeof window & { webkitAudioContext?: typeof AudioContext }).webkitAudioContext;
+
+    if (!AudioContextConstructor) {
+      return;
+    }
+
+    const context = audioContextRef.current ?? new AudioContextConstructor();
+    audioContextRef.current = context;
+
+    frequencies.forEach((frequency, index) => {
+      const oscillator = context.createOscillator();
+      const gain = context.createGain();
+      const start = context.currentTime + index * (duration + gap);
+      const end = start + duration;
+
+      oscillator.type = "sine";
+      oscillator.frequency.setValueAtTime(frequency, start);
+      gain.gain.setValueAtTime(0.0001, start);
+      gain.gain.exponentialRampToValueAtTime(0.045, start + 0.01);
+      gain.gain.exponentialRampToValueAtTime(0.0001, end);
+      oscillator.connect(gain);
+      gain.connect(context.destination);
+      oscillator.start(start);
+      oscillator.stop(end + 0.02);
+    });
+  }, []);
+
+  const playSound = useCallback(
+    (sound: "move" | "compromise" | "floor" | "complete") => {
+      if (sound === "move") {
+        playTone([430], 0.035, 0);
+        return;
+      }
+
+      if (sound === "compromise") {
+        playTone([92, 74], 0.16, 0.015);
+        return;
+      }
+
+      if (sound === "floor") {
+        playTone([440, 554, 659], 0.09, 0.035);
+        return;
+      }
+
+      playTone([523, 784], 0.2, 0.055);
+    },
+    [playTone]
+  );
+
+  const startFloor = useCallback(
+    (floorIndex: number) => {
+      clearTypewriter();
+
+      if (floorTimerRef.current) {
+        window.clearTimeout(floorTimerRef.current);
+        floorTimerRef.current = null;
+      }
+
+      gameRef.current = createGameRuntime(floorIndex);
+      lastGuardTickRef.current = 0;
+      lastLaserTickRef.current = 0;
+      syncView();
+      window.setTimeout(() => surfaceRef.current?.focus(), 0);
+    },
+    [clearTypewriter, syncView]
+  );
+
+  const startMissionComplete = useCallback(() => {
+    clearTypewriter();
+    playSound("complete");
+
+    const runtime = gameRef.current;
+    const fullText = MISSION_COMPLETE_LINES.join("\n");
+    runtime.mode = "complete";
+    runtime.completeText = "";
+    runtime.completeReady = false;
+    syncView();
+
+    let index = 0;
+    completeTimerRef.current = window.setInterval(() => {
+      index += 1;
+      runtime.completeText = fullText.slice(0, index);
+      syncView();
+
+      if (index >= fullText.length) {
+        clearTypewriter();
+        runtime.completeReady = true;
+        syncView();
+      }
+    }, 42);
+  }, [clearTypewriter, playSound, syncView]);
+
+  const triggerCompromise = useCallback(() => {
+    const runtime = gameRef.current;
+
+    if (runtime.mode !== "playing") {
+      return;
+    }
+
+    runtime.mode = "compromised";
+    playSound("compromise");
+    syncView();
+  }, [playSound, syncView]);
+
+  useEffect(() => {
+    startFloor(0);
+
+    return () => {
+      if (rafRef.current) {
+        window.cancelAnimationFrame(rafRef.current);
+      }
+
+      if (floorTimerRef.current) {
+        window.clearTimeout(floorTimerRef.current);
+      }
+
+      clearTypewriter();
+      audioContextRef.current?.close();
+    };
+  }, [clearTypewriter, startFloor]);
+
+  useEffect(() => {
+    const tick = (timestamp: number) => {
+      const runtime = gameRef.current;
+
+      if (runtime.mode === "playing") {
+        if (!lastGuardTickRef.current) {
+          lastGuardTickRef.current = timestamp;
+        }
+
+        if (timestamp - lastGuardTickRef.current >= 400) {
+          advancePatrols(runtime);
+          lastGuardTickRef.current = timestamp;
+
+          if (isDetected(runtime)) {
+            triggerCompromise();
+          } else {
+            syncView();
+          }
+        }
+
+        if (FLOOR_LAYOUTS[runtime.floorIndex].lasers?.length) {
+          if (!lastLaserTickRef.current) {
+            lastLaserTickRef.current = timestamp;
+          }
+
+          if (timestamp - lastLaserTickRef.current >= 600) {
+            runtime.laserActive = !runtime.laserActive;
+            lastLaserTickRef.current = timestamp;
+
+            if (isDetected(runtime)) {
+              triggerCompromise();
+            } else {
+              syncView();
+            }
+          }
+        }
+      }
+
+      rafRef.current = window.requestAnimationFrame(tick);
+    };
+
+    rafRef.current = window.requestAnimationFrame(tick);
+
+    return () => {
+      if (rafRef.current) {
+        window.cancelAnimationFrame(rafRef.current);
+      }
+    };
+  }, [syncView, triggerCompromise]);
+
+  useEffect(() => {
+    const handleKeyDown = (event: globalThis.KeyboardEvent) => {
+      const runtime = gameRef.current;
+
+      if (runtime.mode !== "playing") {
+        return;
+      }
+
+      const deltas: Partial<Record<string, GridPoint>> = {
+        w: { x: 0, y: -1 },
+        a: { x: -1, y: 0 },
+        s: { x: 0, y: 1 },
+        d: { x: 1, y: 0 },
+      };
+      const delta = deltas[event.key.toLowerCase()];
+
+      if (!delta) {
+        return;
+      }
+
+      event.preventDefault();
+      const layout = FLOOR_LAYOUTS[runtime.floorIndex];
+      const nextAgent = {
+        x: runtime.agent.x + delta.x,
+        y: runtime.agent.y + delta.y,
+      };
+
+      if (isBlocked(layout, nextAgent)) {
+        return;
+      }
+
+      runtime.agent = nextAgent;
+      playSound("move");
+
+      if (isDetected(runtime)) {
+        triggerCompromise();
+        return;
+      }
+
+      if (pointsEqual(nextAgent, layout.server)) {
+        runtime.mode = "floor-clear";
+        playSound("floor");
+        syncView();
+
+        floorTimerRef.current = window.setTimeout(() => {
+          if (runtime.floorIndex === FLOOR_LAYOUTS.length - 1) {
+            startMissionComplete();
+            return;
+          }
+
+          startFloor(runtime.floorIndex + 1);
+        }, 520);
+        return;
+      }
+
+      syncView();
+    };
+
+    window.addEventListener("keydown", handleKeyDown);
+
+    return () => {
+      window.removeEventListener("keydown", handleKeyDown);
+    };
+  }, [playSound, startFloor, startMissionComplete, syncView, triggerCompromise]);
+
+  const runtime = view;
+  const layout = FLOOR_LAYOUTS[runtime.floorIndex];
+  const wallKeys = new Set(layout.walls.map(pointKey));
+  const guardByKey = new Map(runtime.guards.map((guard) => [pointKey(guard.path[guard.step]), guard]));
+  const cameraByKey = new Map(runtime.cameras.map((camera) => [pointKey(camera), camera]));
+  const detectors = getDetectors(runtime);
+  const cells = Array.from({ length: layout.cols * layout.rows }, (_, index) => ({
+    x: index % layout.cols,
+    y: Math.floor(index / layout.cols),
+  }));
+
+  return (
+    <div
+      ref={surfaceRef}
+      tabIndex={0}
+      className={`stealth-game-shell flex h-full min-h-0 flex-col overflow-hidden rounded-[1.9rem] border border-black/8 bg-white shadow-[0_22px_55px_rgba(0,0,0,0.07)] outline-none ${
+        runtime.mode === "compromised" ? "stealth-compromised" : ""
+      }`}
+      aria-label="Stealth resume extraction game"
+    >
+      <div className="flex items-center justify-between border-b border-black/8 bg-[#fbfaf8] px-4 py-3">
+        <div className="flex min-w-0 items-center gap-3">
+          <div className="flex items-center gap-2" aria-hidden="true">
+            <span className="h-3 w-3 rounded-full bg-[#ff5f57]" />
+            <span className="h-3 w-3 rounded-full bg-[#febc2e]" />
+            <span className="h-3 w-3 rounded-full bg-[#28c840]" />
+          </div>
+          <p className="truncate font-mono text-[11px] font-semibold uppercase tracking-[0.2em] text-neutral-600">
+            FLOOR {runtime.floorIndex + 1} / 3
+          </p>
+        </div>
+        <p className="hidden font-mono text-[11px] font-semibold uppercase tracking-[0.24em] text-neutral-500 sm:block">
+          NIHAD_OS v1.0
+        </p>
+        <button
+          type="button"
+          onClick={onExit}
+          className="rounded-full border border-black/10 bg-white px-3 py-1.5 font-mono text-[10px] font-bold uppercase tracking-[0.18em] text-neutral-700 shadow-sm transition hover:border-neutral-900 hover:text-neutral-950 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-black/20"
+        >
+          ✕ Exit
+        </button>
+      </div>
+
+      {runtime.mode === "complete" ? (
+        <div className="flex flex-1 flex-col items-center justify-center gap-8 bg-white px-6 text-center">
+          <pre className="min-h-[112px] whitespace-pre-wrap text-left font-mono text-lg font-semibold leading-9 tracking-normal text-neutral-950">
+            {runtime.completeText}
+            {!runtime.completeReady ? <span className="animate-pulse text-[#d65a12]">_</span> : null}
+          </pre>
+
+          {runtime.completeReady ? (
+            <div className="flex flex-col gap-3 sm:flex-row">
+              <a
+                href={resumeHref}
+                download
+                className="inline-flex items-center justify-center rounded-full border border-neutral-900 bg-neutral-900 px-5 py-2.5 text-sm font-semibold text-white shadow-sm transition hover:bg-neutral-800 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-black/25"
+              >
+                Download Resume
+              </a>
+              <button
+                type="button"
+                onClick={onExit}
+                className="inline-flex items-center justify-center rounded-full border border-neutral-300 bg-white px-5 py-2.5 text-sm font-semibold text-neutral-900 shadow-sm transition hover:bg-neutral-100 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-black/20"
+              >
+                Return to Terminal
+              </button>
+            </div>
+          ) : null}
+        </div>
+      ) : (
+        <div className="relative flex min-h-0 flex-1 flex-col justify-center bg-white p-4">
+          <div
+            className="relative mx-auto grid w-full max-w-[560px] overflow-hidden rounded-[1.15rem] border border-black/10 bg-white shadow-inner"
+            style={{
+              aspectRatio: `${layout.cols} / ${layout.rows}`,
+              gridTemplateColumns: `repeat(${layout.cols}, minmax(0, 1fr))`,
+            }}
+          >
+            <svg
+              className="pointer-events-none absolute inset-0 z-30 h-full w-full"
+              viewBox={`0 0 ${layout.cols} ${layout.rows}`}
+              preserveAspectRatio="none"
+              aria-hidden="true"
+            >
+              {detectors.map((detector, index) => (
+                <polygon
+                  key={`${detector.kind}-${index}-${detector.x}-${detector.y}-${detector.dir}`}
+                  points={visionPolygon(detector)}
+                  fill="rgba(245, 130, 32, 0.34)"
+                  stroke="rgba(214, 90, 18, 0.34)"
+                  strokeWidth="0.04"
+                />
+              ))}
+            </svg>
+
+            {(layout.lasers ?? []).map((laser, index) => {
+              const activeClass = runtime.laserActive
+                ? "bg-[#ef3b2d] shadow-[0_0_14px_rgba(239,59,45,0.7)]"
+                : "bg-neutral-300";
+              const laserStyle =
+                laser.orientation === "horizontal"
+                  ? {
+                      left: `${(laser.x1 / layout.cols) * 100}%`,
+                      top: `${((laser.y + 0.46) / layout.rows) * 100}%`,
+                      width: `${((laser.x2 - laser.x1 + 1) / layout.cols) * 100}%`,
+                      height: "2px",
+                    }
+                  : {
+                      left: `${((laser.x + 0.46) / layout.cols) * 100}%`,
+                      top: `${(laser.y1 / layout.rows) * 100}%`,
+                      width: "2px",
+                      height: `${((laser.y2 - laser.y1 + 1) / layout.rows) * 100}%`,
+                    };
+
+              return (
+                <span
+                  key={`${laser.orientation}-${index}`}
+                  className={`pointer-events-none absolute z-20 ${activeClass}`}
+                  style={laserStyle}
+                  aria-hidden="true"
+                />
+              );
+            })}
+
+            {cells.map((cell) => {
+              const key = pointKey(cell);
+              const isWall = wallKeys.has(key);
+              const isServer = pointsEqual(cell, layout.server);
+              const guard = guardByKey.get(key);
+              const camera = cameraByKey.get(key);
+              const isAgent = pointsEqual(cell, runtime.agent);
+
+              return (
+                <div
+                  key={key}
+                  className={`relative z-10 flex items-center justify-center border border-neutral-200/80 ${
+                    isWall ? "bg-neutral-200" : "bg-white"
+                  } ${isServer ? "bg-[#f5f5f2]" : ""}`}
+                >
+                  {isServer ? (
+                    <span className="font-mono text-[7px] font-bold leading-none text-neutral-950 sm:text-[8px]">
+                      [SERVER]
+                    </span>
+                  ) : null}
+                  {camera ? (
+                    <span
+                      className="absolute z-40 h-[42%] w-[42%] rotate-45 rounded-[2px] bg-neutral-800"
+                      aria-hidden="true"
+                    />
+                  ) : null}
+                  {guard ? (
+                    <span className="absolute z-40 h-[48%] w-[48%] rounded-[3px] bg-neutral-950" aria-hidden="true" />
+                  ) : null}
+                  {isAgent ? (
+                    <span className="absolute z-50 h-[38%] w-[38%] rounded-full bg-neutral-950 ring-2 ring-white" aria-hidden="true" />
+                  ) : null}
+                </div>
+              );
+            })}
+          </div>
+
+          <div className="mt-4 flex items-center justify-between gap-4 font-mono text-[10px] uppercase tracking-[0.22em] text-neutral-500">
+            <span>Objective: Extract [SERVER]</span>
+            <span>{runtime.mode === "floor-clear" ? "Floor Clear" : "Live Patrol"}</span>
+          </div>
+
+          {runtime.mode === "compromised" ? (
+            <div className="absolute inset-0 z-40 flex flex-col items-center justify-center bg-white/92 px-6 text-center">
+              <div className="stealth-glitch text-3xl font-black uppercase tracking-[0.14em] text-red-600">
+                IDENTITY COMPROMISED
+              </div>
+              <p className="mt-3 font-mono text-sm font-semibold uppercase tracking-[0.24em] text-neutral-950">
+                ACCESS REVOKED
+              </p>
+              <button
+                type="button"
+                onClick={() => startFloor(runtime.floorIndex)}
+                className="mt-7 rounded-full border border-neutral-900 bg-neutral-900 px-5 py-2.5 text-sm font-semibold text-white shadow-sm transition hover:bg-neutral-800 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-black/25"
+              >
+                [ RETRY FLOOR ]
+              </button>
+            </div>
+          ) : null}
+        </div>
+      )}
+
+      <style>{`
+        .stealth-game-shell {
+          position: relative;
+        }
+
+        .stealth-compromised {
+          animation: stealth-red-flash 420ms ease-out;
+        }
+
+        .stealth-compromised::after {
+          animation: stealth-scan 620ms linear infinite;
+          background: repeating-linear-gradient(
+            to bottom,
+            rgba(239, 68, 68, 0.16),
+            rgba(239, 68, 68, 0.16) 1px,
+            transparent 1px,
+            transparent 5px
+          );
+          content: "";
+          inset: 0;
+          pointer-events: none;
+          position: absolute;
+          z-index: 60;
+        }
+
+        .stealth-glitch {
+          animation: stealth-glitch 700ms steps(2, end) infinite;
+        }
+
+        @keyframes stealth-red-flash {
+          0%, 100% {
+            box-shadow: 0 22px 55px rgba(0, 0, 0, 0.07);
+          }
+
+          22%, 58% {
+            box-shadow: 0 0 0 999px rgba(239, 68, 68, 0.2), 0 0 44px rgba(239, 68, 68, 0.55);
+          }
+        }
+
+        @keyframes stealth-scan {
+          from {
+            transform: translateY(-10px);
+          }
+
+          to {
+            transform: translateY(10px);
+          }
+        }
+
+        @keyframes stealth-glitch {
+          0%, 100% {
+            transform: translate(0);
+          }
+
+          25% {
+            transform: translate(2px, -1px);
+          }
+
+          50% {
+            transform: translate(-2px, 1px);
+          }
+
+          75% {
+            transform: translate(1px, 1px);
+          }
+        }
+      `}</style>
+    </div>
   );
 }
 
@@ -473,6 +1617,7 @@ type MagneticContactCardProps = {
   description: string;
   accent: "dark" | "light" | "subtle";
   fullWidth?: boolean;
+  compact?: boolean;
   children: ReactNode;
 };
 
@@ -486,6 +1631,7 @@ function MagneticContactCard({
   description,
   accent,
   fullWidth = false,
+  compact = false,
   children,
 }: MagneticContactCardProps) {
   const reducedMotion = useReducedMotion();
@@ -547,16 +1693,16 @@ function MagneticContactCard({
         <div className="h-full w-full rounded-full" style={{ backgroundImage: glowColor }} />
       </motion.div>
 
-      <div className="relative z-10 flex h-full flex-col justify-between gap-5 p-5 md:p-6">
-        <div className="space-y-4">
-          <div className={`inline-flex h-11 w-11 items-center justify-center rounded-2xl ${iconClass}`}>
+      <div className={`relative z-10 flex h-full flex-col justify-between ${compact ? "gap-3 p-4 md:p-5" : "gap-5 p-5 md:p-6"}`}>
+        <div className={compact ? "space-y-3" : "space-y-4"}>
+          <div className={`inline-flex ${compact ? "h-10 w-10" : "h-11 w-11"} items-center justify-center rounded-2xl ${iconClass}`}>
             {icon}
           </div>
 
           <div className="space-y-1.5">
             <p className={`text-[11px] uppercase tracking-[0.24em] ${eyebrowClass}`}>{eyebrow}</p>
-            <h4 className="text-2xl font-semibold tracking-tight">{title}</h4>
-            <p className={`text-sm leading-7 ${descriptionClass}`}>{description}</p>
+            <h4 className={`${compact ? "text-xl" : "text-2xl"} font-semibold tracking-tight`}>{title}</h4>
+            <p className={`text-sm ${compact ? "leading-6" : "leading-7"} ${descriptionClass}`}>{description}</p>
           </div>
         </div>
 
