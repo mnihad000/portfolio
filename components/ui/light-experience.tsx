@@ -1,6 +1,15 @@
 "use client";
 
-import { useCallback, useEffect, useMemo, useRef, useState, type KeyboardEvent, type ReactNode } from "react";
+import {
+  useCallback,
+  useEffect,
+  useMemo,
+  useRef,
+  useState,
+  type FormEvent,
+  type KeyboardEvent,
+  type ReactNode,
+} from "react";
 import {
   motion,
   useMotionValue,
@@ -402,14 +411,172 @@ function ContactSection() {
   );
 }
 
-type TerminalLine = {
+type TerminalLineKind = "command" | "output" | "success" | "error";
+
+type TerminalTextLine = {
   id: number;
+  type: "text";
   text: string;
-  kind: "command" | "output" | "success" | "error";
+  kind: TerminalLineKind;
+};
+
+type TerminalSecretFormLine = {
+  id: number;
+  type: "secret-form";
+};
+
+type TerminalLine = TerminalTextLine | TerminalSecretFormLine;
+
+type SecretMessage = {
+  number: number;
+  name: string;
+  message: string;
+};
+
+type SecretAccessState = {
+  unlocked: boolean;
+  visitorNumber: number | null;
+  messages: SecretMessage[];
+  messagesLoaded: boolean;
+  promptClosed: boolean;
+  isUnlocking: boolean;
+  unlockFailed: boolean;
+};
+
+type SecretSession = {
+  visitorNumber: number;
+  promptClosed: boolean;
 };
 
 const TERMINAL_COMMAND_GLOW_CLASS =
   "text-[#d65a12] drop-shadow-[0_0_10px_rgba(214,90,18,0.45)]";
+
+const SECRET_SESSION_STORAGE_KEY = "nihad-os-secret-access";
+const SECRET_SEPARATOR = "———————————————————————";
+
+const INITIAL_SECRET_ACCESS: SecretAccessState = {
+  unlocked: false,
+  visitorNumber: null,
+  messages: [],
+  messagesLoaded: false,
+  promptClosed: false,
+  isUnlocking: false,
+  unlockFailed: false,
+};
+
+function isSecretMessage(value: unknown): value is SecretMessage {
+  if (!value || typeof value !== "object") {
+    return false;
+  }
+
+  const entry = value as Partial<SecretMessage>;
+
+  return (
+    Number.isInteger(entry.number) &&
+    typeof entry.name === "string" &&
+    typeof entry.message === "string"
+  );
+}
+
+function readSecretSession(): SecretSession | null {
+  if (typeof window === "undefined") {
+    return null;
+  }
+
+  try {
+    const rawSession = window.sessionStorage.getItem(SECRET_SESSION_STORAGE_KEY);
+
+    if (!rawSession) {
+      return null;
+    }
+
+    const parsed = JSON.parse(rawSession) as Partial<SecretSession>;
+    const visitorNumber = Number(parsed.visitorNumber);
+
+    if (!Number.isInteger(visitorNumber) || visitorNumber < 1) {
+      return null;
+    }
+
+    return {
+      visitorNumber,
+      promptClosed: parsed.promptClosed === true,
+    };
+  } catch {
+    return null;
+  }
+}
+
+function writeSecretSession(visitorNumber: number, promptClosed: boolean) {
+  if (typeof window === "undefined") {
+    return;
+  }
+
+  try {
+    window.sessionStorage.setItem(
+      SECRET_SESSION_STORAGE_KEY,
+      JSON.stringify({ visitorNumber, promptClosed })
+    );
+  } catch {
+    // The active component state still carries the unlock if storage is blocked.
+  }
+}
+
+function formatOrdinal(value: number) {
+  const remainder = value % 100;
+
+  if (remainder >= 11 && remainder <= 13) {
+    return `${value}th`;
+  }
+
+  switch (value % 10) {
+    case 1:
+      return `${value}st`;
+    case 2:
+      return `${value}nd`;
+    case 3:
+      return `${value}rd`;
+    default:
+      return `${value}th`;
+  }
+}
+
+function formatSecretMessages(messages: SecretMessage[]) {
+  if (!messages.length) {
+    return "  No messages have been left yet.";
+  }
+
+  return messages
+    .map((entry) => {
+      const name = entry.name.trim() || "Anonymous";
+      const message = entry.message.replace(/"/g, '\\"');
+
+      return `  #${entry.number} · ${name}: "${message}"`;
+    })
+    .join("\n");
+}
+
+function buildSecretDossier(visitorNumber: number, messages: SecretMessage[]) {
+  return [
+    "DECRYPTED. ACCESSING CLASSIFIED DOSSIER...",
+    "",
+    `NIHAD_OS: You are the ${formatOrdinal(visitorNumber)} person to reach this point.`,
+    "",
+    "BREACH COMPLETE.",
+    "You're one of the few who made it this far.",
+    "Most people just scroll portfolios.",
+    "You played the game.",
+    "That's exactly how I approach engineering.",
+    "— Mohammed",
+    "",
+    SECRET_SEPARATOR,
+    "MESSAGES FROM THOSE WHO CAME BEFORE:",
+    "",
+    formatSecretMessages(messages),
+    "",
+    SECRET_SEPARATOR,
+    "OPTIONAL: Leave a message for those who follow.",
+  ].join("\n");
+}
 
 const TERMINAL_COMMANDS = [
   "help",
@@ -488,6 +655,7 @@ function ContactTerminal({ resumeHref }: { resumeHref: string }) {
   const [lines, setLines] = useState<TerminalLine[]>([
     {
       id: 0,
+      type: "text",
       text: "NIHAD_OS boot complete. Type 'help' for available commands.",
       kind: "output",
     },
@@ -496,8 +664,12 @@ function ContactTerminal({ resumeHref }: { resumeHref: string }) {
   const [history, setHistory] = useState<string[]>([]);
   const [historyIndex, setHistoryIndex] = useState<number | null>(null);
   const [isGameActive, setIsGameActive] = useState(false);
+  const [secretAccess, setSecretAccess] = useState<SecretAccessState>(INITIAL_SECRET_ACCESS);
+  const [isSecretMessageSubmitting, setIsSecretMessageSubmitting] = useState(false);
   const lineIdRef = useRef(1);
   const typeTimerRef = useRef<number | null>(null);
+  const secretAccessRef = useRef<SecretAccessState>(secretAccess);
+  const secretUnlockRequestedRef = useRef(false);
   const inputRef = useRef<HTMLInputElement>(null);
   const scrollRef = useRef<HTMLDivElement>(null);
 
@@ -549,19 +721,43 @@ function ContactTerminal({ resumeHref }: { resumeHref: string }) {
   }, []);
 
   useEffect(() => {
+    const savedSession = readSecretSession();
+
+    if (!savedSession) {
+      return;
+    }
+
+    secretUnlockRequestedRef.current = true;
+    setSecretAccess((current) => ({
+      ...current,
+      unlocked: true,
+      visitorNumber: savedSession.visitorNumber,
+      promptClosed: savedSession.promptClosed,
+    }));
+  }, []);
+
+  useEffect(() => {
+    secretAccessRef.current = secretAccess;
+  }, [secretAccess]);
+
+  useEffect(() => {
     scrollRef.current?.scrollTo({
       top: scrollRef.current.scrollHeight,
       behavior: "smooth",
     });
   }, [lines]);
 
-  const addLine = (text: string, kind: TerminalLine["kind"]) => {
+  const addLine = (text: string, kind: TerminalLineKind) => {
     const id = lineIdRef.current;
     lineIdRef.current += 1;
-    setLines((current) => [...current, { id, text, kind }]);
+    setLines((current) => [...current, { id, type: "text", text, kind }]);
   };
 
-  const addTypedLine = (text: string, kind: TerminalLine["kind"] = "output") => {
+  const addTypedLine = (
+    text: string,
+    kind: TerminalLineKind = "output",
+    onComplete?: () => void
+  ) => {
     if (typeTimerRef.current) {
       window.clearInterval(typeTimerRef.current);
     }
@@ -569,22 +765,267 @@ function ContactTerminal({ resumeHref }: { resumeHref: string }) {
     const id = lineIdRef.current;
     lineIdRef.current += 1;
     let index = 0;
-    setLines((current) => [...current, { id, text: "", kind }]);
+    setLines((current) => [...current, { id, type: "text", text: "", kind }]);
 
     typeTimerRef.current = window.setInterval(() => {
       index = Math.min(index + 4, text.length);
       setLines((current) =>
         current.map((line) =>
-          line.id === id ? { ...line, text: text.slice(0, index) } : line
+          line.type === "text" && line.id === id
+            ? { ...line, text: text.slice(0, index) }
+            : line
         )
       );
 
       if (index >= text.length && typeTimerRef.current) {
         window.clearInterval(typeTimerRef.current);
         typeTimerRef.current = null;
+        onComplete?.();
       }
     }, 7);
   };
+
+  const addSecretFormLine = () => {
+    const id = lineIdRef.current;
+    lineIdRef.current += 1;
+    setLines((current) => [
+      ...current.filter((line) => line.type !== "secret-form"),
+      { id, type: "secret-form" },
+    ]);
+  };
+
+  const fetchSecretMessages = async () => {
+    const current = secretAccessRef.current;
+
+    if (current.messagesLoaded) {
+      return current.messages;
+    }
+
+    const response = await fetch("/api/secrets/messages", {
+      cache: "no-store",
+    });
+
+    if (!response.ok) {
+      throw new Error("Unable to load secret messages.");
+    }
+
+    const payload = (await response.json()) as { messages?: unknown[] };
+    const messages = Array.isArray(payload.messages)
+      ? payload.messages.filter(isSecretMessage)
+      : [];
+
+    setSecretAccess((state) => {
+      const nextState = {
+        ...state,
+        messages,
+        messagesLoaded: true,
+      };
+      secretAccessRef.current = nextState;
+      return nextState;
+    });
+
+    return messages;
+  };
+
+  const closeSecretPrompt = () => {
+    const visitorNumber = secretAccessRef.current.visitorNumber;
+
+    if (visitorNumber) {
+      writeSecretSession(visitorNumber, true);
+    }
+
+    setSecretAccess((current) => {
+      const nextState = {
+        ...current,
+        promptClosed: true,
+      };
+      secretAccessRef.current = nextState;
+      return nextState;
+    });
+    setLines((current) => current.filter((line) => line.type !== "secret-form"));
+  };
+
+  const handleSecretMessageSubmit = async (values: { name: string; message: string }) => {
+    const visitorNumber = secretAccessRef.current.visitorNumber;
+    const message = values.message.trim();
+
+    if (!visitorNumber || !message) {
+      return;
+    }
+
+    setIsSecretMessageSubmitting(true);
+
+    try {
+      const response = await fetch("/api/secrets/messages", {
+        method: "POST",
+        headers: {
+          "Content-Type": "application/json",
+        },
+        body: JSON.stringify({
+          number: visitorNumber,
+          name: values.name.trim() || "Anonymous",
+          message,
+        }),
+      });
+
+      if (!response.ok) {
+        throw new Error("Unable to store secret message.");
+      }
+
+      const payload = (await response.json()) as { message?: unknown };
+      const savedMessage = isSecretMessage(payload.message)
+        ? payload.message
+        : {
+            number: visitorNumber,
+            name: values.name.trim() || "Anonymous",
+            message,
+          };
+
+      setSecretAccess((current) => {
+        const nextState = {
+          ...current,
+          messages: [...current.messages, savedMessage],
+          messagesLoaded: true,
+        };
+        secretAccessRef.current = nextState;
+        return nextState;
+      });
+      closeSecretPrompt();
+      addTypedLine("MESSAGE ENCRYPTED AND STORED.", "success");
+    } catch {
+      addTypedLine("MESSAGE STORAGE FAILED. TRY AGAIN LATER.", "error");
+    } finally {
+      setIsSecretMessageSubmitting(false);
+    }
+  };
+
+  const handleSecretMessageSkip = () => {
+    closeSecretPrompt();
+    addTypedLine("MESSAGE ENCRYPTED AND STORED.", "success");
+  };
+
+  const revealSecrets = () => {
+    const current = secretAccessRef.current;
+
+    if (!current.unlocked) {
+      if (current.isUnlocking) {
+        addTypedLine("DECRYPTION HANDSHAKE IN PROGRESS. TRY AGAIN IN A MOMENT.", "output");
+        return;
+      }
+
+      if (current.unlockFailed) {
+        addTypedLine("CLASSIFIED DOSSIER SYNC FAILED. TRY AGAIN LATER.", "error");
+        return;
+      }
+
+      addTypedLine("CLEARANCE LEVEL INSUFFICIENT. BEAT THE MAINFRAME FIRST.", "error");
+      return;
+    }
+
+    if (!current.visitorNumber) {
+      addTypedLine("CLASSIFIED DOSSIER SYNC FAILED. TRY AGAIN LATER.", "error");
+      return;
+    }
+
+    void fetchSecretMessages()
+      .then((messages) => {
+        const visitorNumber = secretAccessRef.current.visitorNumber ?? current.visitorNumber;
+
+        if (!visitorNumber) {
+          throw new Error("Missing visitor number.");
+        }
+
+        addTypedLine(buildSecretDossier(visitorNumber, messages), "success", () => {
+          if (!secretAccessRef.current.promptClosed) {
+            addSecretFormLine();
+          }
+        });
+      })
+      .catch(() => {
+        addTypedLine("CLASSIFIED DOSSIER UNAVAILABLE. TRY AGAIN LATER.", "error");
+      });
+  };
+
+  const handleGameComplete = useCallback(() => {
+    const savedSession = readSecretSession();
+
+    if (savedSession) {
+      secretUnlockRequestedRef.current = true;
+      setSecretAccess((current) => {
+        const nextState = {
+          ...current,
+          unlocked: true,
+          visitorNumber: savedSession.visitorNumber,
+          promptClosed: savedSession.promptClosed,
+        };
+        secretAccessRef.current = nextState;
+        return nextState;
+      });
+      return;
+    }
+
+    if (secretUnlockRequestedRef.current) {
+      return;
+    }
+
+    secretUnlockRequestedRef.current = true;
+    setSecretAccess((current) => {
+      const nextState = {
+        ...current,
+        isUnlocking: true,
+        unlockFailed: false,
+      };
+      secretAccessRef.current = nextState;
+      return nextState;
+    });
+
+    void fetch("/api/secrets/complete", {
+      method: "POST",
+    })
+      .then(async (response) => {
+        if (!response.ok) {
+          throw new Error("Unable to unlock secrets.");
+        }
+
+        return (await response.json()) as { number?: unknown; messages?: unknown[] };
+      })
+      .then((payload) => {
+        const visitorNumber = Number(payload.number);
+
+        if (!Number.isInteger(visitorNumber) || visitorNumber < 1) {
+          throw new Error("Invalid visitor number.");
+        }
+
+        const messages = Array.isArray(payload.messages)
+          ? payload.messages.filter(isSecretMessage)
+          : [];
+        writeSecretSession(visitorNumber, false);
+
+        const nextState = {
+          unlocked: true,
+          visitorNumber,
+          messages,
+          messagesLoaded: true,
+          promptClosed: false,
+          isUnlocking: false,
+          unlockFailed: false,
+        };
+
+        secretAccessRef.current = nextState;
+        setSecretAccess(nextState);
+      })
+      .catch(() => {
+        setSecretAccess((current) => {
+          const nextState = {
+            ...current,
+            isUnlocking: false,
+            unlockFailed: true,
+          };
+          secretAccessRef.current = nextState;
+          return nextState;
+        });
+      });
+  }, []);
 
   const runCommand = (rawInput: string) => {
     const submitted = rawInput.trim();
@@ -622,7 +1063,7 @@ function ContactTerminal({ resumeHref }: { resumeHref: string }) {
     }
 
     if (command === "ls secrets/") {
-      addTypedLine("Permission denied. Nice try.", "error");
+      revealSecrets();
       return;
     }
 
@@ -743,6 +1184,7 @@ function ContactTerminal({ resumeHref }: { resumeHref: string }) {
     return (
       <StealthResumeGame
         resumeHref={resumeHref}
+        onComplete={handleGameComplete}
         onExit={() => {
           setIsGameActive(false);
           window.setTimeout(() => inputRef.current?.focus(), 0);
@@ -773,20 +1215,29 @@ function ContactTerminal({ resumeHref }: { resumeHref: string }) {
         className="min-h-0 flex-1 overflow-y-auto px-4 py-4 font-mono text-sm leading-7 text-neutral-700 md:px-5 md:py-5"
       >
         <div className="space-y-3">
-          {lines.map((line) => (
-            <pre
-              key={line.id}
-              className={`whitespace-pre-wrap break-words font-mono ${
-                line.kind === "command" || line.kind === "success"
-                  ? TERMINAL_COMMAND_GLOW_CLASS
-                  : line.kind === "error"
-                    ? "text-red-600"
-                    : "text-neutral-700"
-              }`}
-            >
-              {renderCommandHighlights(line.text)}
-            </pre>
-          ))}
+          {lines.map((line) =>
+            line.type === "secret-form" ? (
+              <SecretMessageForm
+                key={line.id}
+                isSubmitting={isSecretMessageSubmitting}
+                onSkip={handleSecretMessageSkip}
+                onSubmit={handleSecretMessageSubmit}
+              />
+            ) : (
+              <pre
+                key={line.id}
+                className={`whitespace-pre-wrap break-words font-mono ${
+                  line.kind === "command" || line.kind === "success"
+                    ? TERMINAL_COMMAND_GLOW_CLASS
+                    : line.kind === "error"
+                      ? "text-red-600"
+                      : "text-neutral-700"
+                }`}
+              >
+                {renderCommandHighlights(line.text)}
+              </pre>
+            )
+          )}
         </div>
       </div>
 
@@ -812,6 +1263,83 @@ function ContactTerminal({ resumeHref }: { resumeHref: string }) {
         />
       </label>
     </div>
+  );
+}
+
+function SecretMessageForm({
+  isSubmitting,
+  onSkip,
+  onSubmit,
+}: {
+  isSubmitting: boolean;
+  onSkip: () => void;
+  onSubmit: (values: { name: string; message: string }) => void;
+}) {
+  const [name, setName] = useState("");
+  const [message, setMessage] = useState("");
+  const canSubmit = message.trim().length > 0 && !isSubmitting;
+
+  const handleSubmit = (event: FormEvent<HTMLFormElement>) => {
+    event.preventDefault();
+
+    if (!canSubmit) {
+      return;
+    }
+
+    onSubmit({ name, message });
+  };
+
+  return (
+    <form
+      onSubmit={handleSubmit}
+      onClick={(event) => event.stopPropagation()}
+      className="space-y-3 rounded-lg border border-[#d65a12]/35 bg-[#fffdf8] p-3 font-mono text-sm text-neutral-800"
+    >
+      <label className="block space-y-1">
+        <span className="text-xs font-semibold uppercase tracking-[0.16em] text-neutral-600">
+          NAME (optional):
+        </span>
+        <input
+          value={name}
+          onChange={(event) => setName(event.target.value)}
+          maxLength={64}
+          className="w-full rounded-md border border-neutral-300 bg-white px-3 py-2 font-mono text-sm text-neutral-950 outline-none transition placeholder:text-neutral-400 focus:border-[#d65a12] focus:ring-2 focus:ring-[#d65a12]/20"
+          placeholder="Anonymous"
+          disabled={isSubmitting}
+        />
+      </label>
+      <label className="block space-y-1">
+        <span className="text-xs font-semibold uppercase tracking-[0.16em] text-neutral-600">
+          MESSAGE:
+        </span>
+        <textarea
+          value={message}
+          onChange={(event) => setMessage(event.target.value)}
+          maxLength={360}
+          rows={3}
+          className="w-full resize-none rounded-md border border-neutral-300 bg-white px-3 py-2 font-mono text-sm text-neutral-950 outline-none transition placeholder:text-neutral-400 focus:border-[#d65a12] focus:ring-2 focus:ring-[#d65a12]/20"
+          placeholder="message here"
+          disabled={isSubmitting}
+        />
+      </label>
+      <div className="flex flex-wrap gap-2">
+        <button
+          type="submit"
+          disabled={!canSubmit}
+          className="rounded-md border border-[#d65a12] bg-[#d65a12] px-3 py-1.5 font-mono text-xs font-bold uppercase tracking-[0.16em] text-white transition hover:bg-[#bd4f10] disabled:cursor-not-allowed disabled:border-neutral-300 disabled:bg-neutral-200 disabled:text-neutral-500"
+        >
+          SUBMIT
+        </button>
+        <button
+          type="button"
+          onClick={onSkip}
+          disabled={isSubmitting}
+          className="rounded-md border border-neutral-300 bg-white px-3 py-1.5 font-mono text-xs font-bold uppercase tracking-[0.16em] text-neutral-800 transition hover:border-[#d65a12] hover:text-[#d65a12] disabled:cursor-not-allowed disabled:opacity-60"
+        >
+          SKIP
+        </button>
+      </div>
+    </form>
   );
 }
 
@@ -1143,9 +1671,11 @@ function isDetected(runtime: GameRuntime) {
 
 function StealthResumeGame({
   resumeHref,
+  onComplete,
   onExit,
 }: {
   resumeHref: string;
+  onComplete: () => void;
   onExit: () => void;
 }) {
   const gameRef = useRef<GameRuntime>(createGameRuntime(0));
@@ -1242,6 +1772,7 @@ function StealthResumeGame({
   const startMissionComplete = useCallback(() => {
     clearTypewriter();
     playSound("complete");
+    onComplete();
 
     const runtime = gameRef.current;
     const fullText = MISSION_COMPLETE_LINES.join("\n");
@@ -1262,7 +1793,7 @@ function StealthResumeGame({
         syncView();
       }
     }, 42);
-  }, [clearTypewriter, playSound, syncView]);
+  }, [clearTypewriter, onComplete, playSound, syncView]);
 
   const triggerCompromise = useCallback(() => {
     const runtime = gameRef.current;
@@ -1466,21 +1997,26 @@ function StealthResumeGame({
           </pre>
 
           {runtime.completeReady ? (
-            <div className="flex flex-col gap-3 sm:flex-row">
-              <a
-                href={resumeHref}
-                download
-                className="inline-flex items-center justify-center rounded-full border border-neutral-900 bg-neutral-900 px-5 py-2.5 text-sm font-semibold text-white shadow-sm transition hover:bg-neutral-800 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-black/25"
-              >
-                Download Resume
-              </a>
-              <button
-                type="button"
-                onClick={onExit}
-                className="inline-flex items-center justify-center rounded-full border border-neutral-300 bg-white px-5 py-2.5 text-sm font-semibold text-neutral-900 shadow-sm transition hover:bg-neutral-100 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-black/20"
-              >
-                Return to Terminal
-              </button>
+            <div className="flex flex-col items-center gap-3">
+              <div className="flex flex-col gap-3 sm:flex-row">
+                <a
+                  href={resumeHref}
+                  download
+                  className="inline-flex items-center justify-center rounded-full border border-neutral-900 bg-neutral-900 px-5 py-2.5 text-sm font-semibold text-white shadow-sm transition hover:bg-neutral-800 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-black/25"
+                >
+                  Download Resume
+                </a>
+                <button
+                  type="button"
+                  onClick={onExit}
+                  className="inline-flex items-center justify-center rounded-full border border-neutral-300 bg-white px-5 py-2.5 text-sm font-semibold text-neutral-900 shadow-sm transition hover:bg-neutral-100 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-black/20"
+                >
+                  Return to Terminal
+                </button>
+              </div>
+              <p className="font-mono text-xs text-[#d65a12]/80">
+                🔓 ls secrets/ has been unlocked in the terminal.
+              </p>
             </div>
           ) : null}
         </div>
