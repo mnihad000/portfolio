@@ -1,5 +1,6 @@
 "use client";
 
+import Image from "next/image";
 import {
   useCallback,
   useEffect,
@@ -20,12 +21,12 @@ import {
 } from "framer-motion";
 import {
   ArrowUpRight,
-  Cpu,
   Download,
   FolderGit2,
   Link2,
   Mail,
 } from "lucide-react";
+import headshotFinal from "@/app/profile_picture/headshot_final.jpg";
 import { aboutPageContent } from "@/lib/about";
 import { lightModeContent } from "@/lib/light-mode-content";
 import { projects } from "@/lib/projects";
@@ -203,15 +204,15 @@ function AboutSection() {
 
         <div className="flex justify-center md:justify-end">
           <div className="relative flex h-72 w-72 items-center justify-center overflow-hidden rounded-full border-8 border-white bg-neutral-100 shadow-[0_25px_60px_rgba(0,0,0,0.15)] md:h-96 md:w-96">
-            <div className="absolute inset-0 bg-[radial-gradient(circle_at_top,_rgba(214,90,18,0.18),_transparent_58%)]" />
-            <div className="relative z-10 flex flex-col items-center gap-3 text-center">
-              <div className="rounded-full border border-black/10 bg-white/80 p-4 shadow-sm">
-                <Cpu className="h-16 w-16 text-[#d65a12] md:h-20 md:w-20" strokeWidth={1.5} />
-              </div>
-              <span className="text-sm font-medium uppercase tracking-[0.2em] text-neutral-500">
-                Engineering + AI
-              </span>
-            </div>
+            <Image
+              src={headshotFinal}
+              alt="Portrait of Mohammed Nihad"
+              fill
+              priority
+              sizes="(min-width: 768px) 384px, 288px"
+              className="object-cover object-center"
+            />
+            <div className="pointer-events-none absolute inset-0 bg-[radial-gradient(circle_at_top,_rgba(214,90,18,0.08),_transparent_58%)]" />
           </div>
         </div>
       </div>

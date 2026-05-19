@@ -1,5 +1,7 @@
 import type { CSSProperties } from "react";
 import type { Metadata } from "next";
+import Image from "next/image";
+import headshotFinal from "@/app/profile_picture/headshot_final.jpg";
 import AboutTechStackRail from "@/components/ui/about-tech-stack-rail";
 import { aboutPageContent, type RichParagraph } from "@/lib/about";
 import {
@@ -103,17 +105,17 @@ export default async function DarkModeAboutPage() {
           <aside className="about-enter" style={withAboutDelay("80ms")}>
             <div className="about-portrait-shell overflow-hidden rounded-[22px] border border-white/16 bg-[#101010]">
               <div className="about-portrait-surface relative aspect-[0.86] overflow-hidden bg-[linear-gradient(180deg,#2a2a2a_0%,#141414_100%)]">
+                <Image
+                  src={headshotFinal}
+                  alt="Portrait of Mohammed Nihad"
+                  fill
+                  priority
+                  sizes="180px"
+                  className="object-cover object-center"
+                />
                 <div className="pointer-events-none absolute inset-0 bg-[radial-gradient(circle_at_top,rgba(255,255,255,0.18),transparent_45%)]" />
-                <div className="pointer-events-none absolute inset-x-[16%] top-[10%] h-[42%] rounded-[2rem] bg-white/8 blur-3xl" />
                 <div className="pointer-events-none absolute inset-x-0 bottom-0 h-[55%] bg-[linear-gradient(180deg,transparent_0%,rgba(0,0,0,0.5)_100%)]" />
-                <div className="pointer-events-none absolute inset-x-[18%] top-[14%] h-[48%] rounded-full bg-white/7 blur-2xl" />
-                <div className="pointer-events-none absolute left-[22%] right-[22%] bottom-[16%] top-[38%] rounded-[2rem] border border-white/8" />
                 <div className="about-portrait-shimmer pointer-events-none absolute inset-y-0 -left-[42%] w-[38%]" />
-                <div className="absolute inset-x-0 bottom-4 text-center">
-                  <p className="font-mono text-[9px] tracking-[0.18em] text-white/55 uppercase">
-                    Portrait Placeholder
-                  </p>
-                </div>
               </div>
             </div>
           </aside>
