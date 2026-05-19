@@ -437,6 +437,7 @@ type SecretMessage = {
 type SecretAccessState = {
   unlocked: boolean;
   visitorNumber: number | null;
+  visitorTotal: number | null;
   messages: SecretMessage[];
   messagesLoaded: boolean;
   promptClosed: boolean;
@@ -446,6 +447,7 @@ type SecretAccessState = {
 
 type SecretSession = {
   visitorNumber: number;
+  visitorTotal: number | null;
   promptClosed: boolean;
 };
 
@@ -453,11 +455,13 @@ const TERMINAL_COMMAND_GLOW_CLASS =
   "text-[#d65a12] drop-shadow-[0_0_10px_rgba(214,90,18,0.45)]";
 
 const SECRET_SESSION_STORAGE_KEY = "nihad-os-secret-access";
+const PUBLIC_VISITOR_COUNT_START = 300;
 const SECRET_SEPARATOR = "———————————————————————";
 
 const INITIAL_SECRET_ACCESS: SecretAccessState = {
   unlocked: false,
   visitorNumber: null,
+  visitorTotal: null,
   messages: [],
   messagesLoaded: false,
   promptClosed: false,
@@ -493,6 +497,7 @@ function readSecretSession(): SecretSession | null {
 
     const parsed = JSON.parse(rawSession) as Partial<SecretSession>;
     const visitorNumber = Number(parsed.visitorNumber);
+    const visitorTotal = Number(parsed.visitorTotal);
 
     if (!Number.isInteger(visitorNumber) || visitorNumber < 1) {
       return null;
@@ -500,6 +505,7 @@ function readSecretSession(): SecretSession | null {
 
     return {
       visitorNumber,
+      visitorTotal: Number.isInteger(visitorTotal) && visitorTotal >= 1 ? visitorTotal : null,
       promptClosed: parsed.promptClosed === true,
     };
   } catch {
@@ -507,7 +513,11 @@ function readSecretSession(): SecretSession | null {
   }
 }
 
-function writeSecretSession(visitorNumber: number, promptClosed: boolean) {
+function writeSecretSession(
+  visitorNumber: number,
+  promptClosed: boolean,
+  visitorTotal: number | null
+) {
   if (typeof window === "undefined") {
     return;
   }
@@ -515,7 +525,7 @@ function writeSecretSession(visitorNumber: number, promptClosed: boolean) {
   try {
     window.sessionStorage.setItem(
       SECRET_SESSION_STORAGE_KEY,
-      JSON.stringify({ visitorNumber, promptClosed })
+      JSON.stringify({ visitorNumber, visitorTotal, promptClosed })
     );
   } catch {
     // The active component state still carries the unlock if storage is blocked.
@@ -541,6 +551,16 @@ function formatOrdinal(value: number) {
   }
 }
 
+function normalizeVisitorTotal(visitorTotal: number | null, visitorNumber: number) {
+  return Math.max(
+    Number.isInteger(visitorTotal) && visitorTotal !== null
+      ? visitorTotal
+      : PUBLIC_VISITOR_COUNT_START,
+    PUBLIC_VISITOR_COUNT_START,
+    visitorNumber
+  );
+}
+
 function formatSecretMessages(messages: SecretMessage[]) {
   if (!messages.length) {
     return "  No messages have been left yet.";
@@ -556,11 +576,17 @@ function formatSecretMessages(messages: SecretMessage[]) {
     .join("\n");
 }
 
-function buildSecretDossier(visitorNumber: number, messages: SecretMessage[]) {
+function buildSecretDossier(
+  visitorNumber: number,
+  visitorTotal: number | null,
+  messages: SecretMessage[]
+) {
+  const normalizedVisitorTotal = normalizeVisitorTotal(visitorTotal, visitorNumber);
+
   return [
     "DECRYPTED. ACCESSING CLASSIFIED DOSSIER...",
     "",
-    `NIHAD_OS: You are the ${formatOrdinal(visitorNumber)} person to reach this point.`,
+    `NIHAD_OS: You are the ${formatOrdinal(visitorNumber)} person out of ${normalizedVisitorTotal.toLocaleString()} visitors to reach this far.`,
     "",
     "BREACH COMPLETE.",
     "You're one of the few who made it this far.",
@@ -733,6 +759,7 @@ function ContactTerminal({ resumeHref }: { resumeHref: string }) {
       ...current,
       unlocked: true,
       visitorNumber: savedSession.visitorNumber,
+      visitorTotal: savedSession.visitorTotal,
       promptClosed: savedSession.promptClosed,
     }));
   }, []);
@@ -828,11 +855,45 @@ function ContactTerminal({ resumeHref }: { resumeHref: string }) {
     return messages;
   };
 
+  const fetchVisitorTotal = async () => {
+    const currentTotal = secretAccessRef.current.visitorTotal;
+
+    if (currentTotal) {
+      return currentTotal;
+    }
+
+    const response = await fetch("/api/visitors", {
+      cache: "no-store",
+    });
+
+    if (!response.ok) {
+      return null;
+    }
+
+    const payload = (await response.json()) as { visitors?: unknown };
+    const visitorTotal = Number(payload.visitors);
+
+    if (!Number.isInteger(visitorTotal) || visitorTotal < 1) {
+      return null;
+    }
+
+    setSecretAccess((state) => {
+      const nextState = {
+        ...state,
+        visitorTotal,
+      };
+      secretAccessRef.current = nextState;
+      return nextState;
+    });
+
+    return visitorTotal;
+  };
+
   const closeSecretPrompt = () => {
-    const visitorNumber = secretAccessRef.current.visitorNumber;
+    const { visitorNumber, visitorTotal } = secretAccessRef.current;
 
     if (visitorNumber) {
-      writeSecretSession(visitorNumber, true);
+      writeSecretSession(visitorNumber, true, visitorTotal);
     }
 
     setSecretAccess((current) => {
@@ -928,15 +989,16 @@ function ContactTerminal({ resumeHref }: { resumeHref: string }) {
       return;
     }
 
-    void fetchSecretMessages()
-      .then((messages) => {
+    void Promise.all([fetchSecretMessages(), fetchVisitorTotal()])
+      .then(([messages, visitorTotal]) => {
         const visitorNumber = secretAccessRef.current.visitorNumber ?? current.visitorNumber;
+        const currentVisitorTotal = secretAccessRef.current.visitorTotal ?? visitorTotal;
 
         if (!visitorNumber) {
           throw new Error("Missing visitor number.");
         }
 
-        addTypedLine(buildSecretDossier(visitorNumber, messages), "success", () => {
+        addTypedLine(buildSecretDossier(visitorNumber, currentVisitorTotal, messages), "success", () => {
           if (!secretAccessRef.current.promptClosed) {
             addSecretFormLine();
           }
@@ -957,6 +1019,7 @@ function ContactTerminal({ resumeHref }: { resumeHref: string }) {
           ...current,
           unlocked: true,
           visitorNumber: savedSession.visitorNumber,
+          visitorTotal: savedSession.visitorTotal,
           promptClosed: savedSession.promptClosed,
         };
         secretAccessRef.current = nextState;
@@ -988,23 +1051,33 @@ function ContactTerminal({ resumeHref }: { resumeHref: string }) {
           throw new Error("Unable to unlock secrets.");
         }
 
-        return (await response.json()) as { number?: unknown; messages?: unknown[] };
+        return (await response.json()) as {
+          number?: unknown;
+          visitorTotal?: unknown;
+          messages?: unknown[];
+        };
       })
       .then((payload) => {
         const visitorNumber = Number(payload.number);
+        const visitorTotal = Number(payload.visitorTotal);
 
         if (!Number.isInteger(visitorNumber) || visitorNumber < 1) {
           throw new Error("Invalid visitor number.");
         }
 
+        const normalizedVisitorTotal = normalizeVisitorTotal(
+          Number.isInteger(visitorTotal) && visitorTotal >= 1 ? visitorTotal : null,
+          visitorNumber
+        );
         const messages = Array.isArray(payload.messages)
           ? payload.messages.filter(isSecretMessage)
           : [];
-        writeSecretSession(visitorNumber, false);
+        writeSecretSession(visitorNumber, false, normalizedVisitorTotal);
 
         const nextState = {
           unlocked: true,
           visitorNumber,
+          visitorTotal: normalizedVisitorTotal,
           messages,
           messagesLoaded: true,
           promptClosed: false,

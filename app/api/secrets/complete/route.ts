@@ -7,6 +7,9 @@ type SecretMessage = {
   message: string;
 };
 
+const PUBLIC_VISITOR_COUNT_KEY = "public_visitor_count";
+const PUBLIC_VISITOR_COUNT_START = 300;
+
 let redis: Redis | null = null;
 
 function getRedis() {
@@ -57,12 +60,20 @@ export async function POST() {
   try {
     const client = getRedis();
     const number = await client.incr("visitor_count");
+    await client.setnx(PUBLIC_VISITOR_COUNT_KEY, PUBLIC_VISITOR_COUNT_START);
+    const visitorTotal = Number(await client.get(PUBLIC_VISITOR_COUNT_KEY));
     const rawMessages = await client.lrange("messages", 0, -1);
     const messages = rawMessages
       .map((message) => parseMessage(message))
       .filter((message): message is SecretMessage => message !== null);
 
-    return NextResponse.json({ number, messages });
+    return NextResponse.json({
+      number,
+      visitorTotal: Number.isInteger(visitorTotal)
+        ? Math.max(visitorTotal, PUBLIC_VISITOR_COUNT_START)
+        : PUBLIC_VISITOR_COUNT_START,
+      messages,
+    });
   } catch {
     return NextResponse.json(
       { error: "Unable to unlock classified dossier." },

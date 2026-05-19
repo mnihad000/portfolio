@@ -2,6 +2,7 @@ import Home from "@/components/ui/hero-ascii-one";
 import { Card } from "@/components/ui/card";
 import { Spotlight } from "@/components/ui/spotlight";
 import { SplineScene } from "@/components/ui/splite";
+import VisitorCount from "@/components/ui/visitor-count";
 
 export function SplineSceneBasic() {
   return (
@@ -16,6 +17,7 @@ export function SplineSceneBasic() {
           <p className="mt-4 max-w-[14rem] text-sm leading-6 text-neutral-600 sm:max-w-lg sm:text-base">
             Come see what I&apos;ve been building.
           </p>
+          <VisitorCount />
         </div>
 
         <div className="relative h-[280px] flex-1 md:h-auto">
