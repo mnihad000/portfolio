@@ -25,7 +25,7 @@ export default function LightProjectCard({
     <motion.div
       id={`project-${project.slug}`}
       data-galaxy-project-card={project.slug}
-      className="h-full"
+      className="scroll-mt-28 h-full"
       initial={{ opacity: 0, y: 20 }}
       whileInView={{ opacity: 1, y: 0 }}
       viewport={{ once: true, amount: 0.18 }}
@@ -52,10 +52,12 @@ export default function LightProjectCard({
 
         <div className="flex flex-1 flex-col space-y-4 p-5 md:p-6">
           <div className="space-y-1.5">
-            <h4 className="text-2xl font-semibold tracking-tight text-neutral-900">
+            <h4 className="project-heading text-2xl font-semibold text-neutral-900">
               {project.title}
             </h4>
-            <p className="text-base leading-7 text-neutral-500">{project.description}</p>
+            <p className="project-copy text-base leading-7 text-neutral-500">
+              {project.description}
+            </p>
           </div>
 
           <div className="mt-auto flex items-center gap-2 pt-1 text-sm font-medium uppercase tracking-[0.24em] text-neutral-600">

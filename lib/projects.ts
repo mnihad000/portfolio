@@ -33,6 +33,7 @@ export type ProjectRichDetail = {
   decisionTriggers: string[];
   opponentModeling: string[];
   metrics: ProjectMetric[];
+  disclaimer?: string;
 };
 
 export type ProjectLink = {
@@ -70,6 +71,22 @@ export type ProjectMetric = {
   metric: string;
   target: string;
 };
+
+function sanitizeProjectDetail(
+  strings: TemplateStringsArray,
+  ...values: Array<string | number>
+) {
+  const content = strings.reduce(
+    (result, segment, index) => result + segment + (values[index] ?? ""),
+    ""
+  );
+
+  return content
+    .replaceAll("â†“", "->")
+    .replaceAll("â”œâ”€â”€", "|--")
+    .replaceAll("â””â”€â”€", "`--")
+    .replaceAll("â”‚", "|");
+}
 
 export const projects: Project[] = [
   {
@@ -391,7 +408,7 @@ cd frontend && npm install && npm run dev`,
           items: ["SQLite", "Match logs", "Decision traces"],
         },
       ],
-      howItWorksFlow: `BlueStacks (Clash Royale)
+      howItWorksFlow: sanitizeProjectDetail`BlueStacks (Clash Royale)
     ↓ screen capture @ ~60fps (mss)
 YOLOv8  -> battlefield units, positions, HP
 YOLOv8n -> cards in hand
@@ -402,7 +419,7 @@ Claude API -> strategic decision every 2-3s
 ADB input_tap
     ↓
 BlueStacks executes tap`,
-      architectureTree: `clash-royale-agent/
+      architectureTree: sanitizeProjectDetail`clash-royale-agent/
 ├── perception/
 │   ├── screen_capture.py
 │   ├── unit_detector.py

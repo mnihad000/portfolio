@@ -7,6 +7,13 @@ export function isDarkModeRoute(pathname: string) {
   return pathname === DARKMODE_HOME_ROUTE || pathname.startsWith(`${DARKMODE_HOME_ROUTE}/`);
 }
 
+export function isProjectDetailRoute(pathname: string) {
+  return (
+    /^\/projects\/[^/]+\/?$/.test(pathname) ||
+    /^\/darkmode\/projects\/[^/]+\/?$/.test(pathname)
+  );
+}
+
 export function getCanonicalPathForTheme(
   pathname: string,
   theme: SiteTheme
@@ -48,11 +55,15 @@ export function getCanonicalPathForTheme(
   }
 
   if (pathname === DARKMODE_PROJECTS_ROUTE) {
-    return "/projects";
+    return "/#projects";
   }
 
   if (pathname.startsWith(`${DARKMODE_PROJECTS_ROUTE}/`)) {
     return pathname.replace(DARKMODE_HOME_ROUTE, "");
+  }
+
+  if (pathname === "/projects") {
+    return "/#projects";
   }
 
   if (pathname === `${DARKMODE_HOME_ROUTE}/about`) {

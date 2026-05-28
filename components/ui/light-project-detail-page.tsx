@@ -13,10 +13,13 @@ export default function LightProjectDetailPage({
   const detail = project.richDetail;
 
   if (detail) {
+    const links = detail.links.filter((link) => link.href.trim().length > 0);
+    const metrics = detail.metrics;
+
     return (
-      <main className="min-h-screen bg-[#f6f2eb] text-neutral-950">
-        <article className="mx-auto w-full max-w-[1120px] px-6 pb-20 pt-32 md:px-8 lg:pt-36">
-          <BackToProjectsLink />
+      <main className="min-h-screen bg-white text-neutral-950">
+        <article className="mx-auto w-full max-w-[1120px] px-6 pb-20 pt-16 md:px-8 md:pt-20 lg:pt-24">
+          <BackToProjectsLink projectSlug={project.slug} />
 
           <div className="relative mt-7 overflow-hidden rounded-[2rem] border border-black/8 bg-white shadow-[0_24px_60px_rgba(0,0,0,0.08)]">
             <div className="relative h-[260px] md:h-[420px] lg:h-[560px]">
@@ -35,10 +38,10 @@ export default function LightProjectDetailPage({
             <p className="text-xs uppercase tracking-[0.26em] text-neutral-500">
               {project.dateLabel}
             </p>
-            <h1 className="mt-4 text-4xl font-semibold tracking-tight md:text-6xl">
+            <h1 className="project-heading mt-4 text-4xl font-semibold text-neutral-900 md:text-6xl">
               {detail.heroTitle}
             </h1>
-            <p className="mt-5 text-lg leading-9 text-neutral-600 md:text-[1.55rem] md:leading-[1.55]">
+            <p className="project-copy mt-5 text-lg leading-9 text-neutral-600 md:text-[1.55rem] md:leading-[1.55]">
               {detail.heroSubtitle}
             </p>
           </header>
@@ -46,13 +49,13 @@ export default function LightProjectDetailPage({
           <div className="mt-14 grid gap-8 lg:grid-cols-[minmax(0,1fr)_320px] lg:items-start">
             <div className="space-y-8">
               <ContentSection title="Overview">
-                <div className="space-y-5 text-base leading-8 text-neutral-700">
+                <div className="project-copy space-y-5 text-[1.03rem] leading-8 text-neutral-700">
                   {detail.overview.map((paragraph) => (
                     <p key={paragraph}>{paragraph}</p>
                   ))}
                 </div>
                 {detail.overviewHighlight ? (
-                  <p className="mt-6 rounded-[1.5rem] border border-black/8 bg-[#fff8ed] px-5 py-4 text-sm leading-7 text-neutral-700">
+                  <p className="project-copy mt-6 rounded-[1.5rem] border border-black/6 bg-neutral-100 px-5 py-4 text-sm leading-7 text-neutral-700">
                     {detail.overviewHighlight}
                   </p>
                 ) : null}
@@ -73,8 +76,10 @@ export default function LightProjectDetailPage({
                       key={dataset.name}
                       className="rounded-[1.5rem] border border-black/8 bg-white p-5"
                     >
-                      <h3 className="text-base font-medium text-neutral-900">{dataset.name}</h3>
-                      <p className="mt-2 text-sm leading-7 text-neutral-600">
+                      <h3 className="project-heading text-base font-medium text-neutral-900">
+                        {dataset.name}
+                      </h3>
+                      <p className="project-copy mt-2 text-sm leading-7 text-neutral-600">
                         {dataset.description}
                       </p>
                       <Link
@@ -95,7 +100,7 @@ export default function LightProjectDetailPage({
                   <p className="text-xs uppercase tracking-[0.16em] text-neutral-500">
                     Prerequisites
                   </p>
-                  <ul className="mt-3 space-y-2 text-sm leading-7 text-neutral-700">
+                  <ul className="project-copy mt-3 space-y-2 text-sm leading-7 text-neutral-700">
                     {detail.setup.prerequisites.map((item) => (
                       <li key={item} className="pl-4 before:-ml-4 before:mr-2 before:content-['-']">
                         {item}
@@ -111,7 +116,9 @@ export default function LightProjectDetailPage({
               </ContentSection>
 
               <ContentSection title="Decision Engine">
-                <p className="text-sm leading-7 text-neutral-600">{detail.decisionMaking.cadence}</p>
+                <p className="project-copy text-sm leading-7 text-neutral-600">
+                  {detail.decisionMaking.cadence}
+                </p>
                 <div className="mt-5 grid gap-5 xl:grid-cols-2">
                   <CodePanel
                     label="State Snapshot (Input)"
@@ -129,7 +136,7 @@ export default function LightProjectDetailPage({
                   {detail.decisionTriggers.map((trigger) => (
                     <li
                       key={trigger}
-                      className="rounded-[1.25rem] border border-black/8 bg-white px-4 py-3 text-sm leading-7 text-neutral-700"
+                      className="project-copy rounded-[1.25rem] border border-black/8 bg-white px-4 py-3 text-sm leading-7 text-neutral-700"
                     >
                       {trigger}
                     </li>
@@ -142,7 +149,7 @@ export default function LightProjectDetailPage({
                   {detail.opponentModeling.map((item) => (
                     <li
                       key={item}
-                      className="rounded-[1.25rem] border border-black/8 bg-white px-4 py-3 text-sm leading-7 text-neutral-700"
+                      className="project-copy rounded-[1.25rem] border border-black/8 bg-white px-4 py-3 text-sm leading-7 text-neutral-700"
                     >
                       {item}
                     </li>
@@ -150,50 +157,60 @@ export default function LightProjectDetailPage({
                 </ul>
               </ContentSection>
 
-              <ContentSection title="Metrics">
-                <div className="overflow-hidden rounded-[1.5rem] border border-black/8 bg-white">
-                  {detail.metrics.map((metric, index) => (
-                    <div
-                      key={metric.metric}
-                      className={`grid grid-cols-[minmax(0,1fr)_auto] gap-4 px-4 py-3 text-sm leading-7 md:px-5 ${
-                        index === 0 ? "" : "border-t border-black/8"
-                      }`}
-                    >
-                      <p className="text-neutral-600">{metric.metric}</p>
-                      <p className="text-right font-medium text-neutral-900">{metric.target}</p>
-                    </div>
-                  ))}
-                </div>
-              </ContentSection>
+              {metrics.length > 0 ? (
+                <ContentSection title="Metrics">
+                  <div className="overflow-hidden rounded-[1.5rem] border border-black/8 bg-white">
+                    {metrics.map((metric, index) => (
+                      <div
+                        key={metric.metric}
+                        className={`grid grid-cols-[minmax(0,1fr)_auto] gap-4 px-4 py-3 text-sm leading-7 md:px-5 ${
+                          index === 0 ? "" : "border-t border-black/8"
+                        }`}
+                      >
+                        <p className="project-copy text-neutral-600">{metric.metric}</p>
+                        <p className="project-copy text-right font-medium text-neutral-900">
+                          {metric.target}
+                        </p>
+                      </div>
+                    ))}
+                  </div>
+                </ContentSection>
+              ) : null}
 
-              <section className="rounded-[1.75rem] border border-[#d65a12]/18 bg-[#fff4e8] p-5">
-                <h2 className="text-2xl font-semibold tracking-tight text-neutral-900">
-                
-                </h2>
-                <p className="mt-3 text-sm leading-7 text-neutral-700">{detail.disclaimer}</p>
-              </section>
+              {detail.disclaimer ? (
+                <section className="rounded-[1.75rem] border border-black/10 bg-neutral-100 p-5">
+                  <h2 className="project-heading text-2xl font-semibold text-neutral-900">
+                    Disclaimer
+                  </h2>
+                  <p className="project-copy mt-3 text-sm leading-7 text-neutral-700">
+                    {detail.disclaimer}
+                  </p>
+                </section>
+              ) : null}
             </div>
 
-            <aside className="space-y-6 lg:sticky lg:top-28">
-              <section className="rounded-[1.75rem] border border-black/8 bg-white p-6 shadow-[0_18px_45px_rgba(0,0,0,0.04)]">
-                <p className="text-xs uppercase tracking-[0.18em] text-neutral-500">Links</p>
-                <div className="mt-4 space-y-3">
-                  {detail.links.map((link) => (
-                    <Link
-                      key={link.href}
-                      href={link.href}
-                      target="_blank"
-                      rel="noreferrer"
-                      className="block rounded-2xl border border-black/10 bg-neutral-950 px-4 py-3 text-center text-sm font-medium uppercase tracking-[0.18em] text-white transition-colors hover:bg-neutral-800"
-                    >
-                      {link.label}
-                    </Link>
-                  ))}
-                </div>
-              </section>
+            <aside className="space-y-6 lg:sticky lg:top-8">
+              {links.length > 0 ? (
+                <section className="rounded-[1.75rem] border border-black/8 bg-white p-6 shadow-[0_18px_45px_rgba(0,0,0,0.04)]">
+                  <p className="text-xs uppercase tracking-[0.18em] text-neutral-500">Links</p>
+                  <div className="mt-4 space-y-3">
+                    {links.map((link) => (
+                      <Link
+                        key={link.href}
+                        href={link.href}
+                        target="_blank"
+                        rel="noreferrer"
+                        className="block rounded-2xl border border-black/10 bg-neutral-950 px-4 py-3 text-center text-sm font-medium uppercase tracking-[0.18em] text-white transition-colors hover:bg-neutral-800"
+                      >
+                        {link.label}
+                      </Link>
+                    ))}
+                  </div>
+                </section>
+              ) : null}
 
               <section className="rounded-[1.75rem] border border-black/8 bg-white p-6 shadow-[0_18px_45px_rgba(0,0,0,0.04)]">
-                <h2 className="text-2xl font-semibold tracking-tight text-neutral-900">
+                <h2 className="project-heading text-2xl font-semibold text-neutral-900">
                   Tech Stack
                 </h2>
                 <div className="mt-5 space-y-4">
@@ -206,7 +223,7 @@ export default function LightProjectDetailPage({
                         {group.items.map((item) => (
                           <span
                             key={item}
-                            className="rounded-[10px] border border-black/8 bg-[#f6f2eb] px-2.5 py-1 text-[0.81rem] text-neutral-700"
+                            className="project-copy rounded-[10px] border border-black/8 bg-neutral-100 px-2.5 py-1 text-[0.81rem] text-neutral-700"
                           >
                             {item}
                           </span>
@@ -224,18 +241,20 @@ export default function LightProjectDetailPage({
   }
 
   return (
-    <main className="min-h-screen bg-[#f6f2eb] text-neutral-950">
-      <article className="mx-auto w-full max-w-[1040px] px-6 pb-16 pt-32 md:px-8">
-        <BackToProjectsLink />
+    <main className="min-h-screen bg-white text-neutral-950">
+      <article className="mx-auto w-full max-w-[1040px] px-6 pb-16 pt-16 md:px-8 md:pt-20">
+        <BackToProjectsLink projectSlug={project.slug} />
 
         <header className="mt-8 rounded-[2rem] border border-black/8 bg-white p-6 shadow-[0_18px_45px_rgba(0,0,0,0.04)] md:p-8">
           <p className="text-xs uppercase tracking-[0.16em] text-neutral-500">
             {project.dateLabel}
           </p>
-          <h1 className="mt-3 text-4xl font-semibold tracking-tight md:text-6xl">
+          <h1 className="project-heading mt-3 text-4xl font-semibold text-neutral-900 md:text-6xl">
             {project.title}
           </h1>
-          <p className="mt-4 text-base leading-8 text-neutral-600">{project.description}</p>
+          <p className="project-copy mt-4 text-base leading-8 text-neutral-600">
+            {project.description}
+          </p>
         </header>
 
         <div className="relative mt-8 h-72 overflow-hidden rounded-[2rem] border border-black/8 bg-white shadow-[0_18px_45px_rgba(0,0,0,0.04)] md:h-[28rem]">
@@ -250,7 +269,7 @@ export default function LightProjectDetailPage({
 
         <section className="mt-8 rounded-[2rem] border border-black/8 bg-white p-6 shadow-[0_18px_45px_rgba(0,0,0,0.04)] md:p-8">
           <h2 className="text-sm uppercase tracking-[0.16em] text-neutral-500">Overview</h2>
-          <p className="mt-4 text-base leading-8 text-neutral-700">
+          <p className="project-copy mt-4 text-base leading-8 text-neutral-700">
             {project.fullDescription}
           </p>
         </section>
@@ -261,7 +280,7 @@ export default function LightProjectDetailPage({
             {project.technologies.map((technology) => (
               <span
                 key={technology}
-                className="rounded-xl border border-black/10 bg-[#f6f2eb] px-3 py-1.5 text-sm text-neutral-700"
+                className="project-copy rounded-xl border border-black/10 bg-neutral-100 px-3 py-1.5 text-sm text-neutral-700"
               >
                 {technology}
               </span>
@@ -277,11 +296,11 @@ export default function LightProjectDetailPage({
             <h2 className="mt-3 text-2xl font-semibold tracking-tight text-neutral-900">
               {project.proofCard.title}
             </h2>
-            <p className="mt-3 max-w-2xl text-base leading-8 text-neutral-600">
+            <p className="project-copy mt-3 max-w-2xl text-base leading-8 text-neutral-600">
               {project.proofCard.description}
             </p>
 
-            <div className="relative mt-6 overflow-hidden rounded-[1.5rem] border border-black/8 bg-[#f6f2eb]">
+            <div className="relative mt-6 overflow-hidden rounded-[1.5rem] border border-black/8 bg-neutral-100">
               <div className="relative aspect-[4/3] w-full">
                 <Image
                   src={project.proofCard.imageSrc}
@@ -298,11 +317,11 @@ export default function LightProjectDetailPage({
   );
 }
 
-function BackToProjectsLink() {
+function BackToProjectsLink({ projectSlug }: { projectSlug: string }) {
   return (
     <Link
-      href="/projects"
-      className="inline-flex items-center gap-2 text-sm font-medium uppercase tracking-[0.22em] text-neutral-500 transition-colors hover:text-neutral-900"
+      href={`/#project-${projectSlug}`}
+      className="inline-flex items-center gap-2 text-sm font-semibold uppercase tracking-[0.22em] text-neutral-500 transition-colors hover:text-neutral-900"
     >
       <span aria-hidden>&larr;</span>
       <span>Back to Projects</span>
@@ -319,7 +338,7 @@ function ContentSection({
 }) {
   return (
     <section>
-      <h2 className="text-3xl font-semibold tracking-tight text-neutral-900">{title}</h2>
+      <h2 className="project-heading text-3xl font-semibold text-neutral-900">{title}</h2>
       <div className="mt-5">{children}</div>
     </section>
   );
@@ -337,7 +356,7 @@ function CodePanel({
       {label ? (
         <p className="mb-3 text-xs uppercase tracking-[0.14em] text-neutral-500">{label}</p>
       ) : null}
-      <pre className="overflow-x-auto text-[0.82rem] leading-6 text-neutral-700">
+      <pre className="overflow-x-auto font-mono text-[0.82rem] leading-6 text-neutral-700">
         <code>{content}</code>
       </pre>
     </article>
@@ -345,10 +364,14 @@ function CodePanel({
 }
 
 function SetupBlock({ title, command }: { title: string; command: string }) {
+  if (!command.trim()) {
+    return null;
+  }
+
   return (
     <article className="mt-5 rounded-[1.5rem] border border-black/8 bg-white p-5 shadow-[0_18px_45px_rgba(0,0,0,0.04)]">
       <p className="text-xs uppercase tracking-[0.14em] text-neutral-500">{title}</p>
-      <pre className="mt-3 overflow-x-auto text-[0.82rem] leading-6 text-neutral-700">
+      <pre className="mt-3 overflow-x-auto font-mono text-[0.82rem] leading-6 text-neutral-700">
         <code>{command}</code>
       </pre>
     </article>

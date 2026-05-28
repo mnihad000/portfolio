@@ -9,6 +9,7 @@ import {
   DARKMODE_HOME_ROUTE,
   DARKMODE_PROJECTS_ROUTE,
   isDarkModeRoute,
+  isProjectDetailRoute,
 } from "@/lib/theme-routes";
 import ThemeToggle from "@/components/ui/theme-toggle";
 
@@ -316,6 +317,10 @@ function NavHeader() {
     window.addEventListener("scroll", handleScroll, { passive: true });
     return () => window.removeEventListener("scroll", handleScroll);
   }, []);
+
+  if (isProjectDetailRoute(pathname)) {
+    return null;
+  }
 
   const showLightTabs = mounted && theme === "light" && pathname === "/";
   const showLightRouteNav =

@@ -411,6 +411,25 @@
   will-change: opacity;
 }
 
+.project-heading,
+.project-copy {
+  font-family: var(--font-geist-sans), "Helvetica Neue", Arial, sans-serif;
+}
+
+.project-heading {
+  letter-spacing: -0.04em;
+}
+
+.project-copy {
+  letter-spacing: -0.02em;
+}
+
+html[data-site-intro="played"] .site-intro-overlay {
+  opacity: 0;
+  visibility: hidden;
+  pointer-events: none;
+}
+
 @keyframes route-enter-fade-up {
   to {
     opacity: 1;

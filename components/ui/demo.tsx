@@ -12,7 +12,7 @@ export function SplineSceneBasic() {
       <div className="flex h-full flex-col md:flex-row">
         <div className="relative z-10 flex flex-1 flex-col justify-center px-6 pb-2 pt-8 md:p-8">
           <h1 className="max-w-[11rem] bg-gradient-to-b from-neutral-900 to-neutral-500 bg-clip-text text-4xl font-bold text-transparent sm:max-w-none md:text-5xl">
-            Welcome to the Future
+            Welcome to my personal Website
           </h1>
           <p className="mt-4 max-w-[14rem] text-sm leading-6 text-neutral-600 sm:max-w-lg sm:text-base">
             Come see what I&apos;ve been building.

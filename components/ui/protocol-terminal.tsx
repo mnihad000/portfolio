@@ -78,6 +78,7 @@ const CONTACT_EMAIL = "mnihad1107@gmail.com";
 const GITHUB_URL = "https://github.com/mnihad000";
 const LINKEDIN_URL = "https://www.linkedin.com/in/mohammed-nihad-090348263/";
 const RESUME_URL = "/resume";
+const LIGHT_PROJECTS_HOME_ROUTE = "/#projects";
 const COMMAND_ACCENT_CLASS =
   "text-[#d65a12] drop-shadow-[0_0_10px_rgba(214,90,18,0.45)]";
 
@@ -243,6 +244,15 @@ export default function ProtocolTerminal() {
 
   function openThemedRoute(href: string) {
     openInternalRoute(getCanonicalPathForTheme(href, theme));
+  }
+
+  function openProjectsHome() {
+    if (theme === "light") {
+      openInternalRoute(LIGHT_PROJECTS_HOME_ROUTE);
+      return;
+    }
+
+    openInternalRoute(getCanonicalPathForTheme("/projects", theme));
   }
 
   function triggerResumeDownload() {
@@ -422,6 +432,7 @@ export default function ProtocolTerminal() {
 
     if (normalized === "projects") {
       appendProjectEntries();
+      openProjectsHome();
       return;
     }
 

@@ -10,7 +10,7 @@ export default function DarkModeProjectsPage() {
 
       <section className="route-enter relative z-10 mx-auto w-full max-w-[1500px] px-6 pt-32 pb-16 md:px-10 lg:pt-40">
         <header className="space-y-5 text-center">
-          <h1 className="text-3xl tracking-[0.em] md:text-5xl">projects</h1>
+          <h1 className="text-3xl tracking-[0.1em] md:text-5xl">projects</h1>
           <p className="mx-auto max-w-3xl text-sm leading-8 text-white/70 md:text-base">
             Selected engineering work with dedicated detail pages.
           </p>

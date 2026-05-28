@@ -23,6 +23,8 @@ export default async function DarkModeProjectDetailPage({
 
   if (project.richDetail) {
     const detail = project.richDetail;
+    const links = detail.links.filter((link) => link.href.trim().length > 0);
+    const metrics = detail.metrics;
 
     return (
       <main className="relative min-h-screen overflow-hidden bg-black font-mono text-white">
@@ -30,9 +32,9 @@ export default async function DarkModeProjectDetailPage({
         <div className="pointer-events-none absolute inset-0 bg-[linear-gradient(to_bottom,rgba(255,255,255,0.05)_1px,transparent_1px)] bg-[size:100%_3px] opacity-[0.08]" />
         <div className="pointer-events-none absolute inset-0 bg-[radial-gradient(circle_at_top,rgba(255,255,255,0.08),transparent_56%)]" />
 
-        <article className="route-enter relative z-10 mx-auto w-full max-w-[1040px] px-6 pt-36 pb-16 md:px-8 lg:pt-40 lg:pb-24">
+        <article className="route-enter relative z-10 mx-auto w-full max-w-[1040px] px-6 pb-16 pt-16 md:px-8 md:pt-20 lg:pb-24 lg:pt-24">
           <Link
-            href="/darkmode/projects"
+            href={`/darkmode/projects#project-${project.slug}`}
             className="inline-flex items-center gap-2 text-[1.05rem] text-white/52 transition-colors hover:text-white/78"
           >
             <span aria-hidden>&larr;</span>
@@ -180,44 +182,54 @@ export default async function DarkModeProjectDetailPage({
                 </ul>
               </section>
 
-              <section>
-                <h2 className="text-[2rem] tracking-[0.01em] text-white md:text-[2.45rem]">Metrics</h2>
-                <div className="mt-5 overflow-hidden rounded-2xl border border-white/12 bg-white/[0.03]">
-                  {detail.metrics.map((metric, index) => (
-                    <div
-                      key={metric.metric}
-                      className={`grid grid-cols-[minmax(0,1fr)_auto] gap-4 px-4 py-3 text-sm leading-7 md:px-5 ${
-                        index === 0 ? "" : "border-t border-white/10"
-                      }`}
-                    >
-                      <p className="text-white/80">{metric.metric}</p>
-                      <p className="text-right text-white">{metric.target}</p>
-                    </div>
-                  ))}
-                </div>
-              </section>
+              {metrics.length > 0 ? (
+                <section>
+                  <h2 className="text-[2rem] tracking-[0.01em] text-white md:text-[2.45rem]">
+                    Metrics
+                  </h2>
+                  <div className="mt-5 overflow-hidden rounded-2xl border border-white/12 bg-white/[0.03]">
+                    {metrics.map((metric, index) => (
+                      <div
+                        key={metric.metric}
+                        className={`grid grid-cols-[minmax(0,1fr)_auto] gap-4 px-4 py-3 text-sm leading-7 md:px-5 ${
+                          index === 0 ? "" : "border-t border-white/10"
+                        }`}
+                      >
+                        <p className="text-white/80">{metric.metric}</p>
+                        <p className="text-right text-white">{metric.target}</p>
+                      </div>
+                    ))}
+                  </div>
+                </section>
+              ) : null}
 
-              <section className="rounded-2xl border border-amber-300/25 bg-amber-300/5 p-5">
-                <h2 className="text-[1.45rem] tracking-[0.01em] text-amber-100">Disclaimer</h2>
-                <p className="mt-3 text-sm leading-7 text-amber-100/82">{detail.disclaimer}</p>
-              </section>
+              {detail.disclaimer ? (
+                <section className="rounded-2xl border border-amber-300/25 bg-amber-300/5 p-5">
+                  <h2 className="text-[1.45rem] tracking-[0.01em] text-amber-100">Disclaimer</h2>
+                  <p className="mt-3 text-sm leading-7 text-amber-100/82">
+                    {detail.disclaimer}
+                  </p>
+                </section>
+              ) : null}
             </div>
 
-            <aside className="space-y-6 lg:sticky lg:top-28">
-              <section className="rounded-[22px] border border-white/12 bg-[rgba(12,12,12,0.9)] p-6">
-                <p className="text-xs tracking-[0.16em] text-white/45 uppercase">Links</p>
-                {detail.links.map((link) => (
-                  <Link
-                    key={link.href}
-                    href={link.href}
-                    target="_blank"
-                    rel="noreferrer"
-                    className="mt-4 block rounded-xl bg-white px-4 py-3 text-center text-lg text-black transition-colors hover:bg-white/88"
-                  >
-                    {link.label}
-                  </Link>
-                ))}
-              </section>
+            <aside className="space-y-6 lg:sticky lg:top-8">
+              {links.length > 0 ? (
+                <section className="rounded-[22px] border border-white/12 bg-[rgba(12,12,12,0.9)] p-6">
+                  <p className="text-xs tracking-[0.16em] text-white/45 uppercase">Links</p>
+                  {links.map((link) => (
+                    <Link
+                      key={link.href}
+                      href={link.href}
+                      target="_blank"
+                      rel="noreferrer"
+                      className="mt-4 block rounded-xl bg-white px-4 py-3 text-center text-lg text-black transition-colors hover:bg-white/88"
+                    >
+                      {link.label}
+                    </Link>
+                  ))}
+                </section>
+              ) : null}
 
               <section className="rounded-[22px] border border-white/12 bg-[rgba(12,12,12,0.9)] p-6">
                 <h2 className="text-[1.8rem] leading-none tracking-[0.01em] text-white">Tech Stack</h2>
@@ -254,7 +266,15 @@ export default async function DarkModeProjectDetailPage({
       <div className="pointer-events-none absolute inset-0 bg-[linear-gradient(to_bottom,rgba(255,255,255,0.06)_1px,transparent_1px)] bg-[size:100%_3px] opacity-[0.08]" />
       <div className="pointer-events-none absolute inset-0 bg-[radial-gradient(circle_at_top,rgba(255,255,255,0.08),transparent_55%)]" />
 
-      <article className="route-enter relative z-10 mx-auto w-full max-w-[1040px] px-6 pt-28 pb-16 md:px-8">
+      <article className="route-enter relative z-10 mx-auto w-full max-w-[1040px] px-6 pb-16 pt-16 md:px-8 md:pt-20">
+        <Link
+          href={`/darkmode/projects#project-${project.slug}`}
+          className="mb-8 inline-flex items-center gap-2 text-[1.05rem] text-white/52 transition-colors hover:text-white/78"
+        >
+          <span aria-hidden>&larr;</span>
+          <span>Back to Projects</span>
+        </Link>
+
         <header className="mb-8 border border-white/15 bg-black/45 p-6 backdrop-blur-sm md:p-8">
           <p className="font-mono text-xs tracking-[0.16em] text-white/55 uppercase">
             {project.dateLabel}
@@ -326,6 +346,10 @@ type SetupBlockProps = {
 };
 
 function SetupBlock({ title, command }: SetupBlockProps) {
+  if (!command.trim()) {
+    return null;
+  }
+
   return (
     <article className="mt-5 rounded-2xl border border-white/12 bg-white/[0.03] p-5">
       <p className="text-xs tracking-[0.14em] text-white/48 uppercase">{title}</p>
