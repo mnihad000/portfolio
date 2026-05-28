@@ -168,7 +168,7 @@ export default function LightProjectDetailPage({
 
               <section className="rounded-[1.75rem] border border-[#d65a12]/18 bg-[#fff4e8] p-5">
                 <h2 className="text-2xl font-semibold tracking-tight text-neutral-900">
-                  Disclaimer
+                
                 </h2>
                 <p className="mt-3 text-sm leading-7 text-neutral-700">{detail.disclaimer}</p>
               </section>

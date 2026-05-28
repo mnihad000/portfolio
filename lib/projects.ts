@@ -33,7 +33,6 @@ export type ProjectRichDetail = {
   decisionTriggers: string[];
   opponentModeling: string[];
   metrics: ProjectMetric[];
-  disclaimer: string;
 };
 
 export type ProjectLink = {
@@ -340,8 +339,6 @@ cd frontend && npm install && npm run dev`,
           target: "$500/month on AWS (doc estimate).",
         },
       ],
-      disclaimer:
-        "This project page reflects a documentation-defined system architecture and phased implementation roadmap. The current repository snapshot is primarily design, schema, and operations documentation; most production service code is planned but not fully checked in.",
     },
   },
   {
@@ -951,8 +948,6 @@ npx prisma studio`,
         "Dependency chain analysis for blocker detection",
       ],
       metrics: [],
-      disclaimer:
-        "Docs explicitly describe this as MVP/hackathon planning material and not a final production spec; many implementation items are still unchecked in TASKS.md.",
     },
   },
   {
