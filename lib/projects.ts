@@ -6,7 +6,16 @@ export type Project = {
   dateLabel: string;
   technologies: string[];
   coverImage: string;
+  proofCard?: ProjectProofCard;
   richDetail?: ProjectRichDetail;
+};
+
+export type ProjectProofCard = {
+  eyebrow: string;
+  title: string;
+  description: string;
+  imageSrc: string;
+  imageAlt: string;
 };
 
 export type ProjectRichDetail = {
@@ -499,15 +508,32 @@ adb devices  # should show emulator-5554`,
     },
   },
   {
-    slug: "squeeze-ai",
-    title: "Squeeze Ai",
+    slug: "lemontree-volunteer-platform",
+    title: "Lemontree Volunteer Platform",
     description:
-      "AI compression workspace that distills long-form content into concise, structured outputs for faster decision-making.",
+      "Winner at the Morgan Stanley Hackathon and acquired by Lemontree(Hackathon partners)- now serving over 500k+ users, this AI-assisted volunteer operations platform was built to launch outreach campaigns, recruit volunteers, and measure impact through one workflow.",
     fullDescription:
-      "Squeeze Ai is a content compression and synthesis tool designed for high-volume information workflows. The system ingests long documents, transcripts, and notes, then produces layered summaries tuned for depth and reading time. It emphasizes controllable output quality with adjustable abstraction levels, making it useful for research briefings, project updates, and rapid context loading.",
+      "Winner at the Morgan Stanley Hackathon and acquired by Lemontree(Hackathon partners)- now serving over 500k+ users, this project turned volunteer campaign operations into one coordinated product. The frontend was built in Next.js and TypeScript with role-based flows for organizers, volunteers, admins, and pantry owners across campaign creation, map discovery, RSVP, check-in, leaderboard, and analytics experiences. The backend was built in FastAPI on top of Supabase auth, Postgres, and storage, with services for invitations, flyer generation, reporting, and social posting. On top of that, an agentic AWS Bedrock and LangGraph layer could gather campaign context conversationally, call platform tools, create campaigns, generate flyers, and trigger follow-on workflow actions instead of acting like a passive chatbot.",
     dateLabel: "FEBRUARY 2026",
-    technologies: ["Next.js", "TypeScript", "OpenAI API", "PostgreSQL", "Prisma"],
-    coverImage: "/projects/squeeze-ai-cover.svg",
+    technologies: [
+      "Next.js",
+      "TypeScript",
+      "FastAPI",
+      "Supabase",
+      "AWS Bedrock",
+      "LangGraph",
+      "Mapbox",
+      "Resend",
+    ],
+    coverImage: "/projects/Squeeze.png",
+    proofCard: {
+      eyebrow: "Recognition",
+      title: "Morgan Stanley Hackathon Certificate",
+      description:
+        "Certificate included as supporting proof for the hackathon win referenced in the project summary.",
+      imageSrc: "/projects/certificate.jpg",
+      imageAlt: "Morgan Stanley Hackathon certificate for Lemontree Volunteer Platform",
+    },
   },
   {
     slug: "autonomous-dataset-agent",

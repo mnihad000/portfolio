@@ -268,6 +268,31 @@ export default function LightProjectDetailPage({
             ))}
           </div>
         </section>
+
+        {project.proofCard ? (
+          <section className="mt-8 rounded-[2rem] border border-black/8 bg-white p-6 shadow-[0_18px_45px_rgba(0,0,0,0.04)] md:p-8">
+            <p className="text-sm uppercase tracking-[0.16em] text-neutral-500">
+              {project.proofCard.eyebrow}
+            </p>
+            <h2 className="mt-3 text-2xl font-semibold tracking-tight text-neutral-900">
+              {project.proofCard.title}
+            </h2>
+            <p className="mt-3 max-w-2xl text-base leading-8 text-neutral-600">
+              {project.proofCard.description}
+            </p>
+
+            <div className="relative mt-6 overflow-hidden rounded-[1.5rem] border border-black/8 bg-[#f6f2eb]">
+              <div className="relative aspect-[4/3] w-full">
+                <Image
+                  src={project.proofCard.imageSrc}
+                  alt={project.proofCard.imageAlt}
+                  fill
+                  className="object-contain"
+                />
+              </div>
+            </div>
+          </section>
+        ) : null}
       </article>
     </main>
   );
