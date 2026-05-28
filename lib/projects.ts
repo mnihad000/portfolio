@@ -508,7 +508,7 @@ adb devices  # should show emulator-5554`,
     slug: "lemontree-volunteer-platform",
     title: "Lemontree Volunteer Platform",
     description:
-      "Winner at the Morgan Stanley Hackathon and acquired by Lemontree(Hackathon partners)- now serving over 500k+ users, this AI-assisted volunteer operations platform was built to launch outreach campaigns, recruit volunteers, and measure impact through one workflow.",
+      "Winner at the Morgan Stanley Hackathon and acquired by Lemontree(Hackathon partners)- now serving over 500k+ users",
     fullDescription:
       "Winner at the Morgan Stanley Hackathon and acquired by Lemontree(Hackathon partners)- now serving over 500k+ users, this project turned volunteer campaign operations into one coordinated product. The frontend was built in Next.js and TypeScript with role-based flows for organizers, volunteers, admins, and pantry owners across campaign creation, map discovery, RSVP, check-in, leaderboard, and analytics experiences. The backend was built in FastAPI on top of Supabase auth, Postgres, and storage, with services for invitations, flyer generation, reporting, and social posting. On top of that, an agentic AWS Bedrock and LangGraph layer could gather campaign context conversationally, call platform tools, create campaigns, generate flyers, and trigger follow-on workflow actions instead of acting like a passive chatbot.",
     dateLabel: "FEBRUARY 2026",
