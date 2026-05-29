@@ -1,7 +1,7 @@
 export type LightExperienceItem = {
   date: string;
   title: string;
-  body: string;
+  body: string | string[];
 };
 
 export const lightModeContent = {
@@ -27,26 +27,36 @@ export const lightModeContent = {
     {
       date: "December 2025 - Present",
       title: "Software Engineering Intern - Buildify",
-      body:
-        "Built an agentic Retention Autopilot that automated campaign operations, improved 30-day returning-user workflows, and reduced campaign setup time by 30%.",
+      body: [
+        "As the sole fullstack engineer on this project, I built Retention Autopilot, an agentic AI system designed to reduce churn for the small businesses on our platform.",
+        "Every time a customer logged in, the system pulled their usage data, segmented them automatically, and generated a targeted marketing campaign, renewal discounts, feature nudges, ROI summaries, upgrade prompts, or re-engagement tips depending on where they were in their journey.",
+        "Each campaign had an A/B tested variant baked in. A human reviewed and approved before anything went out. The result: a 30% improvement in 30-day returning users and a 30% reduction in campaign setup time.",
+      ],
     },
     {
       date: "June 2025 - December 2025",
-      title: "Co-Author / Research Contributor - Self-Critiquing LLM Paper",
-      body:
-        "Co-authored a research pipeline combining expert feedback, distillation, reinforcement learning, and Pareto optimization while reducing infrastructure cost by up to 90%.",
+      title: "Co-Author / Research Contributor - Feedback Distillation LLM Paper",
+      body: [
+        "Co-authored an unpublished research paper introducing a feedback distillation framework for improving LLM reasoning. The system pairs a large expert model with a lightweight student model (TinyLlama 1.1B vs. LLaMA-3 8B), where the student learns to match expert-quality feedback in real time through knowledge distillation, eliminating the need for a separate fixed amateur model.",
+        "Contributed to both the implementation and experimental evaluation, benchmarking the framework against CLEAR, Chain-of-Thought, and Chain-of-Draft baselines across math reasoning, instruction following, and reading comprehension tasks.",
+      ],
     },
     {
       date: "June 2025 - August 2025",
       title: "Software Engineering Intern - STEMKasa",
-      body:
-        "Led a three-intern rebuild of a 17-file monolith into a MERN app with tests, secure auth, Stripe subscriptions, and AI-powered learning features.",
+      body: [
+        "Led 3 interns to rebuild a 17-file monolith as a MERN app, implementing component-based design, REST APIs, and integration tests to preserve 100% functionality.",
+        "Architected and deployed a full CI/CD pipeline using GitHub Actions, automating build, test, and deployment workflows to eliminate manual deployment errors across staging and production environments.",
+        "Engineered an AI tutoring layer with GPT-powered adaptive flashcards and lessons, then integrated secure auth and Stripe subscriptions, driving a 25% engagement increase across 3 schools.",
+      ],
     },
     {
       date: "June 2023 - September 2023",
       title: "Software Automation Intern - Universacare",
-      body:
-        "Built Selenium-based automation and reusable React components that reduced manual work, improved UI consistency, and saved hours across submission workflows.",
+      body: [
+        "Built a Python Selenium web scraping workflow to extract daily Home Health Aide data, automating manual work and improving productivity by 11%.",
+        "Developed 15 reusable React components and integrated a role-aware online application form into the production website, improving UI consistency/access control and saving 2+ hours per submission.",
+      ],
     },
   ] satisfies LightExperienceItem[],
 } as const;

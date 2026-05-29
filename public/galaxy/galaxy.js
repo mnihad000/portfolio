@@ -899,6 +899,7 @@
   }
 
   function renderPlanetPanel(planetEntry) {
+    var descriptionBullets = planetEntry.data.descriptionBullets || [];
     var moons = (planetEntry.data.moons || [])
       .map(function (moon) {
         return (
@@ -911,11 +912,21 @@
       })
       .join("");
 
+    var descriptionMarkup = descriptionBullets.length
+      ? '<ul class="galaxy-panel-list">' +
+        descriptionBullets
+          .map(function (bullet) {
+            return '<li class="galaxy-panel-list-item">' + bullet + "</li>";
+          })
+          .join("") +
+        "</ul>"
+      : '<p class="galaxy-panel-description">' + planetEntry.data.description + "</p>";
+
     panel.innerHTML = [
       '<p class="galaxy-panel-kicker">Planet Detail</p>',
       '<h2 class="galaxy-panel-title">' + planetEntry.data.label + "</h2>",
       '<p class="galaxy-panel-sublabel">' + planetEntry.data.sublabel + "</p>",
-      '<p class="galaxy-panel-description">' + planetEntry.data.description + "</p>",
+      descriptionMarkup,
       '<section class="galaxy-panel-section">',
       '<p class="galaxy-panel-section-title">Moons</p>',
       '<div class="galaxy-panel-moons">' + moons + "</div>",

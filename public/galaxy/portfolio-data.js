@@ -16,18 +16,21 @@
         type: "internship",
         prestige: 10,
         color: 0x2f7cf6,
-        description:
-          "Built an agentic Retention Autopilot that ingests analytics, segments users, and automates retention operations at campaign scale. Launched approved A/B-tested push and rewards campaigns that improved 30-day returning-user workflows while cutting campaign setup time by 30%.",
+        descriptionBullets: [
+          "As the sole fullstack engineer on this project, I built Retention Autopilot, an agentic AI system designed to reduce churn for the small businesses on our platform.",
+          "Every time a customer logged in, the system pulled their usage data, segmented them automatically, and generated a targeted marketing campaign, renewal discounts, feature nudges, ROI summaries, upgrade prompts, or re-engagement tips depending on where they were in their journey.",
+          "Each campaign had an A/B tested variant baked in. A human reviewed and approved before anything went out. The result: a 30% improvement in 30-day returning users and a 30% reduction in campaign setup time.",
+        ],
         moons: [
           {
             label: "Retention Autopilot",
             description:
-              "Agentic retention workflow that turns analytics signals into automated campaign operations.",
+              "Agentic AI retention system that turns usage data into segmented, journey-specific campaigns.",
           },
           {
             label: "A/B Campaign Engine",
             description:
-              "Approved push and rewards experiments that accelerated setup and improved returning-user performance.",
+              "Human-reviewed campaign variants improved returning-user performance while reducing setup time.",
           },
         ],
       },
@@ -119,18 +122,20 @@
         type: "job",
         prestige: 7,
         color: 0x7c3aed,
-        description:
-          "Co-authored a self-critiquing LLM research pipeline combining expert feedback, distillation, reinforcement learning, and Pareto optimization, improving model accuracy while reducing infrastructure costs by up to 90% using open-weight models.",
+        descriptionBullets: [
+          "Co-authored an unpublished research paper introducing a feedback distillation framework for improving LLM reasoning. The system pairs a large expert model with a lightweight student model (TinyLlama 1.1B vs. LLaMA-3 8B), where the student learns to match expert-quality feedback in real time through knowledge distillation, eliminating the need for a separate fixed amateur model.",
+          "Contributed to both the implementation and experimental evaluation, benchmarking the framework against CLEAR, Chain-of-Thought, and Chain-of-Draft baselines across math reasoning, instruction following, and reading comprehension tasks.",
+        ],
         moons: [
           {
-            label: "Self-Critiquing LLMs",
+            label: "Feedback Distillation",
             description:
-              "Pipeline design across expert feedback loops, distillation, and reinforcement learning.",
+              "Student and expert models were paired so a 1.1B model could learn to produce expert-quality feedback in real time.",
           },
           {
-            label: "90% Cost Reduction",
+            label: "Benchmark Evaluation",
             description:
-              "Open-weight model strategy that cut infrastructure cost while preserving strong performance.",
+              "Framework was benchmarked against CLEAR, Chain-of-Thought, and Chain-of-Draft across three reasoning task categories.",
           },
         ],
       },
@@ -146,18 +151,26 @@
         type: "internship",
         prestige: 6,
         color: 0x0f766e,
-        description:
-          "Led a three-intern rebuild of a 17-file monolith into a MERN application with component-based architecture, secure auth, Stripe subscriptions, GPT-powered learning features, and stronger automated testing.",
+        descriptionBullets: [
+          "Led 3 interns to rebuild a 17-file monolith as a MERN app, implementing component-based design, REST APIs, and integration tests to preserve 100% functionality.",
+          "Architected and deployed a full CI/CD pipeline using GitHub Actions, automating build, test, and deployment workflows to eliminate manual deployment errors across staging and production environments.",
+          "Engineered an AI tutoring layer with GPT-powered adaptive flashcards and lessons, then integrated secure auth and Stripe subscriptions, driving a 25% engagement increase across 3 schools.",
+        ],
         moons: [
           {
             label: "Led 3 Interns",
             description:
-              "Drove the rebuild from monolith to component-based MERN architecture while preserving system behavior.",
+              "Drove the rebuild from monolith to a component-based MERN application while preserving full functionality.",
+          },
+          {
+            label: "GitHub Actions CI/CD",
+            description:
+              "Automated build, test, and deployment workflows across staging and production to remove manual deployment errors.",
           },
           {
             label: "+25% Engagement",
             description:
-              "AI flashcards and lessons improved engagement across three schools.",
+              "GPT-powered adaptive flashcards, lessons, auth, and subscriptions increased student engagement across 3 schools.",
           },
         ],
       },
@@ -173,18 +186,20 @@
         type: "internship",
         prestige: 5,
         color: 0x6b7280,
-        description:
-          "Built Selenium-based automation to extract daily Home Health Aide data and developed reusable React components for a role-aware production application flow, reducing manual work and improving UI consistency.",
+        descriptionBullets: [
+          "Built a Python Selenium web scraping workflow to extract daily Home Health Aide data, automating manual work and improving productivity by 11%.",
+          "Developed 15 reusable React components and integrated a role-aware online application form into the production website, improving UI consistency/access control and saving 2+ hours per submission.",
+        ],
         moons: [
           {
             label: "Automation",
             description:
-              "Python Selenium workflow that improved operational productivity by 11%.",
+              "Python Selenium workflow that automated manual Home Health Aide data extraction and improved productivity by 11%.",
           },
           {
             label: "15 React Components",
             description:
-              "Reusable UI components that improved consistency and saved hours across submission workflows.",
+              "Role-aware production form and reusable UI components improved consistency, access control, and saved 2+ hours per submission.",
           },
         ],
       },

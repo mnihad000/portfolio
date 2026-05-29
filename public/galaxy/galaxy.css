@@ -296,6 +296,18 @@
   color: rgba(10, 10, 10, 0.74);
 }
 
+.galaxy-panel-list {
+  margin: 22px 0 0;
+  padding-left: 18px;
+  font-size: 12px;
+  line-height: 1.9;
+  color: rgba(10, 10, 10, 0.74);
+}
+
+.galaxy-panel-list-item + .galaxy-panel-list-item {
+  margin-top: 8px;
+}
+
 .galaxy-panel-section {
   margin-top: 28px;
 }

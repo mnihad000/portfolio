@@ -252,9 +252,17 @@ function AboutSection() {
                   <h4 className="text-lg font-semibold text-neutral-900 md:text-xl">
                     {item.title}
                   </h4>
-                  <p className="max-w-3xl text-sm leading-7 text-neutral-600 md:text-base">
-                    {item.body}
-                  </p>
+                  {Array.isArray(item.body) ? (
+                    <ul className="max-w-3xl list-disc space-y-2 pl-5 text-sm leading-7 text-neutral-600 marker:text-neutral-400 md:text-base">
+                      {item.body.map((bullet) => (
+                        <li key={bullet}>{bullet}</li>
+                      ))}
+                    </ul>
+                  ) : (
+                    <p className="max-w-3xl text-sm leading-7 text-neutral-600 md:text-base">
+                      {item.body}
+                    </p>
+                  )}
                 </div>
               </article>
             ))}
