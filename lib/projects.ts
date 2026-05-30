@@ -117,7 +117,7 @@ export const projects: Project[] = [
       "ArgoCD",
       "GitHub Actions",
     ],
-    coverImage: "/projects/rhetoriq-cover.svg",
+    coverImage: "/projects/Rhetoriq.png",
     richDetail: {
       heroTitle: "Autonomous Narrative Tracing Pipeline",
       heroSubtitle:
