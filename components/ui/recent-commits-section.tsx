@@ -52,14 +52,6 @@ function describeDonutSlice(
   ].join(" ");
 }
 
-function getOuterLabelAnchor(labelX: number, center: number) {
-  if (Math.abs(labelX - center) < 12) {
-    return "middle";
-  }
-
-  return labelX < center ? "end" : "start";
-}
-
 function CommitSkeletonCard() {
   return (
     <div className="rounded-[18px] border border-[rgba(232,80,10,0.09)] bg-[rgba(255,255,255,0.76)] px-5 py-4 shadow-[0_10px_36px_rgba(232,80,10,0.05)] backdrop-blur-[16px]">
@@ -127,7 +119,7 @@ function YearlyCommitRadialChart({ summary }: { summary: GitHubYearlyCommitSumma
   const sectorGap = 1.2;
   const outerRingRadius = innerChartRadius + RADIAL_ACTIVITY_SCALE.length * (bandWidth + bandGap);
   const labelRadius =
-    innerChartRadius + RADIAL_ACTIVITY_SCALE.length * (bandWidth + bandGap) + 18;
+    innerChartRadius + RADIAL_ACTIVITY_SCALE.length * (bandWidth + bandGap) + 12;
   const maxMonthlyCommits = Math.max(summary.maxMonthlyCommits, 1);
 
   return (
@@ -179,12 +171,17 @@ function YearlyCommitRadialChart({ summary }: { summary: GitHubYearlyCommitSumma
             const monthRatio = month.commitCount / maxMonthlyCommits;
             const labelPosition = polarToCartesian(center, labelRadius, midAngle);
             const valuePosition = polarToCartesian(center, innerChartRadius - 14, midAngle);
+            const tangentAngle = midAngle + 90;
+            const normalizedTangentAngle = ((tangentAngle % 360) + 360) % 360;
+            const labelRotation =
+              normalizedTangentAngle > 90 && normalizedTangentAngle < 270
+                ? tangentAngle + 180
+                : tangentAngle;
             const dividerEnd = polarToCartesian(
               center,
               outerRingRadius,
               midAngle,
             );
-            const textAnchor = getOuterLabelAnchor(labelPosition.x, center);
 
             return (
               <g key={`${month.label}-${month.commitCount}`}>
@@ -250,8 +247,9 @@ function YearlyCommitRadialChart({ summary }: { summary: GitHubYearlyCommitSumma
                   fontSize="11"
                   fontWeight="700"
                   letterSpacing="0.22em"
-                  textAnchor={textAnchor}
+                  textAnchor="middle"
                   dominantBaseline="middle"
+                  transform={`rotate(${labelRotation} ${labelPosition.x} ${labelPosition.y})`}
                 >
                   {month.shortLabel}
                 </text>
