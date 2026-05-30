@@ -1,6 +1,10 @@
 import assert from "node:assert/strict";
 import test from "node:test";
-import { mapGitHubEventsToActivity } from "./github-activity.ts";
+import {
+  mapGitHubEventsToActivity,
+  mapGitHubEventsToRecentCommits,
+  summarizeMonthlyCommitsFromEvents,
+} from "./github-activity.ts";
 
 test("maps push event with repo, branch, and compact commit preview", () => {
   const events = [
@@ -109,4 +113,70 @@ test("applies limit after sorting by recency", () => {
   const items = mapGitHubEventsToActivity(events, 1);
   assert.equal(items.length, 1);
   assert.equal(items[0]?.repo, "mnihad000/new");
+});
+
+test("maps public events into compact recent commit cards", () => {
+  const events = [
+    {
+      id: "evt-3",
+      type: "PushEvent",
+      created_at: "2026-05-18T13:00:00Z",
+      repo: { name: "mnihad000/portfolio-site" },
+      payload: {
+        ref: "refs/heads/main",
+        commits: [
+          { sha: "1111111aaaaaa", message: "feat: refresh recent commits layout" },
+        ],
+      },
+    },
+  ];
+
+  const items = mapGitHubEventsToRecentCommits(events, 5);
+  assert.equal(items.length, 1);
+  assert.equal(items[0]?.repo, "portfolio-site");
+  assert.equal(items[0]?.branch, "main");
+  assert.equal(items[0]?.shortSha, "1111111");
+  assert.equal(items[0]?.message, "feat: refresh recent commits layout");
+});
+
+test("summarizes monthly commit counts from push events", () => {
+  const events = [
+    {
+      id: "jan",
+      type: "PushEvent",
+      created_at: "2026-01-11T08:00:00Z",
+      payload: {
+        size: 4,
+        commits: [{ sha: "aaa", message: "jan" }],
+      },
+    },
+    {
+      id: "apr",
+      type: "PushEvent",
+      created_at: "2026-04-12T08:00:00Z",
+      payload: {
+        commits: [
+          { sha: "bbb", message: "apr 1" },
+          { sha: "ccc", message: "apr 2" },
+        ],
+      },
+    },
+    {
+      id: "ignore-old-year",
+      type: "PushEvent",
+      created_at: "2025-12-31T23:59:00Z",
+      payload: {
+        size: 99,
+        commits: [{ sha: "zzz", message: "old year" }],
+      },
+    },
+  ];
+
+  const summary = summarizeMonthlyCommitsFromEvents(events, 2026);
+  assert.equal(summary.totalCommits, 6);
+  assert.equal(summary.maxMonthlyCommits, 4);
+  assert.equal(summary.months[0]?.commitCount, 4);
+  assert.equal(summary.months[3]?.commitCount, 2);
+  assert.equal(summary.months[4]?.commitCount, 0);
+  assert.equal(summary.source, "public_events");
 });
