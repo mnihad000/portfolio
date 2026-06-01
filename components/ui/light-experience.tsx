@@ -19,13 +19,7 @@ import {
   useTransform,
   type Transition,
 } from "framer-motion";
-import {
-  ArrowUpRight,
-  Download,
-  FolderGit2,
-  Link2,
-  Mail,
-} from "lucide-react";
+import { ArrowUpRight, Download, FolderGit2, Link2, Mail } from "lucide-react";
 import headshotFinal from "@/app/profile_picture/headshot_final.jpg";
 import { aboutPageContent } from "@/lib/about";
 import { lightModeContent } from "@/lib/light-mode-content";
@@ -45,14 +39,19 @@ const revealTransition: Transition = {
 
 function renderRichParagraph(
   paragraph: (typeof aboutPageContent.heroParagraphs)[number],
-  keyPrefix: string
+  keyPrefix: string,
 ) {
   return (
-    <p key={keyPrefix} className="text-base leading-8 text-neutral-700 md:text-lg">
+    <p
+      key={keyPrefix}
+      className="text-base leading-8 text-neutral-700 md:text-lg"
+    >
       {paragraph.map((segment, index) => (
         <span
           key={`${keyPrefix}-${index}`}
-          className={segment.strong ? "font-semibold text-[#d65a12]" : undefined}
+          className={
+            segment.strong ? "font-semibold text-[#d65a12]" : undefined
+          }
         >
           {segment.text}
         </span>
@@ -72,7 +71,7 @@ export default function LightExperience() {
       timers.push(
         window.setTimeout(() => {
           element.classList.remove("galaxy-highlight");
-        }, 1600)
+        }, 1600),
       );
     };
 
@@ -90,7 +89,7 @@ export default function LightExperience() {
           timers.push(
             window.setTimeout(() => {
               highlightProjectFromHash(attempt + 1);
-            }, 120)
+            }, 120),
           );
         }
         return;
@@ -116,7 +115,9 @@ export default function LightExperience() {
   return (
     <div
       className="min-h-svh bg-white text-neutral-950"
-      style={{ fontFamily: 'var(--font-geist-sans), "IBM Plex Mono", sans-serif' }}
+      style={{
+        fontFamily: 'var(--font-geist-sans), "IBM Plex Mono", sans-serif',
+      }}
     >
       <div className="px-4 pb-2 pt-0 md:px-10" />
 
@@ -163,7 +164,9 @@ function AboutSection() {
         <div className="relative isolate space-y-6">
           <div className="floating-accent-dots" aria-hidden="true" />
           <div>
-            <p className="text-xs uppercase tracking-[0.25em] text-neutral-500">About me</p>
+            <p className="text-xs uppercase tracking-[0.25em] text-neutral-500">
+              About me
+            </p>
             <AnimatedName
               text={lightModeContent.name}
               className="mt-2 text-4xl font-bold tracking-tight text-[#d65a12] drop-shadow-[0_4px_18px_rgba(214,90,18,0.2)] md:text-6xl"
@@ -175,7 +178,7 @@ function AboutSection() {
 
           <div className="max-w-xl space-y-4">
             {aboutPageContent.heroParagraphs.map((paragraph, index) =>
-              renderRichParagraph(paragraph, `about-paragraph-${index}`)
+              renderRichParagraph(paragraph, `about-paragraph-${index}`),
             )}
           </div>
 
@@ -344,7 +347,8 @@ function ContactSection() {
               Contact Me
             </h3>
             <p className="max-w-xl text-base leading-8 text-neutral-600 md:text-lg">
-              Got a project idea, opportunity, want to team up for a hackathon, or just want to chat? I&apos;d love to hear from you.
+              Got a project idea, opportunity, want to team up for a hackathon,
+              or just want to chat? I&apos;d love to hear from you.
             </p>
           </motion.div>
 
@@ -402,7 +406,6 @@ function ContactSection() {
                 <ArrowUpRight className="h-4 w-4" strokeWidth={1.8} />
               </span>
             </MagneticContactCard>
-
           </motion.div>
         </div>
 
@@ -497,7 +500,9 @@ function readSecretSession(): SecretSession | null {
   }
 
   try {
-    const rawSession = window.sessionStorage.getItem(SECRET_SESSION_STORAGE_KEY);
+    const rawSession = window.sessionStorage.getItem(
+      SECRET_SESSION_STORAGE_KEY,
+    );
 
     if (!rawSession) {
       return null;
@@ -513,7 +518,10 @@ function readSecretSession(): SecretSession | null {
 
     return {
       visitorNumber,
-      visitorTotal: Number.isInteger(visitorTotal) && visitorTotal >= 1 ? visitorTotal : null,
+      visitorTotal:
+        Number.isInteger(visitorTotal) && visitorTotal >= 1
+          ? visitorTotal
+          : null,
       promptClosed: parsed.promptClosed === true,
     };
   } catch {
@@ -524,7 +532,7 @@ function readSecretSession(): SecretSession | null {
 function writeSecretSession(
   visitorNumber: number,
   promptClosed: boolean,
-  visitorTotal: number | null
+  visitorTotal: number | null,
 ) {
   if (typeof window === "undefined") {
     return;
@@ -533,7 +541,7 @@ function writeSecretSession(
   try {
     window.sessionStorage.setItem(
       SECRET_SESSION_STORAGE_KEY,
-      JSON.stringify({ visitorNumber, visitorTotal, promptClosed })
+      JSON.stringify({ visitorNumber, visitorTotal, promptClosed }),
     );
   } catch {
     // The active component state still carries the unlock if storage is blocked.
@@ -559,13 +567,16 @@ function formatOrdinal(value: number) {
   }
 }
 
-function normalizeVisitorTotal(visitorTotal: number | null, visitorNumber: number) {
+function normalizeVisitorTotal(
+  visitorTotal: number | null,
+  visitorNumber: number,
+) {
   return Math.max(
     Number.isInteger(visitorTotal) && visitorTotal !== null
       ? visitorTotal
       : PUBLIC_VISITOR_COUNT_START,
     PUBLIC_VISITOR_COUNT_START,
-    visitorNumber
+    visitorNumber,
   );
 }
 
@@ -587,9 +598,12 @@ function formatSecretMessages(messages: SecretMessage[]) {
 function buildSecretDossier(
   visitorNumber: number,
   visitorTotal: number | null,
-  messages: SecretMessage[]
+  messages: SecretMessage[],
 ) {
-  const normalizedVisitorTotal = normalizeVisitorTotal(visitorTotal, visitorNumber);
+  const normalizedVisitorTotal = normalizeVisitorTotal(
+    visitorTotal,
+    visitorNumber,
+  );
 
   return [
     "DECRYPTED. ACCESSING CLASSIFIED DOSSIER...",
@@ -600,7 +614,6 @@ function buildSecretDossier(
     "You're one of the few who made it this far.",
     "Most people just scroll portfolios.",
     "You played the game.",
-    "That's exactly how I approach engineering.",
     "— Mohammed",
     "",
     SECRET_SEPARATOR,
@@ -629,16 +642,16 @@ const TERMINAL_COMMANDS = [
 
 const TERMINAL_COMMAND_PATTERN = new RegExp(
   `^([\\s>]*)(?:${TERMINAL_COMMANDS.map((command) =>
-    command.replace(/[.*+?^${}()|[\]\\]/g, "\\$&")
+    command.replace(/[.*+?^${}()|[\]\\]/g, "\\$&"),
   ).join("|")})(?=\\s+-|\\s|$)`,
-  "i"
+  "i",
 );
 
 const QUOTED_TERMINAL_COMMAND_PATTERN = new RegExp(
   `'(${TERMINAL_COMMANDS.map((command) =>
-    command.replace(/[.*+?^${}()|[\]\\]/g, "\\$&")
+    command.replace(/[.*+?^${}()|[\]\\]/g, "\\$&"),
   ).join("|")})'`,
-  "gi"
+  "gi",
 );
 
 function renderCommandHighlights(text: string): ReactNode {
@@ -665,17 +678,23 @@ function renderCommandHighlights(text: string): ReactNode {
     const fragments: ReactNode[] = [];
     let lastIndex = 0;
 
-    part.replace(QUOTED_TERMINAL_COMMAND_PATTERN, (match, command: string, offset: number) => {
-      fragments.push(part.slice(lastIndex, offset), "'");
-      fragments.push(
-        <span key={`${partIndex}-${offset}`} className={TERMINAL_COMMAND_GLOW_CLASS}>
-          {command}
-        </span>
-      );
-      fragments.push("'");
-      lastIndex = offset + match.length;
-      return match;
-    });
+    part.replace(
+      QUOTED_TERMINAL_COMMAND_PATTERN,
+      (match, command: string, offset: number) => {
+        fragments.push(part.slice(lastIndex, offset), "'");
+        fragments.push(
+          <span
+            key={`${partIndex}-${offset}`}
+            className={TERMINAL_COMMAND_GLOW_CLASS}
+          >
+            {command}
+          </span>,
+        );
+        fragments.push("'");
+        lastIndex = offset + match.length;
+        return match;
+      },
+    );
 
     if (!fragments.length) {
       return part;
@@ -699,8 +718,11 @@ function ContactTerminal({ resumeHref }: { resumeHref: string }) {
   const [history, setHistory] = useState<string[]>([]);
   const [historyIndex, setHistoryIndex] = useState<number | null>(null);
   const [isGameActive, setIsGameActive] = useState(false);
-  const [secretAccess, setSecretAccess] = useState<SecretAccessState>(INITIAL_SECRET_ACCESS);
-  const [isSecretMessageSubmitting, setIsSecretMessageSubmitting] = useState(false);
+  const [secretAccess, setSecretAccess] = useState<SecretAccessState>(
+    INITIAL_SECRET_ACCESS,
+  );
+  const [isSecretMessageSubmitting, setIsSecretMessageSubmitting] =
+    useState(false);
   const lineIdRef = useRef(1);
   const typeTimerRef = useRef<number | null>(null);
   const secretAccessRef = useRef<SecretAccessState>(secretAccess);
@@ -792,7 +814,7 @@ function ContactTerminal({ resumeHref }: { resumeHref: string }) {
   const addTypedLine = (
     text: string,
     kind: TerminalLineKind = "output",
-    onComplete?: () => void
+    onComplete?: () => void,
   ) => {
     if (typeTimerRef.current) {
       window.clearInterval(typeTimerRef.current);
@@ -809,8 +831,8 @@ function ContactTerminal({ resumeHref }: { resumeHref: string }) {
         current.map((line) =>
           line.type === "text" && line.id === id
             ? { ...line, text: text.slice(0, index) }
-            : line
-        )
+            : line,
+        ),
       );
 
       if (index >= text.length && typeTimerRef.current) {
@@ -912,10 +934,15 @@ function ContactTerminal({ resumeHref }: { resumeHref: string }) {
       secretAccessRef.current = nextState;
       return nextState;
     });
-    setLines((current) => current.filter((line) => line.type !== "secret-form"));
+    setLines((current) =>
+      current.filter((line) => line.type !== "secret-form"),
+    );
   };
 
-  const handleSecretMessageSubmit = async (values: { name: string; message: string }) => {
+  const handleSecretMessageSubmit = async (values: {
+    name: string;
+    message: string;
+  }) => {
     const visitorNumber = secretAccessRef.current.visitorNumber;
     const message = values.message.trim();
 
@@ -979,16 +1006,25 @@ function ContactTerminal({ resumeHref }: { resumeHref: string }) {
 
     if (!current.unlocked) {
       if (current.isUnlocking) {
-        addTypedLine("DECRYPTION HANDSHAKE IN PROGRESS. TRY AGAIN IN A MOMENT.", "output");
+        addTypedLine(
+          "DECRYPTION HANDSHAKE IN PROGRESS. TRY AGAIN IN A MOMENT.",
+          "output",
+        );
         return;
       }
 
       if (current.unlockFailed) {
-        addTypedLine("CLASSIFIED DOSSIER SYNC FAILED. TRY AGAIN LATER.", "error");
+        addTypedLine(
+          "CLASSIFIED DOSSIER SYNC FAILED. TRY AGAIN LATER.",
+          "error",
+        );
         return;
       }
 
-      addTypedLine("CLEARANCE LEVEL INSUFFICIENT. BEAT THE MAINFRAME FIRST.", "error");
+      addTypedLine(
+        "CLEARANCE LEVEL INSUFFICIENT. BEAT THE MAINFRAME FIRST.",
+        "error",
+      );
       return;
     }
 
@@ -999,21 +1035,30 @@ function ContactTerminal({ resumeHref }: { resumeHref: string }) {
 
     void Promise.all([fetchSecretMessages(), fetchVisitorTotal()])
       .then(([messages, visitorTotal]) => {
-        const visitorNumber = secretAccessRef.current.visitorNumber ?? current.visitorNumber;
-        const currentVisitorTotal = secretAccessRef.current.visitorTotal ?? visitorTotal;
+        const visitorNumber =
+          secretAccessRef.current.visitorNumber ?? current.visitorNumber;
+        const currentVisitorTotal =
+          secretAccessRef.current.visitorTotal ?? visitorTotal;
 
         if (!visitorNumber) {
           throw new Error("Missing visitor number.");
         }
 
-        addTypedLine(buildSecretDossier(visitorNumber, currentVisitorTotal, messages), "success", () => {
-          if (!secretAccessRef.current.promptClosed) {
-            addSecretFormLine();
-          }
-        });
+        addTypedLine(
+          buildSecretDossier(visitorNumber, currentVisitorTotal, messages),
+          "success",
+          () => {
+            if (!secretAccessRef.current.promptClosed) {
+              addSecretFormLine();
+            }
+          },
+        );
       })
       .catch(() => {
-        addTypedLine("CLASSIFIED DOSSIER UNAVAILABLE. TRY AGAIN LATER.", "error");
+        addTypedLine(
+          "CLASSIFIED DOSSIER UNAVAILABLE. TRY AGAIN LATER.",
+          "error",
+        );
       });
   };
 
@@ -1074,8 +1119,10 @@ function ContactTerminal({ resumeHref }: { resumeHref: string }) {
         }
 
         const normalizedVisitorTotal = normalizeVisitorTotal(
-          Number.isInteger(visitorTotal) && visitorTotal >= 1 ? visitorTotal : null,
-          visitorNumber
+          Number.isInteger(visitorTotal) && visitorTotal >= 1
+            ? visitorTotal
+            : null,
+          visitorNumber,
         );
         const messages = Array.isArray(payload.messages)
           ? payload.messages.filter(isSecretMessage)
@@ -1157,27 +1204,28 @@ function ContactTerminal({ resumeHref }: { resumeHref: string }) {
       return;
     }
 
-    const outputs: Partial<Record<(typeof TERMINAL_COMMANDS)[number], string>> = {
-      help: [
-        "Available commands:",
-        "help - list commands",
-        "whoami - short bio",
-        "status - current internship and search signal",
-        "projects - real projects and links",
-        "skills - tech stack",
-        "contact - contact links",
-        "resume - download resume PDF",
-        "clear - clear terminal",
-        "start game - launch stealth extraction module",
-        "sudo hire me - request elevated access",
-        "ls secrets/ - inspect restricted path",
-      ].join("\n"),
-      whoami: terminalContent.bio,
-      status: terminalContent.status,
-      projects: terminalContent.projectList,
-      skills: terminalContent.skills,
-      contact: terminalContent.contact,
-    };
+    const outputs: Partial<Record<(typeof TERMINAL_COMMANDS)[number], string>> =
+      {
+        help: [
+          "Available commands:",
+          "help - list commands",
+          "whoami - short bio",
+          "status - current internship and search signal",
+          "projects - real projects and links",
+          "skills - tech stack",
+          "contact - contact links",
+          "resume - download resume PDF",
+          "clear - clear terminal",
+          "start game - launch stealth extraction module",
+          "sudo hire me - request elevated access",
+          "ls secrets/ - inspect restricted path",
+        ].join("\n"),
+        whoami: terminalContent.bio,
+        status: terminalContent.status,
+        projects: terminalContent.projectList,
+        skills: terminalContent.skills,
+        contact: terminalContent.contact,
+      };
 
     const output = outputs[command as keyof typeof outputs];
 
@@ -1188,13 +1236,15 @@ function ContactTerminal({ resumeHref }: { resumeHref: string }) {
 
     addTypedLine(
       `command not found: ${submitted}. Type 'help' for available commands.`,
-      "error"
+      "error",
     );
   };
 
   const autocompleteCommand = () => {
     const normalizedInput = input.toLowerCase();
-    const matches = TERMINAL_COMMANDS.filter((command) => command.startsWith(normalizedInput));
+    const matches = TERMINAL_COMMANDS.filter((command) =>
+      command.startsWith(normalizedInput),
+    );
 
     if (matches.length === 1) {
       setInput(matches[0]);
@@ -1250,7 +1300,8 @@ function ContactTerminal({ resumeHref }: { resumeHref: string }) {
         return;
       }
 
-      const nextIndex = historyIndex === history.length - 1 ? 0 : historyIndex + 1;
+      const nextIndex =
+        historyIndex === history.length - 1 ? 0 : historyIndex + 1;
       setHistoryIndex(nextIndex);
       setInput(history[nextIndex]);
       return;
@@ -1318,7 +1369,7 @@ function ContactTerminal({ resumeHref }: { resumeHref: string }) {
               >
                 {renderCommandHighlights(line.text)}
               </pre>
-            )
+            ),
           )}
         </div>
       </div>
@@ -1496,7 +1547,7 @@ const LASER_TICK_MS = 900;
 
 const range = (start: number, end: number) =>
   Array.from({ length: Math.abs(end - start) + 1 }, (_, index) =>
-    start <= end ? start + index : start - index
+    start <= end ? start + index : start - index,
   );
 
 const horizontalPath = (y: number, x1: number, x2: number) =>
@@ -1512,9 +1563,15 @@ const FLOOR_LAYOUTS: FloorLayout[] = [
     start: { x: 1, y: 7 },
     server: { x: 11, y: 1 },
     walls: [
-      ...range(2, 10).filter((x) => x !== 5).map((x) => ({ x, y: 2 })),
-      ...range(2, 11).filter((x) => x !== 9).map((x) => ({ x, y: 5 })),
-      ...range(3, 6).filter((y) => y !== 5).map((y) => ({ x: 7, y })),
+      ...range(2, 10)
+        .filter((x) => x !== 5)
+        .map((x) => ({ x, y: 2 })),
+      ...range(2, 11)
+        .filter((x) => x !== 9)
+        .map((x) => ({ x, y: 5 })),
+      ...range(3, 6)
+        .filter((y) => y !== 5)
+        .map((y) => ({ x: 7, y })),
     ],
     guards: [
       { path: horizontalPath(1, 3, 8) },
@@ -1527,17 +1584,21 @@ const FLOOR_LAYOUTS: FloorLayout[] = [
     start: { x: 1, y: 8 },
     server: { x: 12, y: 1 },
     walls: [
-      ...range(1, 11).filter((x) => x !== 3 && x !== 7 && x !== 10).map((x) => ({ x, y: 3 })),
-      ...range(2, 12).filter((x) => x !== 5 && x !== 9).map((x) => ({ x, y: 6 })),
-      ...range(4, 8).filter((y) => y !== 5 && y !== 7).map((y) => ({ x: 8, y })),
+      ...range(1, 11)
+        .filter((x) => x !== 3 && x !== 7 && x !== 10)
+        .map((x) => ({ x, y: 3 })),
+      ...range(2, 12)
+        .filter((x) => x !== 5 && x !== 9)
+        .map((x) => ({ x, y: 6 })),
+      ...range(4, 8)
+        .filter((y) => y !== 5 && y !== 7)
+        .map((y) => ({ x: 8, y })),
     ],
     guards: [
       { path: horizontalPath(1, 4, 9) },
       { path: verticalPath(12, 5, 8) },
     ],
-    cameras: [
-      { x: 3, y: 4, directions: ["right", "down", "left", "up"] },
-    ],
+    cameras: [{ x: 3, y: 4, directions: ["right", "down", "left", "up"] }],
   },
   {
     cols: 15,
@@ -1545,19 +1606,25 @@ const FLOOR_LAYOUTS: FloorLayout[] = [
     start: { x: 1, y: 8 },
     server: { x: 13, y: 1 },
     walls: [
-      ...range(2, 13).filter((x) => x !== 4 && x !== 8 && x !== 11).map((x) => ({ x, y: 2 })),
-      ...range(1, 11).filter((x) => x !== 3 && x !== 7).map((x) => ({ x, y: 5 })),
-      ...range(4, 13).filter((x) => x !== 7 && x !== 10).map((x) => ({ x, y: 7 })),
-      ...range(3, 8).filter((y) => y !== 4 && y !== 5).map((y) => ({ x: 6, y })),
+      ...range(2, 13)
+        .filter((x) => x !== 4 && x !== 8 && x !== 11)
+        .map((x) => ({ x, y: 2 })),
+      ...range(1, 11)
+        .filter((x) => x !== 3 && x !== 7)
+        .map((x) => ({ x, y: 5 })),
+      ...range(4, 13)
+        .filter((x) => x !== 7 && x !== 10)
+        .map((x) => ({ x, y: 7 })),
+      ...range(3, 8)
+        .filter((y) => y !== 4 && y !== 5)
+        .map((y) => ({ x: 6, y })),
     ],
     guards: [
       { path: horizontalPath(0, 3, 8) },
       { path: horizontalPath(4, 8, 12) },
       { path: verticalPath(13, 5, 8) },
     ],
-    cameras: [
-      { x: 11, y: 3, directions: ["down", "left", "up", "right"] },
-    ],
+    cameras: [{ x: 11, y: 3, directions: ["down", "left", "up", "right"] }],
     lasers: [
       { orientation: "horizontal", y: 4, x1: 2, x2: 5 },
       { orientation: "vertical", x: 10, y1: 4, y2: 7 },
@@ -1574,7 +1641,12 @@ function pointsEqual(a: GridPoint, b: GridPoint) {
 }
 
 function isOutOfBounds(layout: FloorLayout, point: GridPoint) {
-  return point.x < 0 || point.y < 0 || point.x >= layout.cols || point.y >= layout.rows;
+  return (
+    point.x < 0 ||
+    point.y < 0 ||
+    point.x >= layout.cols ||
+    point.y >= layout.rows
+  );
 }
 
 function isWall(layout: FloorLayout, point: GridPoint) {
@@ -1648,7 +1720,10 @@ function advancePatrols(runtime: GameRuntime) {
     }
 
     if (guard.path[nextStep]) {
-      guard.dir = directionBetween(guard.path[guard.step], guard.path[nextStep]);
+      guard.dir = directionBetween(
+        guard.path[guard.step],
+        guard.path[nextStep],
+      );
       guard.step = nextStep;
     }
   });
@@ -1659,7 +1734,11 @@ function advancePatrols(runtime: GameRuntime) {
   });
 }
 
-function detectorPosition(detector: DetectorRuntime, distance: number, offset: number) {
+function detectorPosition(
+  detector: DetectorRuntime,
+  distance: number,
+  offset: number,
+) {
   if (detector.dir === "up") {
     return { x: detector.x + offset, y: detector.y - distance };
   }
@@ -1699,9 +1778,13 @@ function detectorVisiblePoints(layout: FloorLayout, detector: DetectorRuntime) {
   return Array.from(visible.values());
 }
 
-function isInVision(layout: FloorLayout, detector: DetectorRuntime, point: GridPoint) {
+function isInVision(
+  layout: FloorLayout,
+  detector: DetectorRuntime,
+  point: GridPoint,
+) {
   return detectorVisiblePoints(layout, detector).some((visiblePoint) =>
-    pointsEqual(visiblePoint, point)
+    pointsEqual(visiblePoint, point),
   );
 }
 
@@ -1723,7 +1806,11 @@ function getDetectors(runtime: GameRuntime): DetectorRuntime[] {
   ];
 }
 
-function isLaserHit(layout: FloorLayout, agent: GridPoint, laserActive: boolean) {
+function isLaserHit(
+  layout: FloorLayout,
+  agent: GridPoint,
+  laserActive: boolean,
+) {
   if (!laserActive) {
     return false;
   }
@@ -1781,35 +1868,39 @@ function StealthResumeGame({
     }
   }, []);
 
-  const playTone = useCallback((frequencies: number[], duration = 0.08, gap = 0.03) => {
-    const AudioContextConstructor =
-      window.AudioContext ||
-      (window as typeof window & { webkitAudioContext?: typeof AudioContext }).webkitAudioContext;
+  const playTone = useCallback(
+    (frequencies: number[], duration = 0.08, gap = 0.03) => {
+      const AudioContextConstructor =
+        window.AudioContext ||
+        (window as typeof window & { webkitAudioContext?: typeof AudioContext })
+          .webkitAudioContext;
 
-    if (!AudioContextConstructor) {
-      return;
-    }
+      if (!AudioContextConstructor) {
+        return;
+      }
 
-    const context = audioContextRef.current ?? new AudioContextConstructor();
-    audioContextRef.current = context;
+      const context = audioContextRef.current ?? new AudioContextConstructor();
+      audioContextRef.current = context;
 
-    frequencies.forEach((frequency, index) => {
-      const oscillator = context.createOscillator();
-      const gain = context.createGain();
-      const start = context.currentTime + index * (duration + gap);
-      const end = start + duration;
+      frequencies.forEach((frequency, index) => {
+        const oscillator = context.createOscillator();
+        const gain = context.createGain();
+        const start = context.currentTime + index * (duration + gap);
+        const end = start + duration;
 
-      oscillator.type = "sine";
-      oscillator.frequency.setValueAtTime(frequency, start);
-      gain.gain.setValueAtTime(0.0001, start);
-      gain.gain.exponentialRampToValueAtTime(0.045, start + 0.01);
-      gain.gain.exponentialRampToValueAtTime(0.0001, end);
-      oscillator.connect(gain);
-      gain.connect(context.destination);
-      oscillator.start(start);
-      oscillator.stop(end + 0.02);
-    });
-  }, []);
+        oscillator.type = "sine";
+        oscillator.frequency.setValueAtTime(frequency, start);
+        gain.gain.setValueAtTime(0.0001, start);
+        gain.gain.exponentialRampToValueAtTime(0.045, start + 0.01);
+        gain.gain.exponentialRampToValueAtTime(0.0001, end);
+        oscillator.connect(gain);
+        gain.connect(context.destination);
+        oscillator.start(start);
+        oscillator.stop(end + 0.02);
+      });
+    },
+    [],
+  );
 
   const playSound = useCallback(
     (sound: "move" | "compromise" | "floor" | "complete") => {
@@ -1830,7 +1921,7 @@ function StealthResumeGame({
 
       playTone([523, 784], 0.2, 0.055);
     },
-    [playTone]
+    [playTone],
   );
 
   const startFloor = useCallback(
@@ -1848,7 +1939,7 @@ function StealthResumeGame({
       syncView();
       window.setTimeout(() => surfaceRef.current?.focus(), 0);
     },
-    [clearTypewriter, syncView]
+    [clearTypewriter, syncView],
   );
 
   const startMissionComplete = useCallback(() => {
@@ -2023,21 +2114,36 @@ function StealthResumeGame({
     return () => {
       window.removeEventListener("keydown", handleKeyDown);
     };
-  }, [playSound, startFloor, startMissionComplete, syncView, triggerCompromise]);
+  }, [
+    playSound,
+    startFloor,
+    startMissionComplete,
+    syncView,
+    triggerCompromise,
+  ]);
 
   const runtime = view;
   const layout = FLOOR_LAYOUTS[runtime.floorIndex];
   const wallKeys = new Set(layout.walls.map(pointKey));
-  const guardByKey = new Map(runtime.guards.map((guard) => [pointKey(guard.path[guard.step]), guard]));
-  const cameraByKey = new Map(runtime.cameras.map((camera) => [pointKey(camera), camera]));
+  const guardByKey = new Map(
+    runtime.guards.map((guard) => [pointKey(guard.path[guard.step]), guard]),
+  );
+  const cameraByKey = new Map(
+    runtime.cameras.map((camera) => [pointKey(camera), camera]),
+  );
   const detectors = getDetectors(runtime);
   const radarKeys = new Set(
-    detectors.flatMap((detector) => detectorVisiblePoints(layout, detector).map(pointKey))
+    detectors.flatMap((detector) =>
+      detectorVisiblePoints(layout, detector).map(pointKey),
+    ),
   );
-  const cells = Array.from({ length: layout.cols * layout.rows }, (_, index) => ({
-    x: index % layout.cols,
-    y: Math.floor(index / layout.cols),
-  }));
+  const cells = Array.from(
+    { length: layout.cols * layout.rows },
+    (_, index) => ({
+      x: index % layout.cols,
+      y: Math.floor(index / layout.cols),
+    }),
+  );
 
   return (
     <div
@@ -2075,7 +2181,9 @@ function StealthResumeGame({
         <div className="flex flex-1 flex-col items-center justify-center gap-8 bg-white px-6 text-center">
           <pre className="min-h-[112px] whitespace-pre-wrap text-left font-mono text-lg font-semibold leading-9 tracking-normal text-neutral-950">
             {runtime.completeText}
-            {!runtime.completeReady ? <span className="animate-pulse text-[#d65a12]">_</span> : null}
+            {!runtime.completeReady ? (
+              <span className="animate-pulse text-[#d65a12]">_</span>
+            ) : null}
           </pre>
 
           {runtime.completeReady ? (
@@ -2174,10 +2282,16 @@ function StealthResumeGame({
                     />
                   ) : null}
                   {guard ? (
-                    <span className="absolute z-40 h-[48%] w-[48%] rounded-[3px] bg-neutral-950" aria-hidden="true" />
+                    <span
+                      className="absolute z-40 h-[48%] w-[48%] rounded-[3px] bg-neutral-950"
+                      aria-hidden="true"
+                    />
                   ) : null}
                   {isAgent ? (
-                    <span className="absolute z-50 h-[38%] w-[38%] rounded-full bg-neutral-950 ring-2 ring-white" aria-hidden="true" />
+                    <span
+                      className="absolute z-50 h-[38%] w-[38%] rounded-full bg-neutral-950 ring-2 ring-white"
+                      aria-hidden="true"
+                    />
                   ) : null}
                 </div>
               );
@@ -2187,7 +2301,9 @@ function StealthResumeGame({
           <div className="mt-4 flex items-center justify-between gap-4 font-mono text-[10px] uppercase tracking-[0.22em] text-neutral-500">
             <span>Objective: Extract [SERVER]</span>
             <span className="text-red-600">Move: WASD / Arrows</span>
-            <span>{runtime.mode === "floor-clear" ? "Floor Clear" : "Live Patrol"}</span>
+            <span>
+              {runtime.mode === "floor-clear" ? "Floor Clear" : "Live Patrol"}
+            </span>
           </div>
 
           {runtime.mode === "compromised" ? (
@@ -2323,9 +2439,13 @@ function MagneticContactCard({
         ? "border-black/10 bg-white text-neutral-900"
         : "border-black/8 bg-neutral-50 text-neutral-900";
 
-  const descriptionClass = accent === "dark" ? "text-white/72" : "text-neutral-500";
+  const descriptionClass =
+    accent === "dark" ? "text-white/72" : "text-neutral-500";
   const eyebrowClass = accent === "dark" ? "text-white/55" : "text-neutral-400";
-  const iconClass = accent === "dark" ? "bg-white/10 text-white" : "bg-black/5 text-neutral-800";
+  const iconClass =
+    accent === "dark"
+      ? "bg-white/10 text-white"
+      : "bg-black/5 text-neutral-800";
   const glowColor =
     accent === "dark"
       ? "radial-gradient(circle at center, rgba(255,255,255,0.18), transparent 62%)"
@@ -2364,19 +2484,38 @@ function MagneticContactCard({
         style={reducedMotion ? undefined : { left: glowX, top: glowY }}
         className="pointer-events-none absolute h-40 w-40 -translate-x-1/2 -translate-y-1/2 rounded-full blur-2xl"
       >
-        <div className="h-full w-full rounded-full" style={{ backgroundImage: glowColor }} />
+        <div
+          className="h-full w-full rounded-full"
+          style={{ backgroundImage: glowColor }}
+        />
       </motion.div>
 
-      <div className={`relative z-10 flex h-full flex-col justify-between ${compact ? "gap-3 p-4 md:p-5" : "gap-5 p-5 md:p-6"}`}>
+      <div
+        className={`relative z-10 flex h-full flex-col justify-between ${compact ? "gap-3 p-4 md:p-5" : "gap-5 p-5 md:p-6"}`}
+      >
         <div className={compact ? "space-y-3" : "space-y-4"}>
-          <div className={`inline-flex ${compact ? "h-10 w-10" : "h-11 w-11"} items-center justify-center rounded-2xl ${iconClass}`}>
+          <div
+            className={`inline-flex ${compact ? "h-10 w-10" : "h-11 w-11"} items-center justify-center rounded-2xl ${iconClass}`}
+          >
             {icon}
           </div>
 
           <div className="space-y-1.5">
-            <p className={`text-[11px] uppercase tracking-[0.24em] ${eyebrowClass}`}>{eyebrow}</p>
-            <h4 className={`${compact ? "text-xl" : "text-2xl"} font-semibold tracking-tight`}>{title}</h4>
-            <p className={`text-sm ${compact ? "leading-6" : "leading-7"} ${descriptionClass}`}>{description}</p>
+            <p
+              className={`text-[11px] uppercase tracking-[0.24em] ${eyebrowClass}`}
+            >
+              {eyebrow}
+            </p>
+            <h4
+              className={`${compact ? "text-xl" : "text-2xl"} font-semibold tracking-tight`}
+            >
+              {title}
+            </h4>
+            <p
+              className={`text-sm ${compact ? "leading-6" : "leading-7"} ${descriptionClass}`}
+            >
+              {description}
+            </p>
           </div>
         </div>
 
@@ -2385,4 +2524,3 @@ function MagneticContactCard({
     </motion.a>
   );
 }
-
