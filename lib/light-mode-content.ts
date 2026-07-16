@@ -20,7 +20,7 @@ export const lightModeContent = {
   experienceItems: [
     {
       date: "June 2026 - August 2026",
-      title: "Software Engineering Intern (Incoming) - Bloom Energy",
+      title: "Software Engineering Intern — Bloom Energy",
       body: [
         "Unified millions of records across Salesforce, OSI PI, AWS Redshift, and internal systems into an internal diagnostic tool, enabling RMCC engineers to look up active escalations, match historical fault patterns, and receive root cause analysis with fix recommendations, cutting troubleshooting time by 80% across 30,000 monitored fuel cells.",
         "Built and shipped a production visual workflow builder using React Flow, FastAPI, and MongoDB, enabling engineers to assemble reusable node-based DAGs and reducing hand-authoring time for new automation scripts by ~80%.",
