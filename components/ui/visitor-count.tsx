@@ -3,42 +3,55 @@
 import { useEffect, useState } from "react";
 
 const visitorStart = 300;
-let hasTrackedVisit = false;
+let visitorCountRequest: Promise<number> | null = null;
+let resolvedVisitorCount: number | null = null;
 
-export default function VisitorCount() {
-  const [visitors, setVisitors] = useState(visitorStart);
-
-  useEffect(() => {
-    if (hasTrackedVisit) {
-      return;
-    }
-
-    hasTrackedVisit = true;
-
-    async function updateVisitorCount() {
-      try {
-        const response = await fetch("/api/visitors", {
-          method: "POST",
-          cache: "no-store",
-        });
-
+function getVisitorCount() {
+  if (!visitorCountRequest) {
+    visitorCountRequest = fetch("/api/visitors", {
+      method: "POST",
+      cache: "no-store",
+    })
+      .then(async (response) => {
         if (!response.ok) {
           throw new Error("Visitor count request failed.");
         }
 
         const payload = (await response.json()) as { visitors?: unknown };
-        const nextVisitors = Number(payload.visitors);
+        const visitors = Number(payload.visitors);
 
-        if (Number.isInteger(nextVisitors) && nextVisitors >= visitorStart) {
-          setVisitors(nextVisitors);
-        }
-      } catch {
-        setVisitors(visitorStart);
+        return Number.isInteger(visitors) && visitors >= visitorStart
+          ? visitors
+          : visitorStart;
+      })
+      .catch(() => visitorStart);
+  }
+
+  return visitorCountRequest;
+}
+
+export default function VisitorCount() {
+  const [visitors, setVisitors] = useState<number | null>(resolvedVisitorCount);
+
+  useEffect(() => {
+    let active = true;
+
+    void getVisitorCount().then((nextVisitors) => {
+      resolvedVisitorCount = nextVisitors;
+
+      if (active) {
+        setVisitors(nextVisitors);
       }
-    }
+    });
 
-    void updateVisitorCount();
+    return () => {
+      active = false;
+    };
   }, []);
+
+  if (visitors === null) {
+    return null;
+  }
 
   return (
     <p className="mt-2 text-xs font-medium uppercase tracking-[0.18em] text-neutral-500">
