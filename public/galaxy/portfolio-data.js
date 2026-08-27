@@ -12,6 +12,7 @@
         labelPriority: 82,
         preferredLabelPlacement: "top-left",
         labelGroup: "internship",
+        panelSectionTitle: "Key Initiatives",
         sublabel: "Software Engineering Intern · Dec 2025-Present",
         type: "internship",
         prestige: 10,
@@ -42,6 +43,7 @@
         labelPriority: 80,
         preferredLabelPlacement: "top-right",
         labelGroup: "internship",
+        panelSectionTitle: "Focus Areas",
         sublabel: "Software Engineering Intern (Incoming) · Summer 2026",
         type: "internship",
         prestige: 9,
@@ -69,20 +71,21 @@
         labelPriority: 74,
         preferredLabelPlacement: "left",
         labelGroup: "education",
+        panelSectionTitle: "Relevant Coursework",
         sublabel: "Transferred this semester",
         type: "education",
         prestige: 8,
         color: 0x1f2937,
         description:
-          "Transferred to the University of Virginia this semester. Computer Engineering major focused on full-stack product engineering, backend-heavy systems, and applied AI/ML workflows.",
+          "Transferred to the University of Virginia this semester. Computer Engineering major expected to graduate in May 2028.",
         moons: [
           {
-            label: "Distributed Systems",
+            label: "Machine Learning",
             description:
               "Relevant UVA coursework from the resume.",
           },
           {
-            label: "Computer Architecture",
+            label: "Distributed Systems",
             description:
               "Relevant UVA coursework from the resume.",
           },
@@ -92,65 +95,67 @@
               "Relevant UVA coursework from the resume.",
           },
           {
-            label: "Linear Systems",
+            label: "Computer Architecture",
+            description:
+              "Relevant UVA coursework from the resume.",
+          },
+          {
+            label: "Data Structures and Algorithms",
+            description:
+              "Relevant UVA coursework from the resume.",
+          },
+          {
+            label: "Software Engineering and Design",
+            description:
+              "Relevant UVA coursework from the resume.",
+          },
+          {
+            label: "Signals and Systems",
             description:
               "Relevant UVA coursework from the resume.",
           },
         ],
       },
       {
-        id: "uva-transfer",
-        label: "University of Virginia",
-        labelShort: "UVA Transfer",
-        labelDetail: "Joined Aug 2026",
-        labelPriority: 70,
-        preferredLabelPlacement: "top-right",
-        labelGroup: "education",
-        sublabel: "Expected grad May 2028",
-        type: "education",
-        prestige: 7,
-        color: 0xb91c1c,
-        description:
-          "Transferred to UVA this semester and will graduate in May 2028.",
-        moons: [
-          {
-            label: "Transfer Student",
-            description:
-              "Joined the University of Virginia this semester.",
-          },
-          {
-            label: "May 2028",
-            description:
-              "Expected graduation date from the resume.",
-          },
-        ],
-      },
-      {
-        id: "research-paper",
-        label: "Research Paper",
-        labelShort: "Research Paper",
-        labelDetail: "Co-Author / Research Contributor · 2025",
+        id: "ccny",
+        label: "City College of New York",
+        labelShort: "CCNY",
+        labelDetail: "Aug 2024 - May 2026",
         labelPriority: 76,
         preferredLabelPlacement: "bottom-right",
-        labelGroup: "research",
-        sublabel: "Co-Author / Research Contributor · 2025",
-        type: "job",
+        labelGroup: "education",
+        panelSectionTitle: "Relevant Coursework",
+        sublabel: "Transferred to UVA",
+        type: "education",
         prestige: 7,
         color: 0x7c3aed,
-        descriptionBullets: [
-          "Co-authored an unpublished research paper introducing a feedback distillation framework for improving LLM reasoning. The system pairs a large expert model with a lightweight student model (TinyLlama 1.1B vs. LLaMA-3 8B), where the student learns to match expert-quality feedback in real time through knowledge distillation, eliminating the need for a separate fixed amateur model.",
-          "Contributed to both the implementation and experimental evaluation, benchmarking the framework against CLEAR, Chain-of-Thought, and Chain-of-Draft baselines across math reasoning, instruction following, and reading comprehension tasks.",
-        ],
+        description:
+          "Computer Engineering student at CCNY before transferring to the University of Virginia. 5x Hackathon Winner and 3x Dean's List.",
         moons: [
           {
-            label: "Feedback Distillation",
+            label: "Data Structures and Algorithms",
             description:
-              "Student and expert models were paired so a 1.1B model could learn to produce expert-quality feedback in real time.",
+              "Relevant CCNY coursework from the resume.",
           },
           {
-            label: "Benchmark Evaluation",
+            label: "Software Engineering and Design",
             description:
-              "Framework was benchmarked against CLEAR, Chain-of-Thought, and Chain-of-Draft across three reasoning task categories.",
+              "Relevant CCNY coursework from the resume.",
+          },
+          {
+            label: "Linear Algebra",
+            description:
+              "Relevant CCNY coursework from the resume.",
+          },
+          {
+            label: "5x Hackathon Winner",
+            description:
+              "Resume highlight carried over from the CCNY section.",
+          },
+          {
+            label: "3x Dean's List",
+            description:
+              "Resume highlight carried over from the CCNY section.",
           },
         ],
       },
@@ -162,6 +167,7 @@
         labelPriority: 68,
         preferredLabelPlacement: "right",
         labelGroup: "internship",
+        panelSectionTitle: "Highlights",
         sublabel: "Software Engineering Intern · Summer 2025",
         type: "internship",
         prestige: 6,
@@ -197,6 +203,7 @@
         labelPriority: 64,
         preferredLabelPlacement: "top-right",
         labelGroup: "internship",
+        panelSectionTitle: "Highlights",
         sublabel: "Software Automation Intern · 2023",
         type: "internship",
         prestige: 5,

@@ -275,29 +275,32 @@
 .galaxy-panel-title {
   margin: 14px 0 0;
   font-family: "Syne", sans-serif;
-  font-size: clamp(2rem, 5vw, 3rem);
+  max-width: 100%;
+  font-size: clamp(1.8rem, 4.2vw, 2.55rem);
   font-weight: 800;
-  line-height: 0.94;
+  line-height: 0.95;
+  text-wrap: balance;
+  overflow-wrap: anywhere;
 }
 
 .galaxy-panel-sublabel {
-  margin: 14px 0 0;
+  margin: 12px 0 0;
   font-size: 12px;
   letter-spacing: 0.08em;
   text-transform: uppercase;
   color: rgba(10, 10, 10, 0.68);
-  line-height: 1.6;
+  line-height: 1.5;
 }
 
 .galaxy-panel-description {
-  margin: 22px 0 0;
+  margin: 18px 0 0;
   font-size: 12px;
   line-height: 1.9;
   color: rgba(10, 10, 10, 0.74);
 }
 
 .galaxy-panel-list {
-  margin: 22px 0 0;
+  margin: 18px 0 0;
   padding-left: 18px;
   font-size: 12px;
   line-height: 1.9;
@@ -309,7 +312,7 @@
 }
 
 .galaxy-panel-section {
-  margin-top: 28px;
+  margin-top: 22px;
 }
 
 .galaxy-panel-moons {

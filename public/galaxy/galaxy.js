@@ -900,6 +900,9 @@
 
   function renderPlanetPanel(planetEntry) {
     var descriptionBullets = planetEntry.data.descriptionBullets || [];
+    var sectionTitle =
+      planetEntry.data.panelSectionTitle ||
+      (planetEntry.data.type === "education" ? "Relevant Coursework" : "Highlights");
     var moons = (planetEntry.data.moons || [])
       .map(function (moon) {
         return (
@@ -924,11 +927,13 @@
 
     panel.innerHTML = [
       '<p class="galaxy-panel-kicker">Planet Detail</p>',
-      '<h2 class="galaxy-panel-title">' + planetEntry.data.label + "</h2>",
+      '<h2 class="galaxy-panel-title">' +
+        (planetEntry.data.labelShort || planetEntry.data.label) +
+        "</h2>",
       '<p class="galaxy-panel-sublabel">' + planetEntry.data.sublabel + "</p>",
       descriptionMarkup,
       '<section class="galaxy-panel-section">',
-      '<p class="galaxy-panel-section-title">Moons</p>',
+      '<p class="galaxy-panel-section-title">' + sectionTitle + "</p>",
       '<div class="galaxy-panel-moons">' + moons + "</div>",
       "</section>",
       '<div class="galaxy-panel-spacer"></div>',
