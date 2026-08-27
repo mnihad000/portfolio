@@ -65,48 +65,63 @@
         id: "uva",
         label: "University of Virginia",
         labelShort: "UVA",
-        labelDetail: "B.E. Computer Engineering",
+        labelDetail: "Aug 2026 - May 2028",
         labelPriority: 74,
         preferredLabelPlacement: "left",
         labelGroup: "education",
-        sublabel: "B.E. Computer Engineering",
+        sublabel: "Transferred this semester",
         type: "education",
         prestige: 8,
         color: 0x1f2937,
         description:
-          "Computer Engineering major at the University of Virginia with a focus on full-stack product engineering, backend-heavy systems, and applied AI/ML workflows.",
+          "Transferred to the University of Virginia this semester. Computer Engineering major focused on full-stack product engineering, backend-heavy systems, and applied AI/ML workflows.",
         moons: [
           {
-            label: "Full-Stack Systems",
+            label: "Distributed Systems",
             description:
-              "Hands-on coursework and independent builds across product engineering, infrastructure, and AI application layers.",
+              "Relevant UVA coursework from the resume.",
           },
           {
-            label: "Rapid Prototyping",
+            label: "Computer Architecture",
             description:
-              "Strong bias toward learning new frameworks quickly and turning ideas into working products.",
+              "Relevant UVA coursework from the resume.",
+          },
+          {
+            label: "Database Systems",
+            description:
+              "Relevant UVA coursework from the resume.",
+          },
+          {
+            label: "Linear Systems",
+            description:
+              "Relevant UVA coursework from the resume.",
           },
         ],
       },
       {
-        id: "cornell-breakthrough-tech",
-        label: "Cornell Tech",
-        labelShort: "Cornell Tech",
-        labelDetail: "Break Through Tech AI",
+        id: "uva-transfer",
+        label: "University of Virginia",
+        labelShort: "UVA Transfer",
+        labelDetail: "Joined Aug 2026",
         labelPriority: 70,
         preferredLabelPlacement: "top-right",
         labelGroup: "education",
-        sublabel: "Break Through Tech AI",
+        sublabel: "Expected grad May 2028",
         type: "education",
         prestige: 7,
         color: 0xb91c1c,
         description:
-          "Break Through Tech AI credential represented as a separate education node in the system, highlighting advanced AI-focused training alongside the core UVA degree path.",
+          "Transferred to UVA this semester and will graduate in May 2028.",
         moons: [
           {
-            label: "AI Credential",
+            label: "Transfer Student",
             description:
-              "Supplemental program experience centered on AI fluency, applied technical work, and industry-facing preparation.",
+              "Joined the University of Virginia this semester.",
+          },
+          {
+            label: "May 2028",
+            description:
+              "Expected graduation date from the resume.",
           },
         ],
       },
