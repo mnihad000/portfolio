@@ -62,9 +62,9 @@
         ],
       },
       {
-        id: "ccny",
-        label: "CCNY",
-        labelShort: "CCNY",
+        id: "uva",
+        label: "University of Virginia",
+        labelShort: "UVA",
         labelDetail: "B.E. Computer Engineering",
         labelPriority: 74,
         preferredLabelPlacement: "left",
@@ -74,7 +74,7 @@
         prestige: 8,
         color: 0x1f2937,
         description:
-          "Computer Engineering major at The City College of New York with a focus on full-stack product engineering, backend-heavy systems, and applied AI/ML workflows.",
+          "Computer Engineering major at the University of Virginia with a focus on full-stack product engineering, backend-heavy systems, and applied AI/ML workflows.",
         moons: [
           {
             label: "Full-Stack Systems",
@@ -101,7 +101,7 @@
         prestige: 7,
         color: 0xb91c1c,
         description:
-          "Break Through Tech AI credential represented as a separate education node in the system, highlighting advanced AI-focused training alongside the core CCNY degree path.",
+          "Break Through Tech AI credential represented as a separate education node in the system, highlighting advanced AI-focused training alongside the core UVA degree path.",
         moons: [
           {
             label: "AI Credential",

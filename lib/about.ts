@@ -24,7 +24,7 @@ export const aboutPageContent = {
   heroParagraphs: [
     [
       {
-        text: "Hey, I'm Mohammed Nihad, a Computer Engineering major at CCNY. ",
+        text: "Hey, I'm Mohammed Nihad, a Computer Engineering major at the University of Virginia. ",
       },
       {
         text: "I specialize in building full-stack applications and AI/ML systems that solve real problems.",

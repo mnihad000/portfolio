@@ -230,7 +230,7 @@ export default function HeroAsciiOne() {
                 MOHAMMED NIHAD
               </h1>
               <p className="mb-3 font-mono text-xs tracking-[0.22em] text-white/85 uppercase lg:mb-4 lg:text-sm">
-                Computer Engineering Major at CCNY
+                Computer Engineering Major at University of Virginia
               </p>
             </div>
 

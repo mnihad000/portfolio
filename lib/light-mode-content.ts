@@ -6,7 +6,7 @@ export type LightExperienceItem = {
 
 export const lightModeContent = {
   name: "Mohammed Nihad",
-  role: "Computer Engineering Major at CCNY",
+  role: "Computer Engineering Major at University of Virginia",
   location: "New York, NY",
   email: "mnihad1107@gmail.com",
   linkedin: "https://www.linkedin.com/in/mohammed-nihad-090348263/",

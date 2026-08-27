@@ -267,7 +267,7 @@ export default function ProtocolTerminal() {
   function appendWhoAmIEntries() {
     appendEntries([
       createTextEntry("Mohammed Nihad"),
-      createTextEntry("Software Engineering student @ CCNY", "muted"),
+      createTextEntry("Software Engineering student @ University of Virginia", "muted"),
       createTextEntry(
         "Builder. Currently obsessed with systems, AI, and shipping things.",
         "muted"
