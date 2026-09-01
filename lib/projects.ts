@@ -6,6 +6,7 @@ export type Project = {
   dateLabel: string;
   technologies: string[];
   coverImage: string;
+  href?: string;
   proofCard?: ProjectProofCard;
   richDetail?: ProjectRichDetail;
 };
@@ -776,6 +777,7 @@ npm run dev`,
     dateLabel: "COMING SOON",
     technologies: [],
     coverImage: "/projects/amigmi-cover.svg",
+    href: "https://github.com/mnihad000/startup",
   },
   {
     slug: "mira",
