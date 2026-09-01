@@ -768,7 +768,7 @@ npm run dev`,
 
   {
     slug: "amigmi",
-    title: "Amigmi",
+    title: "Startup",
     description:
       "App in progress to be released on the App Store soon.",
     fullDescription:
