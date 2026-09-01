@@ -1,8 +1,6 @@
 "use client";
 
 import { useEffect } from "react";
-import { usePathname } from "next/navigation";
-import { isDarkModeRoute } from "@/lib/theme-routes";
 
 declare global {
   interface Window {
@@ -78,8 +76,6 @@ async function loadGalaxyAssets() {
 }
 
 export default function GalaxyLoader() {
-  const pathname = usePathname();
-
   useEffect(() => {
     let cancelled = false;
 
@@ -94,22 +90,9 @@ export default function GalaxyLoader() {
       }
     }
 
-    if (!isDarkModeRoute(pathname)) {
-      mountGalaxy();
-      return () => {
-        cancelled = true;
-      };
-    }
-
-    window.GalaxyPortfolioNavigator?.destroy();
-
+    mountGalaxy();
     return () => {
       cancelled = true;
-    };
-  }, [pathname]);
-
-  useEffect(() => {
-    return () => {
       window.GalaxyPortfolioNavigator?.destroy();
     };
   }, []);

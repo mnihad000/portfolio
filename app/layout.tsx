@@ -3,8 +3,6 @@ import { Geist, IBM_Plex_Mono, VT323 } from "next/font/google";
 import NavHeader from "@/components/ui/nav-header";
 import ProtocolTerminal from "@/components/ui/protocol-terminal";
 import GalaxyLoader from "@/components/providers/galaxy-loader";
-import { SiteThemeProvider } from "@/components/providers/site-theme-provider";
-import { THEME_BOOTSTRAP_SCRIPT } from "@/lib/theme";
 import "./globals.css";
 
 const ibmPlexMono = IBM_Plex_Mono({
@@ -44,13 +42,10 @@ export default function RootLayout({
         suppressHydrationWarning
         className="flex min-h-full flex-col bg-background text-foreground"
       >
-        <script dangerouslySetInnerHTML={{ __html: THEME_BOOTSTRAP_SCRIPT }} />
-        <SiteThemeProvider>
-          <GalaxyLoader />
-          <NavHeader />
-          {children}
-          <ProtocolTerminal />
-        </SiteThemeProvider>
+        <GalaxyLoader />
+        <NavHeader />
+        {children}
+        <ProtocolTerminal />
       </body>
     </html>
   );

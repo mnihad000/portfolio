@@ -7,7 +7,7 @@ Use this checklist whenever you want to add a new project card that matches the 
 Every card is driven by one object in the exported `projects` array.
 
 Required fields:
-- `slug`: URL-safe unique id (lowercase + hyphens), e.g. `agent-orchestrator`
+- `slug`: URL-safe unique id (lowercase + hyphens), e.g. `portfolio-project`
 - `title`: Card/project title
 - `description`: Short text shown on the card
 - `fullDescription`: Text shown in the basic detail page

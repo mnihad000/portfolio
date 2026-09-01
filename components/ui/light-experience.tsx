@@ -25,7 +25,7 @@ import { aboutPageContent } from "@/lib/about";
 import { lightModeContent } from "@/lib/light-mode-content";
 import { projects } from "@/lib/projects";
 import { AnimatedName } from "@/components/ui/animated-name";
-import { SplineSceneBasic } from "@/components/ui/demo";
+import { HeroScene } from "@/components/ui/hero-scene";
 import LightProjectCard from "@/components/ui/light-project-card";
 import RecentCommitsSection from "@/components/ui/recent-commits-section";
 import TechStackSection from "@/components/ui/tech-stack-section";
@@ -146,7 +146,7 @@ function HeroSection() {
       className="rounded-[2rem] border border-black/7 bg-white p-4 shadow-[0_18px_45px_rgba(0,0,0,0.05)] md:p-5"
     >
       <div className="relative overflow-hidden rounded-[1.7rem] border border-black/8 bg-[#fbfaf8]">
-        <SplineSceneBasic />
+          <HeroScene />
       </div>
     </motion.section>
   );
