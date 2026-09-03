@@ -19,7 +19,17 @@ import {
   useTransform,
   type Transition,
 } from "framer-motion";
-import { ArrowUpRight, Download, FolderGit2, Link2, Mail } from "lucide-react";
+import {
+  ArrowDown,
+  ArrowLeft,
+  ArrowRight,
+  ArrowUp,
+  ArrowUpRight,
+  Download,
+  FolderGit2,
+  Link2,
+  Mail,
+} from "lucide-react";
 import headshotFinal from "@/app/profile_picture/headshot_final.jpg";
 import { aboutPageContent } from "@/lib/about";
 import { lightModeContent } from "@/lib/light-mode-content";
@@ -1980,6 +1990,59 @@ function StealthResumeGame({
     syncView();
   }, [playSound, syncView]);
 
+  const moveAgent = useCallback(
+    (delta: GridPoint) => {
+      const runtime = gameRef.current;
+
+      if (runtime.mode !== "playing") {
+        return;
+      }
+
+      const layout = FLOOR_LAYOUTS[runtime.floorIndex];
+      const nextAgent = {
+        x: runtime.agent.x + delta.x,
+        y: runtime.agent.y + delta.y,
+      };
+
+      if (isBlocked(layout, nextAgent)) {
+        return;
+      }
+
+      runtime.agent = nextAgent;
+      playSound("move");
+
+      if (isDetected(runtime)) {
+        triggerCompromise();
+        return;
+      }
+
+      if (pointsEqual(nextAgent, layout.server)) {
+        runtime.mode = "floor-clear";
+        playSound("floor");
+        syncView();
+
+        floorTimerRef.current = window.setTimeout(() => {
+          if (runtime.floorIndex === FLOOR_LAYOUTS.length - 1) {
+            startMissionComplete();
+            return;
+          }
+
+          startFloor(runtime.floorIndex + 1);
+        }, 520);
+        return;
+      }
+
+      syncView();
+    },
+    [
+      playSound,
+      startFloor,
+      startMissionComplete,
+      syncView,
+      triggerCompromise,
+    ],
+  );
+
   useEffect(() => {
     startFloor(0);
 
@@ -2049,12 +2112,6 @@ function StealthResumeGame({
 
   useEffect(() => {
     const handleKeyDown = (event: globalThis.KeyboardEvent) => {
-      const runtime = gameRef.current;
-
-      if (runtime.mode !== "playing") {
-        return;
-      }
-
       const deltas: Partial<Record<string, GridPoint>> = {
         w: { x: 0, y: -1 },
         a: { x: -1, y: 0 },
@@ -2072,41 +2129,7 @@ function StealthResumeGame({
       }
 
       event.preventDefault();
-      const layout = FLOOR_LAYOUTS[runtime.floorIndex];
-      const nextAgent = {
-        x: runtime.agent.x + delta.x,
-        y: runtime.agent.y + delta.y,
-      };
-
-      if (isBlocked(layout, nextAgent)) {
-        return;
-      }
-
-      runtime.agent = nextAgent;
-      playSound("move");
-
-      if (isDetected(runtime)) {
-        triggerCompromise();
-        return;
-      }
-
-      if (pointsEqual(nextAgent, layout.server)) {
-        runtime.mode = "floor-clear";
-        playSound("floor");
-        syncView();
-
-        floorTimerRef.current = window.setTimeout(() => {
-          if (runtime.floorIndex === FLOOR_LAYOUTS.length - 1) {
-            startMissionComplete();
-            return;
-          }
-
-          startFloor(runtime.floorIndex + 1);
-        }, 520);
-        return;
-      }
-
-      syncView();
+      moveAgent(delta);
     };
 
     window.addEventListener("keydown", handleKeyDown);
@@ -2114,13 +2137,7 @@ function StealthResumeGame({
     return () => {
       window.removeEventListener("keydown", handleKeyDown);
     };
-  }, [
-    playSound,
-    startFloor,
-    startMissionComplete,
-    syncView,
-    triggerCompromise,
-  ]);
+  }, [moveAgent]);
 
   const runtime = view;
   const layout = FLOOR_LAYOUTS[runtime.floorIndex];
@@ -2211,7 +2228,7 @@ function StealthResumeGame({
           ) : null}
         </div>
       ) : (
-        <div className="relative flex min-h-0 flex-1 flex-col justify-center bg-white p-4">
+        <div className="relative flex min-h-0 flex-1 flex-col justify-center bg-white p-3 sm:p-4">
           <div
             className="relative mx-auto grid w-full max-w-[560px] overflow-hidden rounded-[1.15rem] border border-black/10 bg-white shadow-inner"
             style={{
@@ -2298,12 +2315,60 @@ function StealthResumeGame({
             })}
           </div>
 
-          <div className="mt-4 flex items-center justify-between gap-4 font-mono text-[10px] uppercase tracking-[0.22em] text-neutral-500">
+          <div className="mt-3 flex flex-wrap items-center justify-between gap-x-4 gap-y-1 font-mono text-[9px] uppercase tracking-[0.16em] text-neutral-500 sm:mt-4 sm:text-[10px] sm:tracking-[0.22em]">
             <span>Objective: Extract [SERVER]</span>
-            <span className="text-red-600">Move: WASD / Arrows</span>
+            <span className="stealth-keyboard-hint text-red-600">
+              Move: WASD / Arrows
+            </span>
+            <span className="stealth-touch-hint text-red-600">
+              Tap controls to move
+            </span>
             <span>
               {runtime.mode === "floor-clear" ? "Floor Clear" : "Live Patrol"}
             </span>
+          </div>
+
+          <div
+            className="stealth-dpad mt-2 grid grid-cols-3 gap-1 self-center"
+            role="group"
+            aria-label="Touch movement controls"
+          >
+            <button
+              type="button"
+              onClick={() => moveAgent({ x: 0, y: -1 })}
+              disabled={runtime.mode !== "playing"}
+              className="stealth-dpad-button col-start-2"
+              aria-label="Move up"
+            >
+              <ArrowUp aria-hidden="true" />
+            </button>
+            <button
+              type="button"
+              onClick={() => moveAgent({ x: -1, y: 0 })}
+              disabled={runtime.mode !== "playing"}
+              className="stealth-dpad-button row-start-2"
+              aria-label="Move left"
+            >
+              <ArrowLeft aria-hidden="true" />
+            </button>
+            <button
+              type="button"
+              onClick={() => moveAgent({ x: 0, y: 1 })}
+              disabled={runtime.mode !== "playing"}
+              className="stealth-dpad-button col-start-2 row-start-2"
+              aria-label="Move down"
+            >
+              <ArrowDown aria-hidden="true" />
+            </button>
+            <button
+              type="button"
+              onClick={() => moveAgent({ x: 1, y: 0 })}
+              disabled={runtime.mode !== "playing"}
+              className="stealth-dpad-button col-start-3 row-start-2"
+              aria-label="Move right"
+            >
+              <ArrowRight aria-hidden="true" />
+            </button>
           </div>
 
           {runtime.mode === "compromised" ? (
@@ -2329,6 +2394,62 @@ function StealthResumeGame({
       <style>{`
         .stealth-game-shell {
           position: relative;
+        }
+
+        .stealth-dpad,
+        .stealth-touch-hint {
+          display: none;
+        }
+
+        .stealth-dpad-button {
+          align-items: center;
+          background: #ffffff;
+          border: 1px solid rgba(0, 0, 0, 0.16);
+          border-radius: 0.7rem;
+          box-shadow: 0 2px 0 rgba(0, 0, 0, 0.12);
+          color: #171717;
+          display: flex;
+          height: 44px;
+          justify-content: center;
+          touch-action: manipulation;
+          transition: background-color 120ms ease, box-shadow 120ms ease,
+            transform 120ms ease;
+          width: 44px;
+        }
+
+        .stealth-dpad-button svg {
+          height: 20px;
+          width: 20px;
+        }
+
+        .stealth-dpad-button:active:not(:disabled) {
+          background: #f5f5f4;
+          box-shadow: none;
+          transform: translateY(2px);
+        }
+
+        .stealth-dpad-button:focus-visible {
+          outline: 2px solid rgba(214, 90, 18, 0.72);
+          outline-offset: 2px;
+        }
+
+        .stealth-dpad-button:disabled {
+          cursor: not-allowed;
+          opacity: 0.42;
+        }
+
+        @media (any-pointer: coarse), (max-width: 1024px) {
+          .stealth-dpad {
+            display: grid;
+          }
+
+          .stealth-keyboard-hint {
+            display: none;
+          }
+
+          .stealth-touch-hint {
+            display: inline;
+          }
         }
 
         .stealth-compromised {
