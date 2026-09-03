@@ -12,6 +12,27 @@ export default function LightProjectDetailPage({
 }: LightProjectDetailPageProps) {
   const detail = project.richDetail;
 
+  if (project.repoHref) {
+    return (
+      <main className="min-h-screen bg-white text-neutral-950">
+        <article className="mx-auto w-full max-w-[1040px] px-6 pb-16 pt-16 md:px-8 md:pt-20">
+          <BackToProjectsLink projectSlug={project.slug} />
+          <p className="mt-8 text-base text-neutral-600">
+            <a
+              href={project.repoHref}
+              target="_blank"
+              rel="noreferrer"
+              className="font-medium text-[#d65a12] underline underline-offset-4 transition-colors hover:text-[#b94b0c]"
+            >
+              Repository: {project.repoHref}
+            </a>{" "}
+            <span>(repo is private for now)</span>
+          </p>
+        </article>
+      </main>
+    );
+  }
+
   if (detail) {
     const links = detail.links.filter((link) => link.href.trim().length > 0);
     const metrics = detail.metrics;

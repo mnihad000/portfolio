@@ -48,7 +48,7 @@ export default function LightProjectCard({
         </div>
 
         <div className="mt-auto flex items-center gap-2 pt-1 text-sm font-medium uppercase tracking-[0.24em] text-neutral-600">
-          <span>{project.href ? "View Source" : "Open Project"}</span>
+          <span>Open Project</span>
           <ArrowUpRight className="h-4 w-4 transition-transform group-hover:translate-x-0.5 group-hover:-translate-y-0.5" />
         </div>
       </div>
@@ -69,20 +69,9 @@ export default function LightProjectCard({
         ease: CARD_REVEAL_EASE,
       }}
     >
-      {project.href ? (
-        <a
-          href={project.href}
-          target="_blank"
-          rel="noreferrer"
-          className={cardClassName}
-        >
-          {cardContent}
-        </a>
-      ) : (
-        <Link href={`/projects/${project.slug}`} className={cardClassName}>
-          {cardContent}
-        </Link>
-      )}
+      <Link href={`/projects/${project.slug}`} className={cardClassName}>
+        {cardContent}
+      </Link>
     </motion.div>
   );
 }
