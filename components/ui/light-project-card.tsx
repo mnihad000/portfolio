@@ -28,12 +28,12 @@ export default function LightProjectCard({
     <>
       <div className="relative aspect-[16/10] overflow-hidden bg-[radial-gradient(circle_at_top,_rgba(255,255,255,0.8),_rgba(231,231,231,0.95)_40%,_rgba(212,212,212,1)_100%)]">
         <Image
-          src={project.coverImage}
+          src={project.cardImage ?? project.coverImage}
           alt={`${project.title} cover image`}
           fill
           priority={priority}
           sizes="(min-width: 1280px) 33vw, (min-width: 768px) 50vw, 100vw"
-          className="object-cover transition duration-500 group-hover:scale-[1.02]"
+          className={`${project.cardImageFit === "contain" ? "object-contain p-5" : "object-cover"} transition duration-500 group-hover:scale-[1.02]`}
         />
       </div>
 

@@ -266,6 +266,8 @@ export default function LightProjectDetailPage({
       <article className="mx-auto w-full max-w-[1040px] px-6 pb-16 pt-16 md:px-8 md:pt-20">
         <BackToProjectsLink projectSlug={project.slug} />
 
+        {project.detailImageAboveContent ? <ProjectCover project={project} /> : null}
+
         <header className="mt-8 rounded-[2rem] border border-black/8 bg-white p-6 shadow-[0_18px_45px_rgba(0,0,0,0.04)] md:p-8">
           <p className="text-xs uppercase tracking-[0.16em] text-neutral-500">
             {project.dateLabel}
@@ -288,15 +290,7 @@ export default function LightProjectDetailPage({
           ) : null}
         </header>
 
-        <div className="relative mt-8 h-72 overflow-hidden rounded-[2rem] border border-black/8 bg-white shadow-[0_18px_45px_rgba(0,0,0,0.04)] md:h-[28rem]">
-          <Image
-            src={project.coverImage}
-            alt={`${project.title} cover`}
-            fill
-            priority
-            className="object-cover"
-          />
-        </div>
+        {!project.detailImageAboveContent ? <ProjectCover project={project} /> : null}
 
         <section className="mt-8 rounded-[2rem] border border-black/8 bg-white p-6 shadow-[0_18px_45px_rgba(0,0,0,0.04)] md:p-8">
           <h2 className="text-sm uppercase tracking-[0.16em] text-neutral-500">Overview</h2>
@@ -391,6 +385,20 @@ function CodePanel({
         <code>{content}</code>
       </pre>
     </article>
+  );
+}
+
+function ProjectCover({ project }: { project: Project }) {
+  return (
+    <div className="relative mt-8 h-72 overflow-hidden rounded-[2rem] border border-black/8 bg-white shadow-[0_18px_45px_rgba(0,0,0,0.04)] md:h-[28rem]">
+      <Image
+        src={project.coverImage}
+        alt={`${project.title} cover`}
+        fill
+        priority
+        className={project.coverImageFit === "contain" ? "object-contain p-8" : "object-cover"}
+      />
+    </div>
   );
 }
 

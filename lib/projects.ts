@@ -6,6 +6,10 @@ export type Project = {
   dateLabel: string;
   technologies: string[];
   coverImage: string;
+  cardImage?: string;
+  cardImageFit?: "cover" | "contain";
+  detailImageAboveContent?: boolean;
+  coverImageFit?: "cover" | "contain";
   repoHref?: string;
   websiteHref?: string;
   proofCard?: ProjectProofCard;
@@ -778,6 +782,10 @@ npm run dev`,
     dateLabel: "IN DEVELOPMENT",
     technologies: ["React Native", "Expo", "TypeScript", "FastAPI", "PostgreSQL"],
     coverImage: "/projects/rounds-wordmark.png",
+    cardImage: "/projects/rounds-mark.png",
+    cardImageFit: "contain",
+    detailImageAboveContent: true,
+    coverImageFit: "contain",
     websiteHref: "https://rounds-discover.vercel.app/",
   },
   {
