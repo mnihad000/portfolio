@@ -7,6 +7,7 @@ export type Project = {
   technologies: string[];
   coverImage: string;
   repoHref?: string;
+  websiteHref?: string;
   proofCard?: ProjectProofCard;
   richDetail?: ProjectRichDetail;
 };
@@ -771,13 +772,13 @@ npm run dev`,
     slug: "rounds",
     title: "Rounds- (Founder)",
     description:
-      "A mobile-first NYC discovery app for finding, saving, and adapting creator-led days. Leading development and marketing end to end, with 20+ users and growing; Play Store and App Store release expected next.",
+      "Rounds is a mobile-first discovery app for finding, saving, and adapting complete days in New York City. Lead the development and marketing end to end of this project currently with 20+ users and growing, Expected Play Store and App Store release next.",
     fullDescription:
-      "Rounds helps people find, publish, save, and adapt complete days in New York City. Built around creator-led sequences of real places, it makes a great city day easy to discover, understand, and make your own. I lead development and marketing end to end for the project, currently serving 20+ users and growing, with Play Store and App Store releases expected next.",
+      "Rounds is a mobile-first discovery app for finding, saving, and adapting complete days in New York City. Lead the development and marketing end to end of this project currently with 20+ users and growing, Expected Play Store and App Store release next.",
     dateLabel: "IN DEVELOPMENT",
     technologies: ["React Native", "Expo", "TypeScript", "FastAPI", "PostgreSQL"],
-    coverImage: "/projects/rounds-cover.svg",
-    repoHref: "https://github.com/mnihad000/startup",
+    coverImage: "/projects/rounds-mark.png",
+    websiteHref: "https://rounds.app",
   },
   {
     slug: "mira",

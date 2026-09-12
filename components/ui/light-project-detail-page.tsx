@@ -276,6 +276,16 @@ export default function LightProjectDetailPage({
           <p className="project-copy mt-4 text-base leading-8 text-neutral-600">
             {project.description}
           </p>
+          {project.websiteHref ? (
+            <a
+              href={project.websiteHref}
+              target="_blank"
+              rel="noreferrer"
+              className="mt-5 inline-flex font-medium text-[#d65a12] underline underline-offset-4 transition-colors hover:text-[#b94b0c]"
+            >
+              Website: {project.websiteHref}
+            </a>
+          ) : null}
         </header>
 
         <div className="relative mt-8 h-72 overflow-hidden rounded-[2rem] border border-black/8 bg-white shadow-[0_18px_45px_rgba(0,0,0,0.04)] md:h-[28rem]">

@@ -41,7 +41,18 @@ import RecentCommitsSection from "@/components/ui/recent-commits-section";
 import TechStackSection from "@/components/ui/tech-stack-section";
 import { WavyWhatIfText } from "@/components/ui/wavy-what-if-text";
 
-const PROJECT_CARD_COUNT = projects.length;
+const projectCards = [...projects];
+const roundsCardIndex = projectCards.findIndex((project) => project.slug === "rounds");
+const familyOsCardIndex = projectCards.findIndex((project) => project.slug === "familyos");
+
+if (roundsCardIndex >= 0 && familyOsCardIndex >= 0) {
+  [projectCards[roundsCardIndex], projectCards[familyOsCardIndex]] = [
+    projectCards[familyOsCardIndex],
+    projectCards[roundsCardIndex],
+  ];
+}
+
+const PROJECT_CARD_COUNT = projectCards.length;
 const revealTransition: Transition = {
   duration: 0.65,
   ease: [0.22, 1, 0.36, 1],
@@ -322,7 +333,7 @@ function ProjectsSection() {
       </motion.div>
 
       <div className="mx-auto mt-10 grid max-w-6xl gap-6 md:grid-cols-2 lg:grid-cols-3">
-        {projects.map((project, index) => (
+        {projectCards.map((project, index) => (
           <LightProjectCard
             key={project.slug}
             project={project}
