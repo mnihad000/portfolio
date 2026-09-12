@@ -21,19 +21,30 @@ export default function LightProjectCard({
   total = 1,
   priority = false,
 }: LightProjectCardProps) {
+  const usesStandaloneLogo = project.cardImageFit === "contain";
   const cardClassName =
     "group flex h-full flex-col overflow-hidden rounded-[2rem] border border-black/10 bg-white text-left shadow-[0_18px_45px_rgba(0,0,0,0.05)] transition duration-300 hover:-translate-y-1 hover:shadow-[0_24px_55px_rgba(0,0,0,0.08)] focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-black/20";
 
   const cardContent = (
     <>
-      <div className="relative aspect-[16/10] overflow-hidden bg-[radial-gradient(circle_at_top,_rgba(255,255,255,0.8),_rgba(231,231,231,0.95)_40%,_rgba(212,212,212,1)_100%)]">
+      <div
+        className={`relative aspect-[16/10] overflow-hidden ${
+          usesStandaloneLogo
+            ? "bg-[#fffdf7]"
+            : "bg-[radial-gradient(circle_at_top,_rgba(255,255,255,0.8),_rgba(231,231,231,0.95)_40%,_rgba(212,212,212,1)_100%)]"
+        }`}
+      >
         <Image
           src={project.cardImage ?? project.coverImage}
           alt={`${project.title} cover image`}
           fill
           priority={priority}
           sizes="(min-width: 1280px) 33vw, (min-width: 768px) 50vw, 100vw"
-          className={`${project.cardImageFit === "contain" ? "object-contain p-5" : "object-cover"} transition duration-500 group-hover:scale-[1.02]`}
+          className={`${
+            usesStandaloneLogo
+              ? "object-contain p-6 mix-blend-multiply scale-[1.65] group-hover:scale-[1.68]"
+              : "object-cover"
+          } transition duration-500 group-hover:scale-[1.02]`}
         />
       </div>
 
