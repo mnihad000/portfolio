@@ -125,6 +125,10 @@
 }
 
 .belt {
+  cursor: grab;
+  touch-action: pan-y;
+  user-select: none;
+  -webkit-user-select: none;
   -webkit-mask-image: linear-gradient(
     90deg,
     transparent 0,
@@ -145,44 +149,12 @@
   );
 }
 
+.belt[data-dragging="true"] {
+  cursor: grabbing;
+}
+
 .belt-inner {
   will-change: transform;
-}
-
-.belt-inner[data-animate="true"][data-direction="left"] {
-  animation: scroll-left 25s linear infinite;
-}
-
-.belt-inner[data-animate="true"][data-direction="right"] {
-  animation: scroll-right 25s linear infinite;
-}
-
-.belt-inner[data-animate="false"] {
-  animation: none;
-}
-
-.belt:hover .belt-inner[data-animate="true"] {
-  animation-play-state: paused;
-}
-
-@keyframes scroll-left {
-  0% {
-    transform: translateX(0);
-  }
-
-  100% {
-    transform: translateX(-50%);
-  }
-}
-
-@keyframes scroll-right {
-  0% {
-    transform: translateX(-50%);
-  }
-
-  100% {
-    transform: translateX(0);
-  }
 }
 
 .profile-dots::before {

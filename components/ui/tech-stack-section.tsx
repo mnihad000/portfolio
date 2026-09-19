@@ -1,10 +1,18 @@
 "use client";
 
-import { useEffect, useState } from "react";
+import {
+  useCallback,
+  useEffect,
+  useLayoutEffect,
+  useRef,
+  useState,
+  type PointerEvent as ReactPointerEvent,
+} from "react";
 
 const DEVICON_STYLESHEET_ID = "devicon-cdn-stylesheet";
 const DEVICON_STYLESHEET_HREF =
   "https://cdn.jsdelivr.net/gh/devicons/devicon@latest/devicon.min.css";
+const BELT_CYCLE_DURATION_MS = 25_000;
 
 type IconKind = "devicon" | "avatar";
 type BeltDirection = "left" | "right";
@@ -177,25 +185,161 @@ function TechBelt({
   belt: BeltConfig;
   prefersReducedMotion: boolean;
 }) {
+  const trackRef = useRef<HTMLDivElement>(null);
+  const firstGroupRef = useRef<HTMLDivElement>(null);
+  const secondGroupRef = useRef<HTMLDivElement>(null);
+  const cycleWidthRef = useRef(0);
+  const positionRef = useRef(0);
+  const isDraggingRef = useRef(false);
+  const activePointerIdRef = useRef<number | null>(null);
+  const lastPointerXRef = useRef(0);
+  const [isDragging, setIsDragging] = useState(false);
+
+  const renderPosition = useCallback(() => {
+    const track = trackRef.current;
+    const cycleWidth = cycleWidthRef.current;
+
+    if (!track || cycleWidth <= 0) {
+      return;
+    }
+
+    // Keep the track between -cycleWidth and 0 so either copy can cross an edge
+    // without ever exposing empty space.
+    const wrappedPosition =
+      ((positionRef.current % cycleWidth) + cycleWidth) % cycleWidth - cycleWidth;
+
+    positionRef.current = wrappedPosition;
+    track.style.transform = `translate3d(${wrappedPosition}px, 0, 0)`;
+  }, []);
+
+  useLayoutEffect(() => {
+    const firstGroup = firstGroupRef.current;
+    const secondGroup = secondGroupRef.current;
+
+    if (!firstGroup || !secondGroup) {
+      return;
+    }
+
+    const measureCycle = () => {
+      const cycleWidth =
+        secondGroup.getBoundingClientRect().left - firstGroup.getBoundingClientRect().left;
+
+      if (cycleWidth > 0) {
+        cycleWidthRef.current = cycleWidth;
+        renderPosition();
+      }
+    };
+
+    measureCycle();
+
+    const resizeObserver = new ResizeObserver(measureCycle);
+    resizeObserver.observe(firstGroup);
+    resizeObserver.observe(secondGroup);
+
+    return () => {
+      resizeObserver.disconnect();
+    };
+  }, [renderPosition]);
+
+  useEffect(() => {
+    if (prefersReducedMotion) {
+      return;
+    }
+
+    let animationFrame = 0;
+    let previousTime: number | null = null;
+    const directionMultiplier = belt.direction === "left" ? -1 : 1;
+
+    const animate = (time: number) => {
+      if (previousTime !== null && !isDraggingRef.current) {
+        const cycleWidth = cycleWidthRef.current;
+        const elapsed = Math.min(time - previousTime, 100);
+
+        if (cycleWidth > 0) {
+          positionRef.current +=
+            directionMultiplier * (cycleWidth / BELT_CYCLE_DURATION_MS) * elapsed;
+          renderPosition();
+        }
+      }
+
+      previousTime = time;
+      animationFrame = window.requestAnimationFrame(animate);
+    };
+
+    animationFrame = window.requestAnimationFrame(animate);
+
+    return () => {
+      window.cancelAnimationFrame(animationFrame);
+    };
+  }, [belt.direction, prefersReducedMotion, renderPosition]);
+
+  const finishDragging = (event: ReactPointerEvent<HTMLDivElement>) => {
+    if (activePointerIdRef.current !== event.pointerId) {
+      return;
+    }
+
+    activePointerIdRef.current = null;
+    isDraggingRef.current = false;
+    setIsDragging(false);
+
+    if (event.currentTarget.hasPointerCapture(event.pointerId)) {
+      event.currentTarget.releasePointerCapture(event.pointerId);
+    }
+  };
+
+  const handlePointerDown = (event: ReactPointerEvent<HTMLDivElement>) => {
+    if (activePointerIdRef.current !== null) {
+      return;
+    }
+
+    if (event.pointerType === "mouse" && event.button !== 0) {
+      return;
+    }
+
+    activePointerIdRef.current = event.pointerId;
+    lastPointerXRef.current = event.clientX;
+    isDraggingRef.current = true;
+    setIsDragging(true);
+    event.currentTarget.setPointerCapture(event.pointerId);
+  };
+
+  const handlePointerMove = (event: ReactPointerEvent<HTMLDivElement>) => {
+    if (activePointerIdRef.current !== event.pointerId) {
+      return;
+    }
+
+    const deltaX = event.clientX - lastPointerXRef.current;
+    lastPointerXRef.current = event.clientX;
+    positionRef.current += deltaX;
+    renderPosition();
+  };
+
   return (
     <div className="space-y-3">
       <p className="text-[11px] uppercase tracking-[0.28em] text-neutral-400">{belt.label}</p>
-      <div className="belt relative w-full overflow-hidden rounded-[1.9rem] border border-black/8 bg-[linear-gradient(180deg,rgba(255,255,255,0.92),rgba(244,242,238,0.9))] px-3 py-3 shadow-[inset_0_1px_0_rgba(255,255,255,0.72),0_18px_40px_rgba(0,0,0,0.04)]">
+      <div
+        className="belt relative w-full overflow-hidden rounded-[1.9rem] border border-black/8 bg-[linear-gradient(180deg,rgba(255,255,255,0.92),rgba(244,242,238,0.9))] px-3 py-3 shadow-[inset_0_1px_0_rgba(255,255,255,0.72),0_18px_40px_rgba(0,0,0,0.04)]"
+        data-dragging={isDragging}
+        onPointerDown={handlePointerDown}
+        onPointerMove={handlePointerMove}
+        onPointerUp={finishDragging}
+        onPointerCancel={finishDragging}
+        onLostPointerCapture={finishDragging}
+      >
         <div
           aria-hidden="true"
           className="pointer-events-none absolute inset-y-2 left-2 right-2 rounded-full border border-black/5 bg-[radial-gradient(circle_at_center,rgba(255,255,255,0.52),rgba(255,255,255,0.12)_55%,transparent_78%)]"
         />
         <div
+          ref={trackRef}
           className="belt-inner flex w-max items-center gap-3"
-          data-animate={!prefersReducedMotion}
-          data-direction={belt.direction}
         >
-          <div className="flex items-center gap-3">
+          <div ref={firstGroupRef} className="flex items-center gap-3">
             {belt.items.map((item) => (
               <TechBadge key={`${belt.label}-${item.name}-first`} item={item} />
             ))}
           </div>
-          <div className="flex items-center gap-3" aria-hidden="true">
+          <div ref={secondGroupRef} className="flex items-center gap-3" aria-hidden="true">
             {belt.items.map((item) => (
               <TechBadge key={`${belt.label}-${item.name}-second`} item={item} />
             ))}
