@@ -740,12 +740,12 @@
   align-items: stretch;
   overflow-x: auto;
   overflow-y: hidden;
-  padding: 0.4rem 2.3rem;
+  padding: 0.4rem 0.2rem;
   color: rgb(23 23 23);
 }
 
 .liquid-nav__list--compact {
-  padding-inline: 2rem;
+  padding-inline: 0.55rem;
 }
 
 .liquid-nav__item {
