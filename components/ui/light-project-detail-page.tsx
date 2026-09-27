@@ -35,7 +35,7 @@ export default function LightProjectDetailPage({
 
   if (detail) {
     const links = detail.links.filter((link) => link.href.trim().length > 0);
-    const metrics = detail.metrics;
+    const metrics = detail.metrics ?? [];
 
     return (
       <main className="min-h-screen bg-white text-neutral-950">
@@ -81,6 +81,23 @@ export default function LightProjectDetailPage({
                   </p>
                 ) : null}
               </ContentSection>
+
+              {project.embeddedHtml ? (
+                <ContentSection title="Repository Snapshot">
+                  <p className="project-copy mb-4 text-sm leading-7 text-neutral-600">
+                    The saved RhetoriQ repository page is embedded below. The live
+                    repository link has the current source and documentation.
+                  </p>
+                  <iframe
+                    src={project.embeddedHtml}
+                    title={`${project.title} repository snapshot`}
+                    sandbox=""
+                    loading="lazy"
+                    referrerPolicy="no-referrer"
+                    className="h-[620px] w-full rounded-[1.5rem] border border-black/10 bg-white md:h-[760px]"
+                  />
+                </ContentSection>
+              ) : null}
 
               <ContentSection title="How It Works">
                 <CodePanel content={detail.howItWorksFlow} />

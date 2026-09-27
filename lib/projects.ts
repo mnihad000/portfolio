@@ -6,6 +6,7 @@ export type Project = {
   dateLabel: string;
   technologies: string[];
   coverImage: string;
+  embeddedHtml?: string;
   cardImage?: string;
   cardImageFit?: "cover" | "contain";
   detailImageAboveContent?: boolean;
@@ -39,7 +40,7 @@ export type ProjectRichDetail = {
   decisionTriggers: string[];
   opponentModelingTitle?: string;
   opponentModeling: string[];
-  metrics: ProjectMetric[];
+  metrics?: ProjectMetric[];
   disclaimer?: string;
 };
 
@@ -124,6 +125,7 @@ export const projects: Project[] = [
       "GitHub Actions",
     ],
     coverImage: "/projects/cover image.png",
+    embeddedHtml: "/projects/mnihad000_rhetoriq.html",
     richDetail: {
       heroTitle: "Trace How Narratives Spread",
       heroSubtitle:
@@ -252,14 +254,6 @@ npm run build`,
         "Timeline and graph views show observed paths and changes in language without treating an observed first source as the true origin.",
         "Elasticsearch, Neo4j, and pgvector projections are revalidated against PostgreSQL before results are shown.",
       ],
-      metrics: [
-        { metric: "Backend regression", target: "386 passed; 12 optional skips" },
-        { metric: "Frontend regression", target: "27 tests passed; production build passed" },
-        { metric: "Kafka/Flink smoke", target: "20/20 unique document deliveries" },
-        { metric: "Helm render", target: "61 kind / 58 EKS resources" },
-      ],
-      disclaimer:
-        "The product and deployment artifacts are implemented, but public launch, EKS execution, and full B3–B5 runtime acceptance have not been completed. The saved GitHub HTML is a snapshot; use the live repository link for the current source.",
     },
   },
   {
