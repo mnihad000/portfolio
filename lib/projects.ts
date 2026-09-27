@@ -6,7 +6,13 @@ export type Project = {
   dateLabel: string;
   technologies: string[];
   coverImage: string;
-  embeddedHtml?: string;
+  repositorySnapshot?: {
+    archiveHref: string;
+    sourceHref: string;
+    introduction: string;
+    principle: string;
+    highlights: { title: string; description: string }[];
+  };
   cardImage?: string;
   cardImageFit?: "cover" | "contain";
   detailImageAboveContent?: boolean;
@@ -125,7 +131,31 @@ export const projects: Project[] = [
       "GitHub Actions",
     ],
     coverImage: "/projects/cover image.png",
-    embeddedHtml: "/projects/mnihad000_rhetoriq.html",
+    repositorySnapshot: {
+      archiveHref: "/projects/mnihad000_rhetoriq.html",
+      sourceHref: "https://github.com/mnihad000/rhetoriq",
+      introduction:
+        "RhetoriQ detects public narrative signals, retrieves source material, maps how language changes and spreads, and produces reports whose material claims point back to inspectable evidence.",
+      principle:
+        "The system distinguishes the first observation in available data from a proven origin, and it does not treat correlation as proof of coordination.",
+      highlights: [
+        {
+          title: "Research with receipts",
+          description:
+            "Bounded LangGraph investigations use approved public sources, canonical retrieval, and provenance records.",
+        },
+        {
+          title: "Claims checked against evidence",
+          description:
+            "Exact spans, source independence, and contradictions inform what a report can publish.",
+        },
+        {
+          title: "A replayable pipeline",
+          description:
+            "Kafka events, Flink processing, PostgreSQL authority, and recoverable search and graph projections carry the data.",
+        },
+      ],
+    },
     richDetail: {
       heroTitle: "Trace How Narratives Spread",
       heroSubtitle:
@@ -140,7 +170,6 @@ export const projects: Project[] = [
         "Implemented product and infrastructure: 386 backend tests and 27 frontend tests passed in the recorded local release regression. Public URLs, EKS deployment, and the remaining B3–B5 acceptance gates are still pending.",
       links: [
         { label: "GitHub Repository", href: "https://github.com/mnihad000/rhetoriq" },
-        { label: "Saved Repository Page (HTML)", href: "/projects/mnihad000_rhetoriq.html" },
         { label: "Architecture", href: "https://github.com/mnihad000/rhetoriq/blob/further_dev/docs/ARCHITECTURE.md" },
         { label: "Roadmap & Status", href: "https://github.com/mnihad000/rhetoriq/blob/further_dev/docs/ROADMAP.md" },
       ],

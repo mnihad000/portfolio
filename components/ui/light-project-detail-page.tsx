@@ -68,7 +68,7 @@ export default function LightProjectDetailPage({
           </header>
 
           <div className="mt-14 grid gap-8 lg:grid-cols-[minmax(0,1fr)_320px] lg:items-start">
-            <div className="space-y-8">
+            <div className="min-w-0 space-y-8">
               <ContentSection title="Overview">
                 <div className="project-copy space-y-5 text-[1.03rem] leading-8 text-neutral-700">
                   {detail.overview.map((paragraph) => (
@@ -82,20 +82,58 @@ export default function LightProjectDetailPage({
                 ) : null}
               </ContentSection>
 
-              {project.embeddedHtml ? (
-                <ContentSection title="Repository Snapshot">
-                  <p className="project-copy mb-4 text-sm leading-7 text-neutral-600">
-                    The saved RhetoriQ repository page is embedded below. The live
-                    repository link has the current source and documentation.
-                  </p>
-                  <iframe
-                    src={project.embeddedHtml}
-                    title={`${project.title} repository snapshot`}
-                    sandbox=""
-                    loading="lazy"
-                    referrerPolicy="no-referrer"
-                    className="h-[620px] w-full rounded-[1.5rem] border border-black/10 bg-white md:h-[760px]"
-                  />
+              {project.repositorySnapshot ? (
+                <ContentSection title="From the Repository">
+                  <div className="overflow-hidden rounded-[1.75rem] bg-[#151922] text-white shadow-[0_24px_55px_rgba(14,18,28,0.14)]">
+                    <div className="border-b border-white/10 px-6 py-7 sm:px-8 sm:py-9">
+                      <p className="text-xs font-semibold uppercase tracking-[0.22em] text-[#ffad6a]">
+                        README / Project overview
+                      </p>
+                      <h3 className="project-heading mt-4 text-2xl font-semibold leading-tight sm:text-3xl">
+                        Trace every claim to its source.
+                      </h3>
+                      <p className="project-copy mt-4 text-base leading-8 text-white/75">
+                        {project.repositorySnapshot.introduction}
+                      </p>
+                      <p className="project-copy mt-5 border-l-2 border-[#ffad6a] pl-4 text-sm leading-7 text-white/65">
+                        {project.repositorySnapshot.principle}
+                      </p>
+                    </div>
+
+                    <div className="grid gap-px bg-white/10 sm:grid-cols-3">
+                      {project.repositorySnapshot.highlights.map((highlight, index) => (
+                        <div key={highlight.title} className="bg-[#151922] px-6 py-6 sm:px-7">
+                          <p className="text-xs font-semibold tracking-[0.18em] text-[#ffad6a]">
+                            {String(index + 1).padStart(2, "0")}
+                          </p>
+                          <h4 className="project-heading mt-3 text-base font-semibold text-white">
+                            {highlight.title}
+                          </h4>
+                          <p className="project-copy mt-2 text-sm leading-6 text-white/60">
+                            {highlight.description}
+                          </p>
+                        </div>
+                      ))}
+                    </div>
+
+                    <div className="flex flex-wrap gap-3 px-6 py-6 sm:px-8">
+                      <a
+                        href={project.repositorySnapshot.sourceHref}
+                        target="_blank"
+                        rel="noreferrer"
+                        className="inline-flex items-center rounded-full bg-[#ffad6a] px-5 py-2.5 text-sm font-semibold text-[#151922] transition-colors hover:bg-[#ffc28f]"
+                      >
+                        Explore repository <span className="ml-2" aria-hidden>↗</span>
+                      </a>
+                      <a
+                        href={project.repositorySnapshot.archiveHref}
+                        download
+                        className="inline-flex items-center rounded-full border border-white/20 px-5 py-2.5 text-sm font-medium text-white/80 transition-colors hover:border-white/50 hover:text-white"
+                      >
+                        Download saved HTML
+                      </a>
+                    </div>
+                  </div>
                 </ContentSection>
               ) : null}
 
@@ -394,7 +432,7 @@ function CodePanel({
   label?: string;
 }) {
   return (
-    <article className="rounded-[1.5rem] border border-black/8 bg-white p-5 shadow-[0_18px_45px_rgba(0,0,0,0.04)]">
+    <article className="min-w-0 rounded-[1.5rem] border border-black/8 bg-white p-5 shadow-[0_18px_45px_rgba(0,0,0,0.04)]">
       {label ? (
         <p className="mb-3 text-xs uppercase tracking-[0.14em] text-neutral-500">{label}</p>
       ) : null}
