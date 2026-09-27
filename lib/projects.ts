@@ -37,6 +37,7 @@ export type ProjectRichDetail = {
   setup: ProjectSetup;
   decisionMaking: ProjectDecisionMaking;
   decisionTriggers: string[];
+  opponentModelingTitle?: string;
   opponentModeling: string[];
   metrics: ProjectMetric[];
   disclaimer?: string;
@@ -99,12 +100,14 @@ export const projects: Project[] = [
     slug: "rhetoriq",
     title: "RhetoriQ",
     description:
-      "Documentation-defined architecture for an autonomous pipeline that detects, investigates, and visualizes political narrative spread across platforms.",
+      "Built an evidence-first narrative investigation platform with live research, cited claims, a Kafka/Flink pipeline, and an interactive investigation workspace.",
     fullDescription:
-      "RhetoriQ is specified as a 10-service event-driven system where scrapers publish to Kafka, Flink processes and detects anomalies, storage workers persist enriched data, and a LangChain agent synthesizes investigation reports with GPT-4o. The backend is designed around FastAPI REST and WebSocket endpoints, and the frontend around a React/TypeScript dashboard with Sigma.js graph visualization. The repository includes detailed schemas, service contracts, infrastructure plans, and phased execution guidance. Based on current repo contents, this is an architecture-and-roadmap codebase with minimal/no implementation files checked in.",
-    dateLabel: "APRIL 2026",
+      "RhetoriQ is an implemented narrative investigation system. A FastAPI backend and LangGraph research worker collect approved public sources, preserve provenance receipts, verify claims against evidence, and publish reports with visible limitations. Kafka and Flink process events and narrative signals; PostgreSQL, Elasticsearch, Neo4j, pgvector, and Redis support persistence, search, graph paths, semantic recall, and caching. A React/TypeScript frontend presents live progress, evidence, timelines, graph views, and report audits. Helm, Terraform, and release automation are implemented for local Kubernetes and an ephemeral EKS demonstration; full runtime qualification and public deployment are still in progress.",
+    dateLabel: "2026 · ACTIVE DEVELOPMENT",
     technologies: [
       "Python",
+      "FastAPI",
+      "LangGraph",
       "Apache Kafka",
       "Apache Flink",
       "PostgreSQL",
@@ -112,256 +115,151 @@ export const projects: Project[] = [
       "Elasticsearch",
       "Neo4j",
       "Redis",
-      "FastAPI",
       "React",
       "TypeScript",
-      "LangChain",
-      "OpenAI GPT-4o",
       "Docker",
-      "Kubernetes",
+      "Helm",
       "Terraform",
-      "ArgoCD",
+      "AWS EKS",
       "GitHub Actions",
     ],
-    coverImage: "/projects/Rhetoriq.png",
+    coverImage: "/projects/cover image.png",
     richDetail: {
-      heroTitle: "Autonomous Narrative Tracing Pipeline",
+      heroTitle: "Trace How Narratives Spread",
       heroSubtitle:
-        "A planned end-to-end system that detects narrative spikes, traces provenance, and publishes investigation reports from a Kafka-centered microservice architecture.",
+        "An evidence-first investigation system that follows public narratives through source material, competing claims, and inspectable receipts.",
       overview: [
-        "The repo defines an event-driven architecture where five ingestion services (Reddit, NewsAPI, RSS, GDELT, C-SPAN) publish normalized raw documents to Kafka topics. A Flink processor consumes raw.* topics, deduplicates and cleans content, extracts entities, generates 384-dim embeddings, and emits both processed documents and anomaly alerts.",
-        "A storage worker design writes processed data into PostgreSQL/pgvector (semantic search), Elasticsearch (full-text search), Neo4j (spread graph), and Redis (cache/state). A LangChain ReAct agent is specified to consume anomalies, run semantic + graph + text retrieval tools, and synthesize markdown investigation reports with GPT-4o.",
-        "The backend API is documented as a FastAPI layer with JWT auth, paginated investigation endpoints, search endpoints, graph endpoints, and WebSocket broadcast events for anomaly/investigation lifecycle updates. The frontend is documented as a React + TypeScript SPA using React Query, Zustand, Sigma.js, and Recharts for live feed, investigation detail, and graph views.",
-        "The project includes extensive operational documentation for Kafka partitioning/retention, Kubernetes deployment patterns, Terraform modules, ArgoCD GitOps flow, observability dashboards, and a phased 5-6 month implementation roadmap.",
+        "I built a FastAPI and React/TypeScript product for investigating how public narratives emerge and change. The workspace brings together live research progress, a report, source evidence, a timeline, a narrative graph, and a claim-level audit. It distinguishes the first observation in available data from a proven origin and does not infer coordination from correlation alone.",
+        "The LangGraph research runtime plans bounded investigations, selects approved sources, retrieves canonical pages, saves provenance receipts, and resumes from durable checkpoints. A verification layer checks exact evidence spans, source independence, entailment, and contradictions before a publication gate allows supported claims into a report; weak or missing evidence is shown as a limitation.",
+        "The event backbone uses Kafka KRaft, Apicurio schemas, a transactional outbox, role-scoped consumers, retries, dead-letter queues, and replay. A Flink job implements stateful document processing and narrative signals. PostgreSQL is the authoritative store; Elasticsearch, Neo4j, MiniLM/pgvector, and Redis provide recoverable search, graph, semantic, and cache projections.",
+        "I also built Docker/Compose packaging, a shared Helm chart for kind and EKS, three guarded Terraform states, immutable-image delivery, and scripts for smoke tests, recovery, evidence capture, and teardown. The repository includes static validation and local regression results; public launch and full actual-stack qualification remain underway.",
       ],
       overviewHighlight:
-        "Current repo state is documentation-first: architecture, schemas, runbooks, and roadmap are present; implementation files are largely not checked in.",
+        "Implemented product and infrastructure: 386 backend tests and 27 frontend tests passed in the recorded local release regression. Public URLs, EKS deployment, and the remaining B3–B5 acceptance gates are still pending.",
       links: [
-        { label: "Project README", href: "README%20(3).md" },
-        { label: "Architecture Doc", href: "ARCHITECTURE.md" },
-        { label: "Services Doc", href: "SERVICES.md" },
+        { label: "GitHub Repository", href: "https://github.com/mnihad000/rhetoriq" },
+        { label: "Saved Repository Page (HTML)", href: "/projects/mnihad000_rhetoriq.html" },
+        { label: "Architecture", href: "https://github.com/mnihad000/rhetoriq/blob/further_dev/docs/ARCHITECTURE.md" },
+        { label: "Roadmap & Status", href: "https://github.com/mnihad000/rhetoriq/blob/further_dev/docs/ROADMAP.md" },
       ],
       techStackGroups: [
         {
-          title: "Ingestion & Streaming",
-          items: ["Python scraper services", "Apache Kafka", "Apache Flink"],
+          title: "Research & Verification",
+          items: ["LangGraph", "SearXNG", "Federal Register API", "GDELT", "Hacker News", "canonical HTTP retrieval", "claim-evidence verification"],
         },
         {
-          title: "Data Layer",
-          items: ["PostgreSQL", "pgvector", "Elasticsearch", "Neo4j", "Redis"],
+          title: "Streaming & Data",
+          items: ["Kafka KRaft", "Apicurio Registry", "Apache Flink", "PostgreSQL/pgvector", "Elasticsearch", "Neo4j", "Redis"],
         },
         {
-          title: "AI & Analysis",
-          items: [
-            "LangChain ReAct agent",
-            "OpenAI GPT-4o",
-            "HuggingFace NER (dslim/bert-base-NER)",
-            "sentence-transformers/all-MiniLM-L6-v2",
-          ],
+          title: "Product",
+          items: ["FastAPI", "React", "TypeScript", "Vite", "SSE", "interactive graph", "evidence audit"],
         },
         {
-          title: "API & Frontend",
-          items: [
-            "FastAPI",
-            "Uvicorn",
-            "React 18",
-            "TypeScript",
-            "Vite",
-            "React Query",
-            "Zustand",
-            "Sigma.js",
-            "Recharts",
-            "TailwindCSS",
-          ],
-        },
-        {
-          title: "Infra & Delivery",
-          items: [
-            "Docker / Docker Compose",
-            "Kubernetes (EKS)",
-            "Terraform",
-            "ArgoCD",
-            "GitHub Actions",
-            "Prometheus",
-            "Grafana",
-            "AWS Secrets Manager",
-          ],
+          title: "Delivery",
+          items: ["Docker Compose", "Helm", "Kubernetes", "Terraform", "AWS EKS/ECR", "GitHub Actions"],
         },
       ],
-      howItWorksFlow: `1) Scrapers poll/stream Reddit, RSS, NewsAPI, GDELT, and C-SPAN.
-2) Each scraper publishes normalized raw events to Kafka (raw.reddit, raw.news, raw.gdelt, raw.speeches).
-3) Flink consumes raw streams, deduplicates, cleans text, extracts entities, creates embeddings, and computes 10-minute anomaly windows vs 7-day baselines.
-4) Flink emits documents.processed and anomalies.detected.
-5) Storage worker consumes documents.processed and writes to Postgres/pgvector, Elasticsearch, Neo4j, and Redis.
-6) Agent consumes anomalies.detected, executes retrieval tools (semantic_search, graph_trace, full_text_search, get_source_profile), then calls synthesize_report.
-7) Agent publishes completed reports to investigations.complete.
-8) FastAPI consumes/serves investigation data via REST + WebSocket.
-9) React frontend renders live feed, timeline, investigation report, and spread graph.`,
+      howItWorksFlow: `1) A user submits a question or ingests a source document.
+2) FastAPI saves the request and a transactional outbox record in PostgreSQL.
+3) The outbox publisher sends a versioned event to Kafka; workers consume with idempotency and replay controls.
+4) LangGraph plans bounded research and chooses SearXNG, Federal Register, GDELT, Hacker News, internal recall, or canonical-page retrieval.
+5) Every usable source receives a provenance receipt. Flink processes documents and computes narrative signals.
+6) Claim checks inspect evidence spans, independence, contradictions, and missing support.
+7) The publication gate writes a cited report or a visible limitation to PostgreSQL.
+8) React displays live SSE progress, the report, evidence library, timeline, and graph; search and graph projections enrich the workspace.`,
       architectureTree: `rhetoriq/
-services/
-  ingestion/
-    reddit-scraper         -> Kafka: raw.reddit
-    newsapi-scraper        -> Kafka: raw.news
-    rss-scraper            -> Kafka: raw.news
-    gdelt-scraper          -> Kafka: raw.gdelt
-    cspan-scraper          -> Kafka: raw.speeches
-  processing/
-    flink-processor        <- raw.* ; -> documents.processed, anomalies.detected
-  storage/
-    storage-worker         <- documents.processed
-                              -> PostgreSQL/pgvector
-                              -> Elasticsearch
-                              -> Neo4j
-                              -> Redis
-  analysis/
-    investigation-agent    <- anomalies.detected
-                              -> investigations.complete
-  api/
-    fastapi-backend        <- investigations.complete
-                              -> REST + WebSocket
-  frontend/
-    react-dashboard        <- FastAPI REST/WS`,
+  frontend/             React + TypeScript investigation workspace
+  backend/
+    api/                 FastAPI ingestion, investigations, search, graph, SSE
+    agents/              LangGraph planning, retrieval, receipts, verification
+    services/            persistence, events, analysis, projections
+    tests/               backend and contract coverage
+  infra/
+    flink/               stateful document and narrative-signal processing
+    research/            SearXNG and isolated browser adapter
+    terraform/eks-demo/  bootstrap, foundation, platform states
+  deploy/helm/rhetoriq/  shared kind and EKS chart
+  docs/                   architecture, operations, testing, roadmap
+
+  PostgreSQL -> outbox -> Kafka -> workers/Flink -> PostgreSQL
+                                         -> ES / Neo4j / pgvector / Redis`,
       datasets: [
         {
-          name: "Reddit API (PRAW)",
-          description:
-            "Streams monitored political subreddit submissions into raw.reddit for early narrative detection.",
-          href: "DATA_SOURCES.md",
+          name: "GDELT DOC 2.0",
+          description: "News discovery and narrative leads, followed by canonical-source retrieval when evidence is needed.",
+          href: "https://github.com/mnihad000/rhetoriq/blob/further_dev/docs/DATA_SOURCES.md",
         },
         {
-          name: "GDELT GKG/Event updates",
-          description:
-            "15-minute global news event feed used for high-volume narrative and theme signals in raw.gdelt.",
-          href: "DATA_SOURCES.md",
+          name: "Hacker News Algolia API",
+          description: "Public discussion discovery through the implemented Algolia ingestion adapter.",
+          href: "https://github.com/mnihad000/rhetoriq/blob/further_dev/docs/DATA_SOURCES.md",
         },
         {
-          name: "NewsAPI",
-          description:
-            "Supplemental mainstream political article feed for raw.news.",
-          href: "DATA_SOURCES.md",
+          name: "Federal Register",
+          description: "First-party policy records with pagination, retries, provenance receipts, and explicit limitations.",
+          href: "https://github.com/mnihad000/rhetoriq/blob/further_dev/docs/DATA_SOURCES.md",
         },
         {
-          name: "Outlet RSS feeds (NYT, WaPo, Fox, Reuters, BBC, Breitbart, The Hill, Politico)",
-          description:
-            "Direct outlet feeds for politically diverse article ingestion into raw.news.",
-          href: "DATA_SOURCES.md",
-        },
-        {
-          name: "C-SPAN API transcripts",
-          description:
-            "Speech/hearing transcript source for formal political adoption signals in raw.speeches.",
-          href: "DATA_SOURCES.md",
+          name: "Approved public web and internal corpus",
+          description: "SearXNG finds leads; policy-aware canonical retrieval and persisted documents supply inspectable evidence.",
+          href: "https://github.com/mnihad000/rhetoriq/blob/further_dev/docs/DATA_SOURCES.md",
         },
       ],
       setup: {
-        prerequisites: [
-          "Docker Desktop",
-          "Python 3.11+",
-          "Node.js 18+",
-          "kubectl",
-          "Terraform CLI",
-        ],
-        installation: `git clone https://github.com/yourusername/rhetoriq.git
+        prerequisites: ["Docker Desktop", "Python", "Node.js", "Credentials for optional live providers"],
+        installation: `git clone https://github.com/mnihad000/rhetoriq.git
 cd rhetoriq
-cp .env.example .env
-# fill required keys
-docker-compose up -d
-# create Kafka topics per KAFKA.md`,
-        environment: `Configure keys and URLs documented across README (3).md, SERVICES.md, and BACKEND (1).md, including:
-OPENAI_API_KEY
-REDDIT_CLIENT_ID
-REDDIT_CLIENT_SECRET
-NEWS_API_KEY
-CSPAN_API_KEY
-KAFKA_BOOTSTRAP_SERVERS
-POSTGRES_URL
-ELASTICSEARCH_URL
-NEO4J_URI
-NEO4J_PASSWORD
-REDIS_URL
-VITE_API_URL
-VITE_WS_URL`,
-        connect: `Local service endpoints documented:
-API: http://localhost:8000/api/v1
-WebSocket: ws://localhost:8000/ws
-Frontend: http://localhost:3000
-Kafka UI: http://localhost:8080`,
-        downloadModels: `HuggingFace models referenced for local setup:
-- sentence-transformers/all-MiniLM-L6-v2
-- dslim/bert-base-NER
-(roadmap indicates pre-downloading these before Flink processing).`,
-        run: `cd backend/scrapers && python run_all.py
-cd backend/processors && python flink_job.py
-cd backend/processors && python storage_worker.py
-cd backend/agent && python agent.py
-cd backend/api && uvicorn main:app --reload --port 8000
-cd frontend && npm install && npm run dev`,
+# Configure the local secrets described in README.md.
+docker compose up --build -d`,
+        environment: `POSTGRES_PASSWORD and SEARXNG_SECRET are required by the local Compose stack.
+Optional: GEMINI_API_KEY or GROQ_API_KEY for hosted model access.
+Production uses DATABASE_URL and deployment-specific Kafka, CORS, and research settings.
+See README.md and docs/OPERATIONS.md for the full configuration.`,
+        connect: `Frontend: http://127.0.0.1:5173 in Vite development
+API: FastAPI routes under /api
+Investigation workspace: /investigation/:id`,
+        downloadModels: `The MiniLM semantic projection uses sentence-transformers/all-MiniLM-L6-v2.
+Claim verification uses a local NLI model when configured.
+See docs/OPERATIONS.md for model and feature-flag setup.`,
+        run: `docker compose ps
+pytest backend/tests
+cd frontend
+npm run build`,
       },
       decisionMaking: {
         cadence:
-          "Flink runs anomaly detection in 10-minute tumbling windows, comparing phrase frequency against a rolling 7-day baseline; if frequency exceeds threshold (default 3.0x), it emits anomalies.detected. The agent then runs a bounded ReAct loop (max 10 iterations/tool calls) over retrieval tools before synthesizing a report.",
-        requestSample: `{
-  "anomaly_id": "a1b2c3d4",
-  "phrase": "climate lockdowns",
-  "spike_magnitude": 4.7,
-  "window_frequency": 847,
-  "baseline_frequency": 180,
-  "top_sources": [
-    {"source": "reddit", "subreddit": "conspiracy", "count": 312}
-  ]
-}`,
+          "A user question starts a bounded, checkpointed investigation. The worker selects source adapters for each evidence gap, records receipts, and passes proposed claims through deterministic publication rules. Kafka and Flink process ingestion and narrative signals asynchronously; retries and replay preserve progress when workers restart.",
+        requestSample: `POST /api/investigate
+{"query_text":"How did this public claim spread?"}`,
         responseSample: `{
-  "investigation_id": "a1b2c3d4",
-  "phrase": "climate lockdowns",
-  "duration_seconds": 47,
-  "origin": {
-    "source": "reddit",
-    "outlet_or_subreddit": "r/conspiracy",
-    "confidence": 0.87
-  },
-  "spread_path": [
-    {"stage": 1, "source": "reddit", "outlet_or_subreddit": "r/conspiracy"},
-    {"stage": 2, "source": "rss", "outlet_or_subreddit": "Breitbart"}
-  ],
-  "pattern_classification": "grassroots",
-  "report": "## Narrative: climate lockdowns ..."
+  "investigation_id": "inv_<generated-id>",
+  "status": "planning_completed",
+  "current_stage": "planner",
+  "query_text": "How did this public claim spread?",
+  "plan": { "...": "bounded research plan" },
+  "warnings": []
 }`,
       },
       decisionTriggers: [
-        "Phrase frequency in current 10-minute window exceeds configured spike threshold vs rolling 7-day baseline (ANOMALY_SPIKE_THRESHOLD, default 3.0).",
-        "Agent invocation is triggered by new messages on Kafka topic anomalies.detected.",
+        "A submitted question or ingested document creates durable investigation or processing work.",
+        "Research gaps determine which approved source adapter the LangGraph worker calls next.",
+        "Verified evidence, contradictions, and independence checks determine whether a claim is published, qualified, or withheld.",
       ],
+      opponentModelingTitle: "Source & Provenance Analysis",
       opponentModeling: [
-        "Source profiling enriches nodes with type, political lean, audience size estimate, and document counts to characterize amplification roles.",
-        "Spread-path and key-amplifier ranking model narrative propagation through AMPLIFIED graph relationships in Neo4j.",
-        "Investigation state/status is tracked in Redis and Postgres (detected, investigating, complete, failed).",
+        "Receipts keep canonical URLs, retrieval context, source roles, and evidence spans inspectable.",
+        "Timeline and graph views show observed paths and changes in language without treating an observed first source as the true origin.",
+        "Elasticsearch, Neo4j, and pgvector projections are revalidated against PostgreSQL before results are shown.",
       ],
       metrics: [
-        {
-          metric: "Investigation duration",
-          target: "Example documented: 47 seconds per completed investigation response.",
-        },
-        {
-          metric: "Anomaly threshold",
-          target: "Default 3.0x baseline over 10-minute window.",
-        },
-        {
-          metric: "Agent tool-call budget",
-          target: "Max 10 iterations/tool calls per investigation.",
-        },
-        {
-          metric: "API cache latency goal",
-          target: "Documented target: keep common API queries under 100ms via Redis caching.",
-        },
-        {
-          metric: "Per-investigation LLM cost estimate",
-          target: "$0.035 per investigation (doc estimate).",
-        },
-        {
-          metric: "Infrastructure cost estimate",
-          target: "$500/month on AWS (doc estimate).",
-        },
+        { metric: "Backend regression", target: "386 passed; 12 optional skips" },
+        { metric: "Frontend regression", target: "27 tests passed; production build passed" },
+        { metric: "Kafka/Flink smoke", target: "20/20 unique document deliveries" },
+        { metric: "Helm render", target: "61 kind / 58 EKS resources" },
       ],
+      disclaimer:
+        "The product and deployment artifacts are implemented, but public launch, EKS execution, and full B3–B5 runtime acceptance have not been completed. The saved GitHub HTML is a snapshot; use the live repository link for the current source.",
     },
   },
   {

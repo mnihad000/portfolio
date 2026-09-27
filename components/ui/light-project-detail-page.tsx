@@ -165,7 +165,7 @@ export default function LightProjectDetailPage({
                 </ul>
               </ContentSection>
 
-              <ContentSection title="Opponent Modeling">
+              <ContentSection title={detail.opponentModelingTitle ?? "Opponent Modeling"}>
                 <ul className="space-y-2">
                   {detail.opponentModeling.map((item) => (
                     <li
