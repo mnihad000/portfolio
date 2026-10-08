@@ -2,6 +2,10 @@
   position: relative;
   margin: 0 auto;
   width: min(100%, 60rem);
+  /* The jitter animation pushes the layers sideways; clip horizontally so they can't widen the page on phones.
+     The clip margin keeps a little room for the blur to bleed without reaching the viewport edge. */
+  overflow-x: clip;
+  overflow-clip-margin: 12px;
 }
 
 .defs {

@@ -261,7 +261,7 @@ function AboutSection() {
               View Projects
             </a>
             <a
-              href="#contact"
+              href={`mailto:${lightModeContent.email}`}
               className="rounded-full border border-neutral-900 bg-neutral-900 px-5 py-2.5 text-sm font-semibold text-white transition hover:bg-neutral-700"
             >
               Contact
@@ -405,6 +405,7 @@ function ContactSection({
   const resumeHref = aboutPageContent.statuses[0]?.ctaHref ?? "/resume";
   const { windowState, onClose } = windowControls;
   const isWindowed = windowState !== "docked";
+  const [terminalRevealed, setTerminalRevealed] = useState(false);
 
   return (
     <section
@@ -421,7 +422,17 @@ function ContactSection({
             className="space-y-3"
           >
             <h3 className="text-4xl font-semibold tracking-tight text-neutral-900 md:text-5xl">
-              Contact Me
+              <a
+                href={`mailto:${lightModeContent.email}`}
+                className="group inline-flex items-center gap-3 rounded-lg transition-colors hover:text-[#d65a12] focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-[#d65a12]/40"
+              >
+                Contact Me
+                <ArrowUpRight
+                  className="h-7 w-7 -translate-x-1 translate-y-1 opacity-0 transition duration-200 group-hover:translate-x-0 group-hover:translate-y-0 group-hover:opacity-100 group-focus-visible:opacity-100 md:h-9 md:w-9 [@media(hover:none)]:translate-x-0 [@media(hover:none)]:translate-y-0 [@media(hover:none)]:opacity-100"
+                  strokeWidth={2}
+                  aria-hidden="true"
+                />
+              </a>
             </h3>
             <p className="max-w-xl text-base leading-8 text-neutral-600 md:text-lg">
               Got a project idea, opportunity, want to team up for a hackathon,
@@ -488,13 +499,14 @@ function ContactSection({
 
         <motion.div
           initial={{ opacity: 0, y: 24 }}
-          whileInView={{ opacity: 1, y: 0 }}
+          // The window can open before this slot has scrolled into view. A half-revealed slot would
+          // trap the fixed window (transform) and hide it (opacity), so opening it finishes the reveal instantly.
+          animate={terminalRevealed || isWindowed ? { opacity: 1, y: 0 } : undefined}
+          onViewportEnter={() => setTerminalRevealed(true)}
           viewport={{ once: true, amount: 0.25 }}
-          transition={{ ...revealTransition, delay: 0.16 }}
+          transition={isWindowed ? { duration: 0 } : { ...revealTransition, delay: 0.16 }}
           id="nihad-os"
           className="relative h-[560px] scroll-mt-28 md:h-[640px] lg:h-[680px]"
-          // A transformed ancestor would trap the fixed-position window inside this slot.
-          style={isWindowed ? { transform: "none" } : undefined}
         >
           {isWindowed ? (
             <>
