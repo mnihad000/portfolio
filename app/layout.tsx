@@ -1,6 +1,7 @@
 import type { Metadata } from "next";
 import { Geist, IBM_Plex_Mono, VT323 } from "next/font/google";
 import NavHeader from "@/components/ui/nav-header";
+import AimCursor from "@/components/ui/aim-cursor";
 import GalaxyLoader from "@/components/providers/galaxy-loader";
 import "./globals.css";
 
@@ -44,6 +45,7 @@ export default function RootLayout({
         <GalaxyLoader />
         <NavHeader />
         {children}
+        <AimCursor />
       </body>
     </html>
   );

@@ -1,0 +1,50 @@
+# Binary Fibonacci notes
+# r0 and r1 hold the fibonacci numbers
+# r2 is the memory address
+# r3 stores where the loop starts
+
+60 01      # r0 = 1
+64 01      # r1 = 1
+68 C1      # r2 = C1
+6C 08      # r3 = 08, this is where the loop starts
+
+# loop starts here
+
+6A FF      # r2 = r2 - 1, so first time C1 becomes C0
+
+52         # memory[r2] = r0
+6A 01      # move r2 to next memory address
+
+56         # memory[r2] = r1
+6A 01      # move r2 to next address again
+
+21         # r0 = r0 + r1
+24         # r1 = r1 + r0
+
+6A 01      # add 1 to r2 for the loop check
+7B         # if r2 <= 0, jump back to address stored in r3
+
+80         # halt
+
+The idea is that I store two fibonacci numbers each time through the loop.
+
+For example at the start:
+r0 = 1
+r1 = 1
+
+so it stores 1 at C0 and 1 at C1.
+
+Then:
+r0 = r0 + r1 = 2
+r1 = r1 + r0 = 3
+
+so the next loop stores 2 and 3.
+
+Then it becomes 5 and 8, then 13 and 21, etc.
+
+I used r2 as the address counter. The addresses C0 through FF are negative numbers when interpreted as signed 8-bit values, so the conditional jump keeps looping while r2 is in that range.
+
+At the very end, after FF is written, the address wraps around from FF to 00. The extra +1 makes r2 = 01, which is positive, so the 7B instruction does not jump anymore and the program reaches 80 and stops.
+
+
+This is better for your comments file because it reads like **working notes**, not like a formal solution manual.

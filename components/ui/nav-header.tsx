@@ -20,8 +20,6 @@ function GlassDecorations() {
       <span className="liquid-nav__sheen" aria-hidden="true" />
       <span className="liquid-nav__bracket liquid-nav__bracket--left" aria-hidden="true" />
       <span className="liquid-nav__bracket liquid-nav__bracket--right" aria-hidden="true" />
-      <span className="liquid-nav__register liquid-nav__register--left" aria-hidden="true" />
-      <span className="liquid-nav__register liquid-nav__register--right" aria-hidden="true" />
     </>
   );
 }

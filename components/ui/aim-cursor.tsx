@@ -2,12 +2,15 @@
 
 import { useEffect, useRef } from "react";
 
-const BASE_SIZE = 34;
-const SNAP_DISTANCE = 48;
-const MAX_LOCK_WIDTH = 112;
-const MAX_LOCK_HEIGHT = 64;
-const LOCK_PADDING_X = 18;
-const LOCK_PADDING_Y = 14;
+const BASE_SIZE = 28;
+const ARM = 8;
+const LOCK_PADDING_X = 6;
+const LOCK_PADDING_Y = 4;
+// Lock on within LOCK_IN px of a target, but only let go beyond LOCK_OUT px so the edge doesn't flicker.
+const LOCK_IN = 32;
+const LOCK_OUT = 52;
+// Free reticle spin, degrees per second.
+const SPIN_SPEED = 60;
 
 const CLICKABLE_SELECTOR = [
   "a[href]",
@@ -35,18 +38,12 @@ type Point = {
 type CursorState = Point & {
   width: number;
   height: number;
+  angle: number;
 };
 
-type LockTarget = {
-  rect: DOMRect;
-};
-
-function clamp(value: number, min: number, max: number) {
-  return Math.min(Math.max(value, min), max);
-}
-
-function lerp(current: number, target: number, amount: number) {
-  return current + (target - current) * amount;
+// Fraction of the remaining gap to close this frame, independent of frame rate.
+function ease(rate: number, dt: number) {
+  return 1 - Math.exp(-rate * dt);
 }
 
 function getDistanceToRect(point: Point, rect: DOMRect) {
@@ -95,6 +92,7 @@ function isVisibleTarget(element: HTMLElement, rect: DOMRect) {
 
 function isValidTarget(element: HTMLElement, rect: DOMRect) {
   return (
+    element.isConnected &&
     !element.closest(IGNORE_SELECTOR) &&
     !isDisabledElement(element) &&
     hasNonNegativeTabIndex(element) &&
@@ -102,9 +100,9 @@ function isValidTarget(element: HTMLElement, rect: DOMRect) {
   );
 }
 
-function getNearestLockTarget(point: Point): LockTarget | null {
+function getNearestTarget(point: Point): HTMLElement | null {
   const elements = document.querySelectorAll<HTMLElement>(CLICKABLE_SELECTOR);
-  let nearest: LockTarget | null = null;
+  let nearest: HTMLElement | null = null;
   let nearestScore = Number.POSITIVE_INFINITY;
 
   elements.forEach((element) => {
@@ -116,50 +114,21 @@ function getNearestLockTarget(point: Point): LockTarget | null {
 
     const distance = getDistanceToRect(point, rect);
 
-    if (distance > SNAP_DISTANCE) {
+    if (distance > LOCK_IN) {
       return;
     }
 
+    // Prefer the smaller element when targets overlap (e.g. a button inside a card link).
     const areaBias = Math.min(Math.sqrt(rect.width * rect.height) * 0.02, 20);
     const score = distance + areaBias;
 
     if (score < nearestScore) {
       nearestScore = score;
-      nearest = { rect };
+      nearest = element;
     }
   });
 
   return nearest;
-}
-
-function getLockCursorState(point: Point, target: LockTarget): CursorState {
-  const { rect } = target;
-  const width = clamp(rect.width + LOCK_PADDING_X, BASE_SIZE, MAX_LOCK_WIDTH);
-  const height = clamp(rect.height + LOCK_PADDING_Y, BASE_SIZE, MAX_LOCK_HEIGHT);
-  const canFrameFullTarget =
-    rect.width + LOCK_PADDING_X <= MAX_LOCK_WIDTH &&
-    rect.height + LOCK_PADDING_Y <= MAX_LOCK_HEIGHT;
-
-  if (canFrameFullTarget) {
-    return {
-      x: rect.left + rect.width / 2,
-      y: rect.top + rect.height / 2,
-      width,
-      height,
-    };
-  }
-
-  const minX = rect.left + width / 2;
-  const maxX = rect.right - width / 2;
-  const minY = rect.top + height / 2;
-  const maxY = rect.bottom - height / 2;
-
-  return {
-    x: minX <= maxX ? clamp(point.x, minX, maxX) : rect.left + rect.width / 2,
-    y: minY <= maxY ? clamp(point.y, minY, maxY) : rect.top + rect.height / 2,
-    width,
-    height,
-  };
 }
 
 function isTextCursorTarget(point: Point) {
@@ -187,6 +156,7 @@ export default function AimCursor() {
       return;
     }
 
+    const corners = Array.from(cursor.querySelectorAll<SVGPolylineElement>("polyline"));
     const root = document.documentElement;
     const pointer: Point & { visible: boolean } = {
       x: -100,
@@ -198,24 +168,23 @@ export default function AimCursor() {
       y: pointer.y,
       width: BASE_SIZE,
       height: BASE_SIZE,
-    };
-    const targetState: CursorState = {
-      x: pointer.x,
-      y: pointer.y,
-      width: BASE_SIZE,
-      height: BASE_SIZE,
+      angle: 45,
     };
 
     let animationFrame = 0;
+    let lastFrame = performance.now();
     let hasPlacedCursor = false;
     let hasFinePointer = false;
+    let reduceMotion = false;
     let shouldResolveTarget = true;
-    let currentLockTarget: LockTarget | null = null;
+    let lockedElement: HTMLElement | null = null;
 
     const pointerQuery = window.matchMedia("(hover: hover) and (pointer: fine)");
+    const motionQuery = window.matchMedia("(prefers-reduced-motion: reduce)");
 
-    const syncPointerSupport = () => {
+    const syncMediaQueries = () => {
       hasFinePointer = pointerQuery.matches;
+      reduceMotion = motionQuery.matches;
       shouldResolveTarget = true;
 
       if (!hasFinePointer) {
@@ -225,14 +194,9 @@ export default function AimCursor() {
       }
     };
 
-    const setNativeCursorHidden = (hidden: boolean) => {
-      root.classList.toggle("aim-cursor-enabled", hidden);
-    };
-
     const hideCursor = () => {
       pointer.visible = false;
-      cursor.classList.remove("is-visible", "is-locked");
-      setNativeCursorHidden(false);
+      lockedElement = null;
       shouldResolveTarget = true;
     };
 
@@ -252,34 +216,92 @@ export default function AimCursor() {
       shouldResolveTarget = true;
     };
 
-    const renderFrame = () => {
-      const galaxyActive = isGalaxyOverlayActive();
+    const resolveTarget = () => {
+      if (lockedElement) {
+        const lockedRect = lockedElement.getBoundingClientRect();
+
+        if (
+          !isValidTarget(lockedElement, lockedRect) ||
+          getDistanceToRect(pointer, lockedRect) > LOCK_OUT
+        ) {
+          lockedElement = null;
+        }
+      }
+
+      const candidate = getNearestTarget(pointer);
+
+      if (!lockedElement || !candidate || candidate === lockedElement) {
+        lockedElement = lockedElement ?? candidate;
+        return;
+      }
+
+      // While locked, only hand over to another target the pointer is actually on.
+      const candidateRect = candidate.getBoundingClientRect();
+      const lockedRect = lockedElement.getBoundingClientRect();
+      const pointerOnCandidate = getDistanceToRect(pointer, candidateRect) === 0;
+      const pointerOnLocked = getDistanceToRect(pointer, lockedRect) === 0;
+      const candidateIsSmaller =
+        candidateRect.width * candidateRect.height < lockedRect.width * lockedRect.height;
+
+      if (pointerOnCandidate && (!pointerOnLocked || candidateIsSmaller)) {
+        lockedElement = candidate;
+      }
+    };
+
+    const drawCorners = (width: number, height: number) => {
+      const armX = Math.min(ARM, width / 2 - 3);
+      const armY = Math.min(ARM, height / 2 - 3);
+      const points = [
+        [[armX, 0], [0, 0], [0, armY]],
+        [[width - armX, 0], [width, 0], [width, armY]],
+        [[width, height - armY], [width, height], [width - armX, height]],
+        [[armX, height], [0, height], [0, height - armY]],
+      ];
+
+      corners.forEach((corner, index) => {
+        corner.setAttribute(
+          "points",
+          points[index].map(([x, y]) => `${x.toFixed(2)},${y.toFixed(2)}`).join(" ")
+        );
+      });
+    };
+
+    const renderFrame = (now: number) => {
+      const dt = Math.min((now - lastFrame) / 1000, 0.05);
+      lastFrame = now;
+
       const active =
         hasFinePointer &&
         pointer.visible &&
         document.visibilityState === "visible" &&
-        !galaxyActive;
-      const overTextTarget = active && isTextCursorTarget(pointer);
-      const shouldShowCursor = active && !overTextTarget;
+        !isGalaxyOverlayActive();
+      const shouldShowCursor = active && !isTextCursorTarget(pointer);
 
-      setNativeCursorHidden(active);
+      root.classList.toggle("aim-cursor-enabled", shouldShowCursor);
 
       if (!shouldShowCursor) {
         cursor.classList.remove("is-visible", "is-locked");
         hasPlacedCursor = false;
-        currentLockTarget = null;
+        lockedElement = null;
         shouldResolveTarget = true;
         animationFrame = window.requestAnimationFrame(renderFrame);
         return;
       }
 
       if (shouldResolveTarget) {
-        currentLockTarget = getNearestLockTarget(pointer);
+        resolveTarget();
         shouldResolveTarget = false;
       }
 
-      const nextState = currentLockTarget
-        ? getLockCursorState(pointer, currentLockTarget)
+      // Re-measure every frame so the frame follows the element's live size and position.
+      const lockRect = lockedElement?.getBoundingClientRect() ?? null;
+      const target = lockRect
+        ? {
+            x: lockRect.left + lockRect.width / 2,
+            y: lockRect.top + lockRect.height / 2,
+            width: lockRect.width + LOCK_PADDING_X * 2,
+            height: lockRect.height + LOCK_PADDING_Y * 2,
+          }
         : {
             x: pointer.x,
             y: pointer.y,
@@ -287,53 +309,66 @@ export default function AimCursor() {
             height: BASE_SIZE,
           };
 
-      targetState.x = nextState.x;
-      targetState.y = nextState.y;
-      targetState.width = nextState.width;
-      targetState.height = nextState.height;
+      if (lockRect) {
+        // Settle forward onto the next half turn so the frame always ends up horizontal.
+        const upright = Math.ceil(current.angle / 180 - 0.001) * 180;
+        current.angle += (upright - current.angle) * (reduceMotion ? 1 : ease(10, dt));
+      } else if (!reduceMotion) {
+        current.angle += SPIN_SPEED * dt;
+      } else {
+        current.angle = 45;
+      }
+
+      if (current.angle >= 360) {
+        current.angle -= 360;
+      }
 
       if (!hasPlacedCursor) {
-        current.x = targetState.x;
-        current.y = targetState.y;
-        current.width = targetState.width;
-        current.height = targetState.height;
+        current.x = target.x;
+        current.y = target.y;
+        current.width = target.width;
+        current.height = target.height;
         hasPlacedCursor = true;
       } else {
-        const positionEase = currentLockTarget ? 0.28 : 0.48;
-        current.x = lerp(current.x, targetState.x, positionEase);
-        current.y = lerp(current.y, targetState.y, positionEase);
-        current.width = lerp(current.width, targetState.width, 0.28);
-        current.height = lerp(current.height, targetState.height, 0.28);
+        const positionEase = ease(lockRect ? 14 : 30, dt);
+        const shapeEase = ease(12, dt);
+        current.x += (target.x - current.x) * positionEase;
+        current.y += (target.y - current.y) * positionEase;
+        current.width += (target.width - current.width) * shapeEase;
+        current.height += (target.height - current.height) * shapeEase;
       }
 
       cursor.style.width = `${current.width}px`;
       cursor.style.height = `${current.height}px`;
       cursor.style.transform = `translate3d(${current.x - current.width / 2}px, ${
         current.y - current.height / 2
-      }px, 0)`;
+      }px, 0) rotate(${current.angle}deg)`;
+      drawCorners(current.width, current.height);
       cursor.classList.add("is-visible");
-      cursor.classList.toggle("is-locked", Boolean(currentLockTarget));
+      cursor.classList.toggle("is-locked", Boolean(lockRect));
 
       animationFrame = window.requestAnimationFrame(renderFrame);
     };
 
-    syncPointerSupport();
-    pointerQuery.addEventListener("change", syncPointerSupport);
+    syncMediaQueries();
+    pointerQuery.addEventListener("change", syncMediaQueries);
+    motionQuery.addEventListener("change", syncMediaQueries);
     window.addEventListener("pointermove", handlePointerMove, { passive: true });
-    window.addEventListener("pointerleave", hideCursor);
+    root.addEventListener("pointerleave", hideCursor);
     window.addEventListener("blur", hideCursor);
-    window.addEventListener("scroll", markTargetDirty, { passive: true });
+    window.addEventListener("scroll", markTargetDirty, { passive: true, capture: true });
     window.addEventListener("resize", markTargetDirty);
     document.addEventListener("visibilitychange", markTargetDirty);
     animationFrame = window.requestAnimationFrame(renderFrame);
 
     return () => {
       window.cancelAnimationFrame(animationFrame);
-      pointerQuery.removeEventListener("change", syncPointerSupport);
+      pointerQuery.removeEventListener("change", syncMediaQueries);
+      motionQuery.removeEventListener("change", syncMediaQueries);
       window.removeEventListener("pointermove", handlePointerMove);
-      window.removeEventListener("pointerleave", hideCursor);
+      root.removeEventListener("pointerleave", hideCursor);
       window.removeEventListener("blur", hideCursor);
-      window.removeEventListener("scroll", markTargetDirty);
+      window.removeEventListener("scroll", markTargetDirty, { capture: true });
       window.removeEventListener("resize", markTargetDirty);
       document.removeEventListener("visibilitychange", markTargetDirty);
       root.classList.remove("aim-cursor-enabled");
@@ -342,12 +377,13 @@ export default function AimCursor() {
 
   return (
     <div ref={cursorRef} className="aim-cursor" aria-hidden="true">
-      <div className="aim-cursor__box">
-        <span className="aim-cursor__corner aim-cursor__corner--tl" />
-        <span className="aim-cursor__corner aim-cursor__corner--tr" />
-        <span className="aim-cursor__corner aim-cursor__corner--bl" />
-        <span className="aim-cursor__corner aim-cursor__corner--br" />
-      </div>
+      <svg className="aim-cursor__frame">
+        <polyline />
+        <polyline />
+        <polyline />
+        <polyline />
+      </svg>
+      <span className="aim-cursor__dot" />
     </div>
   );
 }
