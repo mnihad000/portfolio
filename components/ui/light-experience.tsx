@@ -39,6 +39,7 @@ import { HeroScene } from "@/components/ui/hero-scene";
 import LightProjectCard from "@/components/ui/light-project-card";
 import RecentCommitsSection from "@/components/ui/recent-commits-section";
 import TechStackSection from "@/components/ui/tech-stack-section";
+import TerminalLauncher from "@/components/ui/terminal-launcher";
 import { WavyWhatIfText } from "@/components/ui/wavy-what-if-text";
 
 const projectCards = [...projects];
@@ -133,6 +134,48 @@ export default function LightExperience() {
     };
   }, []);
 
+  const [terminalWindow, setTerminalWindow] =
+    useState<TerminalWindowState>("docked");
+  const wasWindowedRef = useRef(false);
+
+  const openTerminal = useCallback(() => setTerminalWindow("open"), []);
+  const closeTerminal = useCallback(() => setTerminalWindow("docked"), []);
+  // Docked -> window, window -> maximized, maximized -> window.
+  const toggleTerminalMax = useCallback(() => {
+    setTerminalWindow((current) => (current === "open" ? "maximized" : "open"));
+  }, []);
+
+  useEffect(() => {
+    const isWindowed = terminalWindow !== "docked";
+    const root = document.documentElement;
+
+    if (!isWindowed) {
+      // Hand focus back to the launcher after the window closes.
+      if (wasWindowedRef.current) {
+        document.getElementById("terminal-launcher")?.focus({ preventScroll: true });
+      }
+      wasWindowedRef.current = false;
+      return;
+    }
+
+    wasWindowedRef.current = true;
+    const previousOverflow = root.style.overflow;
+    root.style.overflow = "hidden";
+
+    const handleKeyDown = (event: globalThis.KeyboardEvent) => {
+      if (event.key === "Escape") {
+        setTerminalWindow("docked");
+      }
+    };
+
+    window.addEventListener("keydown", handleKeyDown);
+
+    return () => {
+      root.style.overflow = previousOverflow;
+      window.removeEventListener("keydown", handleKeyDown);
+    };
+  }, [terminalWindow]);
+
   return (
     <div
       className="min-h-svh bg-white text-neutral-950"
@@ -150,8 +193,15 @@ export default function LightExperience() {
         <TechStackSection />
         <RecentCommitsSection />
         <ProjectsSection />
-        <ContactSection />
+        <ContactSection
+          windowControls={{
+            windowState: terminalWindow,
+            onClose: closeTerminal,
+            onToggleMax: toggleTerminalMax,
+          }}
+        />
       </div>
+      <TerminalLauncher hidden={terminalWindow !== "docked"} onOpen={openTerminal} />
     </div>
   );
 }
@@ -347,8 +397,14 @@ function ProjectsSection() {
   );
 }
 
-function ContactSection() {
+function ContactSection({
+  windowControls,
+}: {
+  windowControls: TerminalWindowControls;
+}) {
   const resumeHref = aboutPageContent.statuses[0]?.ctaHref ?? "/resume";
+  const { windowState, onClose } = windowControls;
+  const isWindowed = windowState !== "docked";
 
   return (
     <section
@@ -435,12 +491,113 @@ function ContactSection() {
           whileInView={{ opacity: 1, y: 0 }}
           viewport={{ once: true, amount: 0.25 }}
           transition={{ ...revealTransition, delay: 0.16 }}
-          className="h-[560px] md:h-[640px] lg:h-[680px]"
+          id="nihad-os"
+          className="relative h-[560px] scroll-mt-28 md:h-[640px] lg:h-[680px]"
+          // A transformed ancestor would trap the fixed-position window inside this slot.
+          style={isWindowed ? { transform: "none" } : undefined}
         >
-          <ContactTerminal resumeHref={resumeHref} />
+          {isWindowed ? (
+            <>
+              <div className="nihad-os-backdrop" onClick={onClose} aria-hidden="true" />
+              <div className="flex h-full flex-col items-center justify-center gap-4 rounded-[1.9rem] border border-dashed border-black/15 bg-[#fbfaf8] px-6 text-center">
+                <p className="font-mono text-[11px] font-semibold uppercase tracking-[0.24em] text-neutral-500">
+                  NIHAD_OS is running in a window
+                </p>
+                <button
+                  type="button"
+                  onClick={onClose}
+                  className="rounded-full border border-black/10 bg-white px-4 py-2 font-mono text-[11px] font-bold uppercase tracking-[0.18em] text-neutral-800 shadow-sm transition hover:border-[#d65a12] hover:text-[#d65a12]"
+                >
+                  Bring it back
+                </button>
+              </div>
+            </>
+          ) : null}
+          <div
+            className={`nihad-os-frame ${
+              windowState === "maximized"
+                ? "is-open is-maximized"
+                : windowState === "open"
+                  ? "is-open"
+                  : ""
+            }`}
+            role={isWindowed ? "dialog" : undefined}
+            aria-modal={isWindowed ? true : undefined}
+            aria-label={isWindowed ? "NIHAD_OS terminal" : undefined}
+          >
+            <ContactTerminal resumeHref={resumeHref} windowControls={windowControls} />
+          </div>
         </motion.div>
       </div>
     </section>
+  );
+}
+
+type TerminalWindowState = "docked" | "open" | "maximized";
+
+type TerminalWindowControls = {
+  windowState: TerminalWindowState;
+  onClose: () => void;
+  onToggleMax: () => void;
+};
+
+const WINDOW_DOT_CLASS =
+  "group/dot flex h-3 w-3 items-center justify-center rounded-full font-mono text-[9px] font-bold leading-none text-black/0 transition-colors focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-black/25";
+
+// macOS-style traffic lights. Docked, only green is live (it pops the terminal out);
+// windowed, red and yellow close it and green toggles maximize.
+function WindowControls({
+  windowState,
+  onClose,
+  onToggleMax,
+}: TerminalWindowControls) {
+  const isWindowed = windowState !== "docked";
+
+  return (
+    <div
+      className="group/lights flex items-center gap-2"
+      onClick={(event) => event.stopPropagation()}
+    >
+      {isWindowed ? (
+        <>
+          <button
+            type="button"
+            onClick={onClose}
+            aria-label="Close NIHAD_OS window"
+            className={`${WINDOW_DOT_CLASS} bg-[#ff5f57] group-hover/lights:text-black/55`}
+          >
+            ×
+          </button>
+          <button
+            type="button"
+            onClick={onClose}
+            aria-label="Minimize NIHAD_OS window"
+            className={`${WINDOW_DOT_CLASS} bg-[#febc2e] group-hover/lights:text-black/55`}
+          >
+            −
+          </button>
+        </>
+      ) : (
+        <>
+          <span className="h-3 w-3 rounded-full bg-[#ff5f57]" aria-hidden="true" />
+          <span className="h-3 w-3 rounded-full bg-[#febc2e]" aria-hidden="true" />
+        </>
+      )}
+      <button
+        type="button"
+        onClick={onToggleMax}
+        aria-label={
+          windowState === "docked"
+            ? "Open NIHAD_OS in a window"
+            : windowState === "maximized"
+              ? "Restore NIHAD_OS window size"
+              : "Maximize NIHAD_OS window"
+        }
+        className={`${WINDOW_DOT_CLASS} bg-[#28c840] group-hover/lights:text-black/55`}
+      >
+        +
+      </button>
+    </div>
   );
 }
 
@@ -726,7 +883,13 @@ function renderCommandHighlights(text: string): ReactNode {
   });
 }
 
-function ContactTerminal({ resumeHref }: { resumeHref: string }) {
+function ContactTerminal({
+  resumeHref,
+  windowControls,
+}: {
+  resumeHref: string;
+  windowControls: TerminalWindowControls;
+}) {
   const [lines, setLines] = useState<TerminalLine[]>([
     {
       id: 0,
@@ -825,6 +988,20 @@ function ContactTerminal({ resumeHref }: { resumeHref: string }) {
       behavior: "smooth",
     });
   }, [lines]);
+
+  const isWindowed = windowControls.windowState !== "docked";
+
+  // Focus the prompt when the terminal pops out, but skip touch devices so the keyboard doesn't jump up.
+  useEffect(() => {
+    if (
+      !isWindowed ||
+      !window.matchMedia("(hover: hover) and (pointer: fine)").matches
+    ) {
+      return;
+    }
+
+    inputRef.current?.focus({ preventScroll: true });
+  }, [isWindowed]);
 
   const addLine = (text: string, kind: TerminalLineKind) => {
     const id = lineIdRef.current;
@@ -1208,7 +1385,10 @@ function ContactTerminal({ resumeHref }: { resumeHref: string }) {
     }
 
     if (command === "sudo hire me") {
-      addTypedLine("Access granted. Redirecting to contact form...", "success");
+      addTypedLine("Access granted. Opening email draft...", "success");
+      window.setTimeout(() => {
+        window.location.href = `mailto:${lightModeContent.email}`;
+      }, 350);
       return;
     }
 
@@ -1238,7 +1418,7 @@ function ContactTerminal({ resumeHref }: { resumeHref: string }) {
           "resume - download resume PDF",
           "clear - clear terminal",
           "start game - launch stealth extraction module",
-          "sudo hire me - request elevated access",
+          "sudo hire me - open an email draft",
           "ls secrets/ - inspect restricted path",
         ].join("\n"),
         whoami: terminalContent.bio,
@@ -1338,6 +1518,7 @@ function ContactTerminal({ resumeHref }: { resumeHref: string }) {
     return (
       <StealthResumeGame
         resumeHref={resumeHref}
+        windowControls={windowControls}
         onComplete={handleGameComplete}
         onExit={() => {
           setIsGameActive(false);
@@ -1353,11 +1534,7 @@ function ContactTerminal({ resumeHref }: { resumeHref: string }) {
       onClick={() => inputRef.current?.focus()}
     >
       <div className="flex items-center justify-between border-b border-black/8 bg-[#fbfaf8] px-4 py-3">
-        <div className="flex items-center gap-2" aria-hidden="true">
-          <span className="h-3 w-3 rounded-full bg-[#ff5f57]" />
-          <span className="h-3 w-3 rounded-full bg-[#febc2e]" />
-          <span className="h-3 w-3 rounded-full bg-[#28c840]" />
-        </div>
+        <WindowControls {...windowControls} />
         <p className="font-mono text-[11px] font-semibold uppercase tracking-[0.24em] text-neutral-500">
           NIHAD_OS v1.0
         </p>
@@ -1863,10 +2040,12 @@ function StealthResumeGame({
   resumeHref,
   onComplete,
   onExit,
+  windowControls,
 }: {
   resumeHref: string;
   onComplete: () => void;
   onExit: () => void;
+  windowControls: TerminalWindowControls;
 }) {
   const gameRef = useRef<GameRuntime>(createGameRuntime(0));
   const [view, setView] = useState<GameRuntime>(() => createGameRuntime(0));
@@ -2184,11 +2363,7 @@ function StealthResumeGame({
     >
       <div className="flex items-center justify-between border-b border-black/8 bg-[#fbfaf8] px-4 py-3">
         <div className="flex min-w-0 items-center gap-3">
-          <div className="flex items-center gap-2" aria-hidden="true">
-            <span className="h-3 w-3 rounded-full bg-[#ff5f57]" />
-            <span className="h-3 w-3 rounded-full bg-[#febc2e]" />
-            <span className="h-3 w-3 rounded-full bg-[#28c840]" />
-          </div>
+          <WindowControls {...windowControls} />
           <p className="truncate font-mono text-[11px] font-semibold uppercase tracking-[0.2em] text-neutral-600">
             FLOOR {runtime.floorIndex + 1} / 3
           </p>

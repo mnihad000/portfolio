@@ -91,8 +91,12 @@ function isVisibleTarget(element: HTMLElement, rect: DOMRect) {
 }
 
 function isValidTarget(element: HTMLElement, rect: DOMRect) {
+  // While a modal dialog is open, only its own controls can be locked onto.
+  const modal = document.querySelector("[aria-modal='true']");
+
   return (
     element.isConnected &&
+    (!modal || modal.contains(element)) &&
     !element.closest(IGNORE_SELECTOR) &&
     !isDisabledElement(element) &&
     hasNonNegativeTabIndex(element) &&
@@ -148,11 +152,13 @@ function isGalaxyOverlayActive() {
 
 export default function AimCursor() {
   const cursorRef = useRef<HTMLDivElement>(null);
+  const dotRef = useRef<HTMLSpanElement>(null);
 
   useEffect(() => {
     const cursor = cursorRef.current;
+    const dot = dotRef.current;
 
-    if (!cursor) {
+    if (!cursor || !dot) {
       return;
     }
 
@@ -190,6 +196,7 @@ export default function AimCursor() {
       if (!hasFinePointer) {
         pointer.visible = false;
         cursor.classList.remove("is-visible", "is-locked");
+        dot.classList.remove("is-visible");
         root.classList.remove("aim-cursor-enabled");
       }
     };
@@ -281,6 +288,7 @@ export default function AimCursor() {
 
       if (!shouldShowCursor) {
         cursor.classList.remove("is-visible", "is-locked");
+        dot.classList.remove("is-visible");
         hasPlacedCursor = false;
         lockedElement = null;
         shouldResolveTarget = true;
@@ -293,8 +301,15 @@ export default function AimCursor() {
         shouldResolveTarget = false;
       }
 
-      // Re-measure every frame so the frame follows the element's live size and position.
-      const lockRect = lockedElement?.getBoundingClientRect() ?? null;
+      // Re-measure every frame so the frame follows the element's live size and position,
+      // and drop the lock as soon as the target hides or goes inert (e.g. a button that fades out on click).
+      let lockRect = lockedElement?.getBoundingClientRect() ?? null;
+
+      if (lockedElement && lockRect && !isValidTarget(lockedElement, lockRect)) {
+        lockedElement = null;
+        lockRect = null;
+        shouldResolveTarget = true;
+      }
       const target = lockRect
         ? {
             x: lockRect.left + lockRect.width / 2,
@@ -346,6 +361,9 @@ export default function AimCursor() {
       drawCorners(current.width, current.height);
       cursor.classList.add("is-visible");
       cursor.classList.toggle("is-locked", Boolean(lockRect));
+      // The dot is the real pointer: it tracks the mouse exactly, even while the frame is locked on a target.
+      dot.style.transform = `translate3d(${pointer.x}px, ${pointer.y}px, 0)`;
+      dot.classList.add("is-visible");
 
       animationFrame = window.requestAnimationFrame(renderFrame);
     };
@@ -376,14 +394,16 @@ export default function AimCursor() {
   }, []);
 
   return (
-    <div ref={cursorRef} className="aim-cursor" aria-hidden="true">
-      <svg className="aim-cursor__frame">
-        <polyline />
-        <polyline />
-        <polyline />
-        <polyline />
-      </svg>
-      <span className="aim-cursor__dot" />
-    </div>
+    <>
+      <div ref={cursorRef} className="aim-cursor" aria-hidden="true">
+        <svg className="aim-cursor__frame">
+          <polyline />
+          <polyline />
+          <polyline />
+          <polyline />
+        </svg>
+      </div>
+      <span ref={dotRef} className="aim-cursor-dot" aria-hidden="true" />
+    </>
   );
 }
