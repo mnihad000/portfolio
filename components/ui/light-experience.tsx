@@ -35,6 +35,11 @@ import { aboutPageContent } from "@/lib/about";
 import { lightModeContent } from "@/lib/light-mode-content";
 import { projects } from "@/lib/projects";
 import { AnimatedName } from "@/components/ui/animated-name";
+import EmailToast, {
+  handleEmailLinkClick,
+  MAILTO_HREF,
+  openEmailDraft,
+} from "@/components/ui/email-toast";
 import { HeroScene } from "@/components/ui/hero-scene";
 import LightProjectCard from "@/components/ui/light-project-card";
 import RecentCommitsSection from "@/components/ui/recent-commits-section";
@@ -202,6 +207,7 @@ export default function LightExperience() {
         />
       </div>
       <TerminalLauncher hidden={terminalWindow !== "docked"} onOpen={openTerminal} />
+      <EmailToast />
     </div>
   );
 }
@@ -261,7 +267,8 @@ function AboutSection() {
               View Projects
             </a>
             <a
-              href={`mailto:${lightModeContent.email}`}
+              href={MAILTO_HREF}
+              onClick={handleEmailLinkClick}
               className="rounded-full border border-neutral-900 bg-neutral-900 px-5 py-2.5 text-sm font-semibold text-white transition hover:bg-neutral-700"
             >
               Contact
@@ -422,17 +429,7 @@ function ContactSection({
             className="space-y-3"
           >
             <h3 className="text-4xl font-semibold tracking-tight text-neutral-900 md:text-5xl">
-              <a
-                href={`mailto:${lightModeContent.email}`}
-                className="group inline-flex items-center gap-3 rounded-lg transition-colors hover:text-[#d65a12] focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-[#d65a12]/40"
-              >
-                Contact Me
-                <ArrowUpRight
-                  className="h-7 w-7 -translate-x-1 translate-y-1 opacity-0 transition duration-200 group-hover:translate-x-0 group-hover:translate-y-0 group-hover:opacity-100 group-focus-visible:opacity-100 md:h-9 md:w-9 [@media(hover:none)]:translate-x-0 [@media(hover:none)]:translate-y-0 [@media(hover:none)]:opacity-100"
-                  strokeWidth={2}
-                  aria-hidden="true"
-                />
-              </a>
+              Contact Me
             </h3>
             <p className="max-w-xl text-base leading-8 text-neutral-600 md:text-lg">
               Got a project idea, opportunity, want to team up for a hackathon,
@@ -464,7 +461,8 @@ function ContactSection({
             </MagneticContactCard>
 
             <MagneticContactCard
-              href={`mailto:${lightModeContent.email}`}
+              href={MAILTO_HREF}
+              onClick={handleEmailLinkClick}
               icon={<Mail className="h-5 w-5" strokeWidth={1.8} />}
               eyebrow="Direct"
               title="Email Me"
@@ -1398,9 +1396,7 @@ function ContactTerminal({
 
     if (command === "sudo hire me") {
       addTypedLine("Access granted. Opening email draft...", "success");
-      window.setTimeout(() => {
-        window.location.href = `mailto:${lightModeContent.email}`;
-      }, 350);
+      window.setTimeout(() => void openEmailDraft(), 350);
       return;
     }
 
@@ -2720,6 +2716,7 @@ type MagneticContactCardProps = {
   href: string;
   target?: string;
   rel?: string;
+  onClick?: (event: React.MouseEvent<HTMLAnchorElement>) => void;
   icon: ReactNode;
   eyebrow: string;
   title: string;
@@ -2734,6 +2731,7 @@ function MagneticContactCard({
   href,
   target,
   rel,
+  onClick,
   icon,
   eyebrow,
   title,
@@ -2793,6 +2791,7 @@ function MagneticContactCard({
       href={href}
       target={target}
       rel={rel}
+      onClick={onClick}
       onPointerMove={handleMove}
       onPointerLeave={reset}
       style={reducedMotion ? undefined : { x: springX, y: springY }}
