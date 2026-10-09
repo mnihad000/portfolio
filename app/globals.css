@@ -1199,7 +1199,12 @@ html.aim-cursor-enabled * {
     padding: 11px 15px;
   }
 
-  .nihad-os-frame.is-open,
+  /* A centered card rather than a full-screen sheet; the green dot still expands it to fill the screen. */
+  .nihad-os-frame.is-open {
+    width: calc(100vw - 24px);
+    height: min(520px, 62svh);
+  }
+
   .nihad-os-frame.is-maximized {
     inset: 12px;
     width: auto;
